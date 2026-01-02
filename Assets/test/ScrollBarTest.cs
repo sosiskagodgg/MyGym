@@ -1,12 +1,27 @@
+using System;
+using TMPro;
 using UnityEngine;
-using System.IO;
-public class ScrollBarTest : MonoBehaviour
+using UnityEngine.UI;
+
+public class ScrollBarUI : Scrollbar
 {
-    [Header("parametrs")]
-    [Seriliazifiled] int max;
-    void Start()
+    [Header("Parameters")]
+    [SerializeField] public float max;
+    [SerializeField] public float min;
+    [Header("Objects")]
+    [SerializeField] public TextMeshProUGUI text;
+
+    protected override void Awake()
     {
-        Debug.Log("start");
+        base.Awake();
+        onValueChanged.AddListener(UpdateText);
     }
-    
+
+    private float LerpValue(float value) => Mathf.Lerp(min, max, value);
+
+    private void UpdateText(float value)
+    {
+        if (text != null)
+            text.text = LerpValue(value).ToString();
+    }
 }
