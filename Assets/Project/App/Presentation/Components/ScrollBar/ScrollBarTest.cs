@@ -12,12 +12,18 @@ public class ScrollBarUI : MonoBehaviour
     [Header("Objects")]
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] Scrollbar scrollbar;
-    public float Value {get; private set;}
+    public float Value { get; private set; }
 
 
     void Awake()
     {
         scrollbar.onValueChanged.AddListener(ValueChanged);
+        if(text.text =="")text.text = min.ToString();
+    }
+    public void SetScrollBarPos(float value)
+    {
+        scrollbar.value = Mathf.InverseLerp(min, max, value);
+        ValueChanged(scrollbar.value);
     }
     void ValueChanged(float value)
     {
