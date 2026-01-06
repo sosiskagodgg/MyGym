@@ -26,7 +26,7 @@ public class ChangePlayerData : MonoBehaviour
     }
     void SetScrollBarPos()
     {
-        Player player = new Player().LoadPlayer();
+        Player player = Player.LoadPlayer();
         inputField.text = player.name;
         weightScrollBar.SetScrollBarPos (player.weight);
         heightScrollBar.SetScrollBarPos (player.height);
