@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AddExerciseMenu : MonoBehaviour
+public class AddExerciseUpperMenu : MonoBehaviour
 {
     #region Вывод упражнений
     List<Exercise> exercises;
@@ -20,17 +20,16 @@ public class AddExerciseMenu : MonoBehaviour
     {
         exercises = ExerciseManager.Exercises;
         ChangeValue();
-        ExerciseChangedEvent += ExerciseChange;
     }
     void CreateWindows()
     {
         ClearObj();
-        corectExercises = exercises.Where(ex => ex.name.Contains(imputText)).ToList();
+        corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower())).ToList();
         for (int i = 0; corectExercises.Count > i; i++)
         {
             GameObject obj = Instantiate(card, content);
-            obj.GetComponent<LowerCard>().exercise = exercises[i];
-            obj.GetComponentInChildren<TextMeshProUGUI>().text = exercises[i].name;
+            obj.GetComponent<AddExerciseCard>().exercise = corectExercises[i];
+            obj.GetComponentInChildren<TextMeshProUGUI>().text = corectExercises[i].name;
             spawnObj.Add(obj);
         }
         Canvas.ForceUpdateCanvases();
@@ -48,17 +47,4 @@ public class AddExerciseMenu : MonoBehaviour
 
     #endregion
 
-    [Header("exercise set settings")]
-    [SerializeField] TextMeshProUGUI exerciseName;
-    static public event EventHandler<Exercise> ExerciseChangedEvent;
-    public Exercise exercise;
-    public static void NotifyExerciseChanged(object sender, Exercise changedExercise)
-    {
-        ExerciseChangedEvent?.Invoke(sender, changedExercise);
-    }
-    void ExerciseChange(object obj ,Exercise exercise)
-    {
-        exerciseName.text = exercise.name;
-        this.exercise = exercise;
-    }
 }

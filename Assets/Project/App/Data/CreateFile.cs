@@ -8,7 +8,7 @@ public class CreateFile : MonoBehaviour
     {
         ap = Application.persistentDataPath;
         Create();
-        Test();
+        //Test();
     }
     void Create()
     {

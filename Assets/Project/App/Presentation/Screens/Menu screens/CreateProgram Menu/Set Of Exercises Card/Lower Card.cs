@@ -13,8 +13,4 @@ public class LowerCard : MonoBehaviour
         if (exercise.specificParameters.debugString == null) Debug.Log("Дебаг стринг пустой");
         Debug.Log(exercise.specificParameters.debugString.ToString());
     }
-    public void UpdateExercise()
-    {
-        AddExerciseMenu.NotifyExerciseChanged(this, exercise);
-    }
 }

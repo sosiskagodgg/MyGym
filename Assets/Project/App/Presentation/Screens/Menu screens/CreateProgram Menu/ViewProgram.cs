@@ -8,7 +8,7 @@ public class ViewProgram : MonoBehaviour
     [SerializeField] Transform content;
     [SerializeField] GameObject upperCard;
     [SerializeField] Button[] buttons;
-    Day day;
+    public static Day day;
     private void Awake()
     {
         for (int i = 0; i < buttons.Length; i++) 
@@ -53,6 +53,7 @@ public class ViewProgram : MonoBehaviour
                 Debug.LogError("Неверный формат дня");
                 break;
         }
+        ForCanvas.UpdateCanvas();
     }
     void CreateUpperCards(byte dayNum)
     {

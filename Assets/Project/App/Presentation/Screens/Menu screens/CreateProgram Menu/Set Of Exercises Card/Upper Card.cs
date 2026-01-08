@@ -17,6 +17,7 @@ public class UpperCard : MonoBehaviour
             inst.GetComponent<LowerCard>().exercise = setOfExercises.exercises[i];
             inst.GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponent<LowerCard>().exercise.specificParameters.ToString();
         }
+        ForCanvas.UpdateCanvas();
     }
     public void SetActive()
     {

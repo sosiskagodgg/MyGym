@@ -87,11 +87,16 @@ public class Day
 
 
     #endregion
-    #region Загрузка - Сохранение
-    public void SaveSetOfExercises(SetOfExercises setOfExercises)
+    #region Загрузка - Сохранение - Обновление
+    public void UpdateSetOfExercises(SetOfExercises setOfExercises)
     {
         byte i = (byte)setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         setsOfExercises[i] = setOfExercises;
+        Week.SaveDay(this);
+    }
+    public void AddSetOfExercises(SetOfExercises setOfExercises)
+    {
+        setsOfExercises.Add(setOfExercises);
         Week.SaveDay(this);
     }
     #endregion
@@ -118,12 +123,12 @@ public class SetOfExercises
         if (isSetId) exercises = ExerciseManager.SetId(exercises);
     }
     #endregion
-    #region Загрузка - Сохранение
-    public void SaveExercise(Day day, Exercise exercise)
+    #region Загрузка - Сохранение - Обновление
+    public void UpdateExercise(Day day, Exercise exercise)
     {
         byte i = (byte)exercises.FindIndex(ex => ex.id == exercise.id);
         exercises[i] = exercise;
-        day.SaveSetOfExercises(this);
+        day.UpdateSetOfExercises(this);
     }
     #endregion
     #region Работа с id
