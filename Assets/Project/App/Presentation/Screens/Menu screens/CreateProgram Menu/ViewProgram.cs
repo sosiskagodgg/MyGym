@@ -1,18 +1,29 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ViewProgram : MonoBehaviour
 {
     [SerializeField] GameObject programWindow;
     [SerializeField] Transform content;
     [SerializeField] GameObject upperCard;
-    [Header("Buttons")]
-    [SerializeField] GameObject[] buttons;
+    [SerializeField] Button[] buttons;
     Day day;
     private void Awake()
     {
-        for (int i = 0; i < buttons.Length; i++) { buttons[i].GetComponent<DoubleClickEvent>().DoubleClick += (s, e) => OpenProgram(e); }
+        for (int i = 0; i < buttons.Length; i++) 
+        {
+            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick+= OpenProgram;
+        }
     }
-    public void OpenProgram(string name)
+    private void OnDestroy()
+    {
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick -= OpenProgram;
+        }
+    }
+    public void OpenProgram(object obj,string name)
     {
         programWindow.SetActive(true);
         switch (name)
@@ -45,13 +56,10 @@ public class ViewProgram : MonoBehaviour
     }
     void CreateUpperCards(byte dayNum)
     {
-        Debug.Log($"День номер №{dayNum} открыт");
         day = Week.week.Days[dayNum];
-        Debug.Log($"Количество сетов - {day.setsOfExercises.Count}");
         for (int i = 0; i < day.setsOfExercises.Count; i++)
         {
             var inst = Instantiate(upperCard, content);
-            Debug.Log("Upper создан");
             inst.GetComponent<UpperCard>().setOfExercises = day.setsOfExercises[i];
             inst.GetComponent<UpperCard>().SetActive();
         }

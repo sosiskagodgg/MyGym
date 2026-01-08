@@ -4,19 +4,20 @@ using System;
 using System.Collections;
 public class DoubleClickEvent : MonoBehaviour
 {
-    bool isClick = false;
+    public bool isClick = false;
     public event EventHandler<string> DoubleClick;
     private void OnDisable()
     {
         isClick = false;
     }
-    private void Awake()
+    private void OnEnable()
     {
-        GetComponent<Button>().onClick.AddListener(CheackDoubleClick);
+        isClick = false;
     }
-    void CheackDoubleClick()
+
+    public void CheackDoubleClick()
     {
-        if (isClick) DoubleClick?.Invoke(this,gameObject.name);
+        if (isClick) { DoubleClick?.Invoke(this, gameObject.name);isClick = false;} 
         else
         {
             isClick = true;

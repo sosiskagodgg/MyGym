@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 #region Основной класс
 [System.Serializable]
@@ -40,7 +41,7 @@ public abstract class SpecificParameters
     public abstract string GetDescription(string name);
     public abstract void SetParametrs(Player player,byte ApproachNumber = 0);
     public abstract SpecificParameters DeepClone(SpecificParameters specificParameters);
-
+    public string debugString;
     protected string GetHourWord(int hours)
     {
         int lastTwo = hours % 100;
@@ -220,6 +221,42 @@ public class StrengthTraining : SpecificParameters
     #endregion
     #region Методы для расчета параметров
 
+    private void SetWorkWeight(Player player)
+    {
+        StringBuilder debugString = new StringBuilder();
+        if (repetitions != 0 && onePm != 0 && twelvePm != 0 && player.weight!=0)
+        {
+            debugString.AppendLine($"Параметры игрока\n" +
+                $"Вес - {player.weight}\n" 
+
+
+
+                );
+            debugString.AppendLine($"Параметры упражнения\n" +
+            $"1 пм  - {this.onePm}\n"+
+            $"12 пм  - {this.twelvePm}\n"
+
+
+            );
+            float onePm = player.weight*((float)this.onePm/100);
+            debugString.AppendLine($"Эталонный 1 пм - {(short)onePm}кг");
+            float twelvePm = player.weight * ((float)this.twelvePm / 100);
+            debugString.AppendLine($"Эталонный 12 пм - {(short)twelvePm}");
+            workWeight = (byte)GetWorkWeightByRepetitions(onePm, twelvePm,repetitions);
+            debugString.AppendLine($"Эталонный {repetitions} пм - {workWeight}");
+        }
+        this.debugString = debugString.ToString();
+    }
+    private float GetWorkWeightByRepetitions(float onePm, float twelvePm,byte repetitions)
+    {
+        float workWeight;
+        float step;
+        if (repetitions == 1) return onePm;
+        else if(repetitions == 12) return twelvePm;
+        step = (onePm - twelvePm)/11;
+        workWeight = onePm - step * (repetitions - 1);
+        return workWeight;
+    }
 
 
     #endregion
@@ -235,14 +272,17 @@ public class StrengthTraining : SpecificParameters
             {
                 workWeight = strengthToClone.workWeight,
                 ApproachNumber = strengthToClone.ApproachNumber,
-                description = strengthToClone.description
+                description = strengthToClone.description,
+                debugString = strengthToClone.debugString
             };
             return clone;
         }
-
         throw new ArgumentException("Параметр должен быть типа StrengthTraining", nameof(specificParameters));
     }
-    public override void SetParametrs(Player player, byte ApproachNumber = 0) { Debug.Log("Параметры не установленны"); }
+    public override void SetParametrs(Player player, byte ApproachNumber = 0) 
+    {
+        SetWorkWeight(player);
+    }
     public override string ToString()
     {
         if (workWeight > 0 && repetitions > 0) { return $"{workWeight}кг на {repetitions} раз"; }
