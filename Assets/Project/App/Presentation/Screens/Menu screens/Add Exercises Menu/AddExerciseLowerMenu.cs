@@ -24,7 +24,14 @@ public class AddExerciseLowerMenu : MonoBehaviour
     }
     public void AddExercise()
     {
+        try
+        {
         SetOfExercises newSet = new SetOfExercises(exercise, (byte)scrollBarUI.Value);
         ViewProgram.day.AddSetOfExercises(newSet);
+        }
+        catch
+        {
+            text.text = "Выберите упражнение!";
+        }
     }
 }

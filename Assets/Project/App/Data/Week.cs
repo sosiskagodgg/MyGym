@@ -42,11 +42,12 @@ public class Week
     public void SaveWeek()
     {
         Days ??= new List<Day>();
-        File.WriteAllText(path, JsonUtility.ToJson(this,true));
+        Sort();
+        File.WriteAllText(path, JsonUtility.ToJson(this, true));
     }
     public static void SaveDay(Day day)
     {
-        byte dayNum=(byte)week.Days.FindIndex(d => d.num == day.num);
+        byte dayNum = (byte)week.Days.FindIndex(d => d.num == day.num);
         week.Days[dayNum] = day;
         week.SaveWeek();
     }
@@ -56,18 +57,27 @@ public class Week
 
         if (!File.Exists(path))
         {
-             isFileFind = true; EmptyWeek.SaveWeek(); return EmptyWeek; 
+            isFileFind = true; EmptyWeek.SaveWeek(); return EmptyWeek;
         }
         else
         {
-        Week result;
-        result = JsonUtility.FromJson<Week>(File.ReadAllText(path));
-        return result == null? EmptyWeek : result;
+            Week result;
+            result = JsonUtility.FromJson<Week>(File.ReadAllText(path));
+            return result == null ? EmptyWeek : result;
         }
 
     }
     #endregion
+    #region Сортировка
+    public void Sort()
+    {
+        for (int i = 0; Days.Count > i; i++)
+        {
+            Days[i].Sort();
+        }
+        #endregion
 
+    }
 
 }
 [System.Serializable]
@@ -100,7 +110,15 @@ public class Day
         Week.SaveDay(this);
     }
     #endregion
-
+    #region Соритровка
+    public void Sort()
+    {
+        for (int i = 0; i < setsOfExercises.Count; i++)
+        {
+            setsOfExercises[i].id = (byte)i;
+        }
+    }
+    #endregion
 
 
 }
@@ -108,11 +126,11 @@ public class Day
 public class SetOfExercises
 {
     #region Параметры и конструкторы
-    private static Player player = Player.LoadPlayer();
 
-    public List<Exercise> exercises;
-    public SetOfExercises(Exercise exercise, byte quantity,bool isSetId = true)
+    public List<Exercise> exercises = new List<Exercise>();
+    public SetOfExercises(Exercise exercise, byte quantity, bool isSetId = true)
     {
+        Player player = Player.LoadPlayer();
         exercises = new List<Exercise>();
         for (int i = 0; i < quantity; i++)
         {
@@ -122,6 +140,7 @@ public class SetOfExercises
         }
         if (isSetId) exercises = ExerciseManager.SetId(exercises);
     }
+    public SetOfExercises() { }
     #endregion
     #region Загрузка - Сохранение - Обновление
     public void UpdateExercise(Day day, Exercise exercise)
@@ -131,15 +150,14 @@ public class SetOfExercises
         day.UpdateSetOfExercises(this);
     }
     #endregion
-    #region Работа с id
+    #region Сортировка
     public byte id;
-    public List<SetOfExercises> SetId(List<SetOfExercises> setOfExercises)
+    public void Sort()
     {
-        for (int i = 0; i < setOfExercises.Count; i++)
+        for (int i = 0; i < exercises.Count; i++) 
         {
-            setOfExercises[i].id = (byte)i;
+            exercises[i].id = (byte)i;
         }
-        return setOfExercises;
     }
     #endregion
     #region Визуальные методы
@@ -155,6 +173,25 @@ public class SetOfExercises
         }
     }
     #endregion
-
+    #region Клонирование
+    public SetOfExercises DeepClone(SetOfExercises setOfExercises)
+    {
+        SetOfExercises newSetOfExercises = new SetOfExercises();
+        for(int i  = 0; i < exercises.Count; i++)
+        {
+            try
+            {
+                newSetOfExercises.exercises.Add(ExerciseManager.DeepClone(exercises[i]));
+            }
+            catch 
+            {
+                CreateFile.Test(exercises[i].name);
+                CreateFile.Test(ExerciseManager.DeepClone(exercises[i]).name);
+            }
+        }
+        newSetOfExercises.Sort();
+        return newSetOfExercises;
+    }
+    #endregion
 }
 

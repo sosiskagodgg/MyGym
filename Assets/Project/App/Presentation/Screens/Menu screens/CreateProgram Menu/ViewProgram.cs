@@ -1,20 +1,37 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ViewProgram : MonoBehaviour
 {
-    [SerializeField] GameObject programWindow;
-    [SerializeField] Transform content;
+    [SerializeField] GameObject programWindow; // для открытия меню
+    
+    [SerializeField] Transform content; 
     [SerializeField] GameObject upperCard;
-    [SerializeField] Button[] buttons;
-    public static Day day;
+
+    [SerializeField] Button[] buttons; // Для привязки событий на дабл клик
+    [SerializeField] GameObject description;//для описания
+    public static GameObject Description;
+    private static void Set_Description(GameObject Description) => ViewProgram.Description = Description;
+    #region для обновления
+    static public List<GameObject> instList = new List<GameObject>();
+    private static byte lastDayNum;
+    private static ViewProgram CreateUpperCardsObj; 
+    #endregion
+
+    public static Day day; // для работы с текушим днем
+
+    #region для привязки,отвязки событий
     private void Awake()
     {
-        for (int i = 0; i < buttons.Length; i++) 
+        for (int i = 0; i < buttons.Length; i++)
         {
-            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick+= OpenProgram;
+            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick += OpenProgram;
         }
+        Set_Description(description);
     }
     private void OnDestroy()
     {
@@ -23,6 +40,9 @@ public class ViewProgram : MonoBehaviour
             buttons[i].GetComponent<DoubleClickEvent>().DoubleClick -= OpenProgram;
         }
     }
+
+    #endregion
+
     public void OpenProgram(object obj,string name)
     {
         programWindow.SetActive(true);
@@ -54,15 +74,56 @@ public class ViewProgram : MonoBehaviour
                 break;
         }
         ForCanvas.UpdateCanvas();
-    }
+    } // для 
+
+
+    #region Создание,обновление карточек
     void CreateUpperCards(byte dayNum)
     {
         day = Week.week.Days[dayNum];
         for (int i = 0; i < day.setsOfExercises.Count; i++)
         {
             var inst = Instantiate(upperCard, content);
-            inst.GetComponent<UpperCard>().setOfExercises = day.setsOfExercises[i];
-            inst.GetComponent<UpperCard>().SetActive();
+            inst.GetComponentInChildren<UpperCard>().setOfExercises = day.setsOfExercises[i];
+            inst.GetComponentInChildren<UpperCard>().SetActive();
+            instList.Add(inst);
         }
+        lastDayNum = dayNum;
+        ForceLayoutRebuild();
     }
+    public static void UpdateProgram()
+    {
+        CreateUpperCardsObj ??= GameObject.FindGameObjectWithTag("CreateUpperCards").GetComponent<ViewProgram>();
+        for (int i = 0;i <instList.Count;i++)
+        {
+            try
+            {
+                instList[i].SetActive(false);
+            }
+            catch { }
+            
+           
+        }
+        CreateUpperCardsObj.CreateUpperCards(lastDayNum);
+    }
+    [SerializeField] ContentSizeFitter contentSizeFitter;
+     void ForceLayoutRebuild()
+    {
+        contentSizeFitter.enabled = false;
+        contentSizeFitter.enabled = true;
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
+
+        // Если есть ContentSizeFitter
+        var fitter = contentSizeFitter;
+        if (fitter != null)
+        {
+            fitter.SetLayoutHorizontal();
+            fitter.SetLayoutVertical();
+        }
+
+        ForCanvas.UpdateCanvas();
+    }
+    #endregion
 }

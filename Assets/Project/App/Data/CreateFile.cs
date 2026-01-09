@@ -24,16 +24,8 @@ public class CreateFile : MonoBehaviour
             week.SaveWeek();
         }
     }
-    void Test()
+    public static void Test(string s)
     {
-        try
-        {
-        Week.week.Days[0].setsOfExercises[0] = new SetOfExercises(ExerciseManager.GetExercisesByName("∆им лежа"), 4);
-        }
-        catch
-        {
-            Week.week.Days[0].setsOfExercises.Add(new SetOfExercises(ExerciseManager.GetExercisesByName("∆им лежа"), 4));
-        }
-        Week.week.SaveWeek();
+        Debug.Log(s);
     }
 }
