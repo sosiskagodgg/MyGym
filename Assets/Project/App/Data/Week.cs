@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 [System.Serializable]
 public class Week
@@ -142,6 +143,7 @@ public class SetOfExercises
     }
     public SetOfExercises() { }
     #endregion
+
     #region Загрузка - Сохранение - Обновление
     public void UpdateExercise(Day day, Exercise exercise)
     {
@@ -150,6 +152,7 @@ public class SetOfExercises
         day.UpdateSetOfExercises(this);
     }
     #endregion
+
     #region Сортировка
     public byte id;
     public void Sort()
@@ -160,6 +163,7 @@ public class SetOfExercises
         }
     }
     #endregion
+
     #region Визуальные методы
     public override string ToString()
     {
@@ -173,6 +177,7 @@ public class SetOfExercises
         }
     }
     #endregion
+
     #region Клонирование
     public SetOfExercises DeepClone(SetOfExercises setOfExercises)
     {
@@ -191,6 +196,37 @@ public class SetOfExercises
         }
         newSetOfExercises.Sort();
         return newSetOfExercises;
+    }
+    #endregion
+
+    #region Автоматическое создание сетов
+    public static List<Exercise> GetExercisesByMuscleGroup(int exercisesCount, MuscleGroup targetMuscleGroup)
+    {
+        List<Exercise> fullExercises = ExerciseManager.Exercises.Where(exercise =>
+        {
+            // Находим информацию о целевой мышце в этом упражнении
+            var targetMuscleInfo = exercise.muscles
+                .FirstOrDefault(m => m.muscleGroup == targetMuscleGroup);
+
+            // Если мышцы нет в упражнении - пропускаем
+            if (targetMuscleInfo == null)
+                return false;
+
+            // Проверяем, что у целевой мышцы максимальный процент
+            float maxPercentage = exercise.muscles.Max(m => m.percentageOfWork);
+
+            // Сравниваем с погрешностью (на случай одинаковых процентов)
+            return Mathf.Approximately(targetMuscleInfo.percentageOfWork, maxPercentage) ||
+                   targetMuscleInfo.percentageOfWork > maxPercentage - 0.01f;
+        })
+        .ToList();
+        List<Exercise> returnList = new();
+        for (int i = 0; i < exercisesCount; i++) 
+        {
+            if (fullExercises.Count > i)
+                returnList.Add(fullExercises[i]);
+        }
+        return returnList;
     }
     #endregion
 }

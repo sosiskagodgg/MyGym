@@ -931,10 +931,6 @@ public class ExerciseManager
 
     public static Exercise DeepClone(Exercise exercise)
     {
-        exercise.name = exercise.name;
-        exercise.specificParameters = exercise.specificParameters;
-        exercise.muscles = exercise.muscles;
-        exercise.id = exercise.id;
         Exercise cloneExercise = new Exercise()
         {
             name = exercise.name,

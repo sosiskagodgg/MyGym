@@ -109,8 +109,8 @@ public class ViewProgram : MonoBehaviour
     [SerializeField] ContentSizeFitter contentSizeFitter;
      void ForceLayoutRebuild()
     {
-        contentSizeFitter.enabled = false;
-        contentSizeFitter.enabled = true;
+        if(contentSizeFitter!=null) contentSizeFitter.enabled = false;
+        if (contentSizeFitter != null) contentSizeFitter.enabled = true;
 
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
