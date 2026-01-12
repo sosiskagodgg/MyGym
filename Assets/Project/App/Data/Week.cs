@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 [System.Serializable]
 public class Week
@@ -9,7 +10,7 @@ public class Week
     public List<Day> Days = new List<Day>();
     public static string path = DataPath.Path() + "/WeekData.Json";
 
-    #region �������� - ����������
+    #region Загрузка - Сохранение
     public static Week week
     {
         get
@@ -18,7 +19,7 @@ public class Week
             if (_cachedWeek == null || _lastLoadTime < fileTime)
             {
                 _cachedWeek = Load();
-                Debug.Log("��� ��������");
+                Debug.Log("кэш обновлен");
                 _lastLoadTime = DateTime.Now;
             }
             return _cachedWeek;
@@ -28,13 +29,13 @@ public class Week
     {
         Days = new List<Day>()
     {
-        new Day(0, "�����������", new List<SetOfExercises>()),
-        new Day(1, "�������", new List<SetOfExercises>()),
-        new Day(2, "�����", new List<SetOfExercises>()),
-        new Day(3, "�������", new List<SetOfExercises>()),
-        new Day(4, "�������", new List<SetOfExercises>()),
-        new Day(5, "�������", new List<SetOfExercises>()),
-        new Day(6, "�����������", new List<SetOfExercises>())
+        new Day(0, "Понедельник", new List<SetOfExercises>()),
+        new Day(1, "Вторник", new List<SetOfExercises>()),
+        new Day(2, "Среда", new List<SetOfExercises>()),
+        new Day(3, "Четверг", new List<SetOfExercises>()),
+        new Day(4, "Пятница", new List<SetOfExercises>()),
+        new Day(5, "Суббота", new List<SetOfExercises>()),
+        new Day(6, "Воскресенье", new List<SetOfExercises>())
     }
     };
     private static bool isFileFind;
@@ -69,7 +70,7 @@ public class Week
 
     }
     #endregion
-    #region ����������
+    #region Сортировка
     public void Sort()
     {
         for (int i = 0; Days.Count > i; i++)
@@ -84,7 +85,7 @@ public class Week
 [System.Serializable]
 public class Day
 {
-    #region ��������� � ������������
+    #region Параметры и конструкторы
     public byte num;
     public string name;
     public List<SetOfExercises> setsOfExercises;
@@ -98,7 +99,7 @@ public class Day
 
 
     #endregion
-    #region �������� - ���������� - ����������
+    #region Загрузка - Сохранение - Обновление
     public void UpdateSetOfExercises(SetOfExercises setOfExercises)
     {
         byte i = (byte)setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
@@ -111,7 +112,7 @@ public class Day
         Week.SaveDay(this);
     }
     #endregion
-    #region ����������
+    #region Соритровка
     public void Sort()
     {
         for (int i = 0; i < setsOfExercises.Count; i++)
@@ -126,7 +127,7 @@ public class Day
 [System.Serializable]
 public class SetOfExercises
 {
-    #region ��������� � ������������
+    #region Параметры и конструкторы
 
     public List<Exercise> exercises = new List<Exercise>();
     public SetOfExercises(Exercise exercise, byte quantity, bool isSetId = true)
@@ -144,7 +145,7 @@ public class SetOfExercises
     public SetOfExercises() { }
     #endregion
 
-    #region �������� - ���������� - ����������
+    #region Загрузка - Сохранение - Обновление
     public void UpdateExercise(Day day, Exercise exercise)
     {
         byte i = (byte)exercises.FindIndex(ex => ex.id == exercise.id);
@@ -153,18 +154,18 @@ public class SetOfExercises
     }
     #endregion
 
-    #region ����������
+    #region Сортировка
     public byte id;
     public void Sort()
     {
-        for (int i = 0; i < exercises.Count; i++) 
+        for (int i = 0; i < exercises.Count; i++)
         {
             exercises[i].id = (byte)i;
         }
     }
     #endregion
 
-    #region ���������� ������
+    #region Визуальные методы
     public override string ToString()
     {
         try
@@ -173,25 +174,24 @@ public class SetOfExercises
         }
         catch
         {
-            return "������ ���";
+            return "Пустой сет";
         }
     }
     #endregion
 
-    #region ������������
+    #region Клонирование
     public SetOfExercises DeepClone(SetOfExercises setOfExercises)
     {
         SetOfExercises newSetOfExercises = new SetOfExercises();
-        for(int i  = 0; i < exercises.Count; i++)
+        for (int i = 0; i < exercises.Count; i++)
         {
             try
             {
                 newSetOfExercises.exercises.Add(ExerciseManager.DeepClone(exercises[i]));
             }
-            catch 
+            catch
             {
-                CreateFile.Test(exercises[i].name);
-                CreateFile.Test(ExerciseManager.DeepClone(exercises[i]).name);
+
             }
         }
         newSetOfExercises.Sort();
@@ -199,35 +199,99 @@ public class SetOfExercises
     }
     #endregion
 
-    #region �������������� �������� �����
+    #region Автоматическое создание сетов
     public static List<Exercise> GetExercisesByMuscleGroup(int exercisesCount, MuscleGroup targetMuscleGroup)
     {
         List<Exercise> fullExercises = ExerciseManager.Exercises.Where(exercise =>
         {
-            // ������� ���������� � ������� ����� � ���� ����������
+            // Находим информацию о целевой мышце в этом упражнении
             var targetMuscleInfo = exercise.muscles
                 .FirstOrDefault(m => m.muscleGroup == targetMuscleGroup);
 
-            // ���� ����� ��� � ���������� - ����������
+            // Если мышцы нет в упражнении - пропускаем
             if (targetMuscleInfo == null)
                 return false;
 
-            // ���������, ��� � ������� ����� ������������ �������
+            // Проверяем, что у целевой мышцы максимальный процент
             float maxPercentage = exercise.muscles.Max(m => m.percentageOfWork);
 
-            // ���������� � ������������ (�� ������ ���������� ���������)
+            // Сравниваем с погрешностью (на случай одинаковых процентов)
             return Mathf.Approximately(targetMuscleInfo.percentageOfWork, maxPercentage) ||
                    targetMuscleInfo.percentageOfWork > maxPercentage - 0.01f;
         })
         .ToList();
         List<Exercise> returnList = new();
-        for (int i = 0; i < exercisesCount; i++) 
+        for (int i = 0; i < exercisesCount; i++)
         {
             if (fullExercises.Count > i)
                 returnList.Add(fullExercises[i]);
         }
         return returnList;
     }
+
+    public static List<SetOfExercises> GetExercisesByMuscleWeekWA(Muscle muscle,int weekWA,StringBuilder debugString = null)
+    {
+        // 1. Получаем упражнения, отсортированные по приоритету (1 - самый высокий)
+        List<Exercise> listExercises = ExerciseManager
+            .GetExercisesByMuscle(muscle)
+            .OrderBy(ex => ex.priority)  // 1 → 2 → 3
+            .ToList();
+
+        List<SetOfExercises> setOfExercises = new();
+
+        // 2. Если нет упражнений - возвращаем пустой список
+        if (listExercises.Count == 0)
+        {
+            debugString?.AppendLine($"Нет упражнений для мышцы: {muscle.name}");
+            return setOfExercises;
+        }
+
+        debugString?.AppendLine($"Для мышцы '{muscle.name}' найдено {listExercises.Count} упражнений");
+        debugString?.AppendLine($"Необходимо распределить {weekWA} подходов за неделю");
+
+        // 3. Простой алгоритм распределения
+        int remainingWA = weekWA;
+        int exerciseIndex = 0;
+
+        while (remainingWA > 0)
+        {
+            // Определяем сколько подходов дать на этом шаге (макс 4)
+            int setsForThisStep = Math.Min(4, remainingWA);
+
+            // Берем упражнение (циклически по кругу, начиная с приоритетных)
+            Exercise currentExercise = listExercises[exerciseIndex % listExercises.Count];
+
+            // Создаем сет упражнений
+            setOfExercises.Add(new SetOfExercises(
+                currentExercise,
+                (byte)setsForThisStep
+            ));
+
+            debugString?.AppendLine(
+                $"  Добавлен сет: '{currentExercise.name}' " +
+                $"(приоритет {currentExercise.priority}) - {setsForThisStep} подходов");
+
+            // Уменьшаем оставшиеся подходы
+            remainingWA -= setsForThisStep;
+
+            // Переходим к следующему упражнению
+            exerciseIndex++;
+
+            // Если прошли все доступные упражнения и еще есть подходы,
+            // начинаем с начала (дублируем упражнения)
+            if (exerciseIndex >= listExercises.Count && remainingWA > 0)
+            {
+                debugString?.AppendLine("  Упражнения закончились, начинаем дублирование...");
+            }
+        }
+
+        debugString?.AppendLine(
+            $"Итого создано {setOfExercises.Count} сетов, " +
+            $"всего {setOfExercises.Sum(s => s.exercises.Count)} упражнений");
+
+        return setOfExercises;
+    }
+
     #endregion
 }
 

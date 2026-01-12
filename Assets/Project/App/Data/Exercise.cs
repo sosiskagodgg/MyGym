@@ -15,12 +15,15 @@ public class Exercise
     [SerializeReference]
     public SpecificParameters specificParameters;
     public List<Muscle> muscles;
+    public int priority;
 
-    public Exercise(string name, List<Muscle> muscles, SpecificParameters specificParameters)
+    public Exercise(string name, List<Muscle> muscles, SpecificParameters specificParameters,int priority = 4)
     {
         this.name = name;
         this.specificParameters = specificParameters;
         this.muscles = muscles;
+        this.priority = priority;
+
     }
     public Exercise() { }
     #endregion
@@ -427,20 +430,22 @@ public class ExerciseManager
             "Жим гантелей на наклонной скамье",
             new List<Muscle>
             {
-                new Muscle("Верх груди", 70),
-                new Muscle("Передние дельты", 20),
-                new Muscle("Трицепс", 10)
+        new Muscle("Верх груди", 70),
+        new Muscle("Передние дельты", 20),
+        new Muscle("Трицепс", 10)
             },
-            new StrengthTraining(8, 90, 65)
+            new StrengthTraining(8, 90, 65),
+            2 // Средний приоритет (не самая базовая вариация жима)
         ));
         exercises.Add(new Exercise(
             "Подъемы гантелей лежа на наклонной скамье",
             new List<Muscle>
             {
-                new Muscle("Верх груди", 85),
-                new Muscle("Передние дельты", 15)
+        new Muscle("Верх груди", 85),
+        new Muscle("Передние дельты", 15)
             },
-            new StrengthTraining(12, 35, 25)
+            new StrengthTraining(12, 35, 25),
+            3 // Низкий приоритет (изолирующее)
         ));
 
         // Середина груди
@@ -448,30 +453,33 @@ public class ExerciseManager
             "Сведения в кроссовере через верхние блоки",
             new List<Muscle>
             {
-                new Muscle("Середина груди", 90),
-                new Muscle("Передние дельты", 10)
+        new Muscle("Середина груди", 90),
+        new Muscle("Передние дельты", 10)
             },
-            new StrengthTraining(12, 40, 30)
+            new StrengthTraining(12, 40, 30),
+            3 // Низкий приоритет (изолирующее)
         ));
-        exercises.Add(new Exercise
-            ("Жим лежа",
+        exercises.Add(new Exercise(
+            "Жим лежа",
             new List<Muscle>
             {
-                new Muscle("Середина груди", 65),
-                new Muscle("Трицепс", 25),
-                new Muscle("Передние дельты", 10)
+        new Muscle("Середина груди", 65),
+        new Muscle("Трицепс", 25),
+        new Muscle("Передние дельты", 10)
             },
-            new StrengthTraining(10, 117, 82
-            )));
+            new StrengthTraining(10, 117, 82),
+            1 // Высокий приоритет (базовое упражнение №1)
+        ));
         exercises.Add(new Exercise(
             "Пуловер с гантелью лежа поперек скамьи",
             new List<Muscle>
             {
-                new Muscle("Середина груди", 70),
-                new Muscle("Широчайшие", 25),
+        new Muscle("Середина груди", 70),
+        new Muscle("Широчайшие", 25),
         new Muscle("Трицепс", 5)
             },
-            new StrengthTraining(12, 45, 35)
+            new StrengthTraining(12, 45, 35),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         // Низ груди
@@ -479,15 +487,17 @@ public class ExerciseManager
             "Отжимания на брусьях с акцентом на грудь",
             new List<Muscle>
             {
-                new Muscle("Низ груди", 60),
-                new Muscle("Трицепс", 30),
-                new Muscle("Передние дельты", 10)
+        new Muscle("Низ груди", 60),
+        new Muscle("Трицепс", 30),
+        new Muscle("Передние дельты", 10)
             },
-            new StrengthTraining(8, 25, 0)
+            new StrengthTraining(8, 25, 0),
+            1 // Высокий приоритет (базовое упражнение)
         ));
         #endregion
+
         #region Спина
-        // Широчайшие мышцы (4 упражнения)
+        // Широчайшие мышцы
         exercises.Add(new Exercise(
             "Подтягивания широким хватом",
             new List<Muscle>
@@ -496,7 +506,8 @@ public class ExerciseManager
         new Muscle("Бицепс", 15),
         new Muscle("Предплечья", 5)
             },
-            new StrengthTraining(8, 25, -10)
+            new StrengthTraining(8, 25, -10),
+            1 // Высокий приоритет (базовое упражнение №1)
         ));
 
         exercises.Add(new Exercise(
@@ -507,7 +518,8 @@ public class ExerciseManager
         new Muscle("Ромбовидные", 15),
         new Muscle("Бицепс", 10)
             },
-            new StrengthTraining(12, 143, 100)
+            new StrengthTraining(12, 143, 100),
+            2 // Средний приоритет (аналог подтягиваний)
         ));
 
         exercises.Add(new Exercise(
@@ -519,7 +531,8 @@ public class ExerciseManager
         new Muscle("Задние дельты", 10),
         new Muscle("Бицепс", 5)
             },
-            new StrengthTraining(8, 106, 74)
+            new StrengthTraining(8, 106, 74),
+            1 // Высокий приоритет (базовое упражнение)
         ));
 
         exercises.Add(new Exercise(
@@ -530,17 +543,19 @@ public class ExerciseManager
         new Muscle("Ромбовидные", 20),
         new Muscle("Бицепс", 10)
             },
-            new StrengthTraining(10, 94, 66)
+            new StrengthTraining(10, 94, 66),
+            2 // Средний приоритет (вспомогательное)
         ));
 
-        // Трапециевидные мышцы (3 упражнения)
+        // Трапециевидные мышцы
         exercises.Add(new Exercise(
             "Шраги со штангой сзади",
             new List<Muscle>
             {
         new Muscle("Трапеции", 100),
             },
-            new StrengthTraining(15, 42, 29)
+            new StrengthTraining(15, 42, 29),
+            3 // Низкий приоритет (изолирующее)
         ));
 
         exercises.Add(new Exercise(
@@ -549,7 +564,8 @@ public class ExerciseManager
             {
         new Muscle("Трапеции", 100),
             },
-            new StrengthTraining(12, 84, 59)
+            new StrengthTraining(12, 84, 59),
+            3 // Низкий приоритет (изолирующее)
         ));
 
         exercises.Add(new Exercise(
@@ -559,10 +575,11 @@ public class ExerciseManager
         new Muscle("Трапеции", 80),
         new Muscle("Передние дельты", 20),
             },
-            new StrengthTraining(10, 47, 33)
+            new StrengthTraining(10, 47, 33),
+            2 // Средний приоритет (вспомогательное для дельт и трапеций)
         ));
 
-        // Ромбовидные мышцы (2 упражнения)
+        // Ромбовидные мышцы
         exercises.Add(new Exercise(
             "Тяга Т-грифа с упором в грудь",
             new List<Muscle>
@@ -571,7 +588,8 @@ public class ExerciseManager
         new Muscle("Широчайшие", 25),
         new Muscle("Задние дельты", 10)
             },
-            new StrengthTraining(10, 106, 74)
+            new StrengthTraining(10, 106, 74),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         exercises.Add(new Exercise(
@@ -582,10 +600,11 @@ public class ExerciseManager
         new Muscle("Ромбовидные", 20),
         new Muscle("Трапеции", 10)
             },
-            new StrengthTraining(12, 24, 16)
+            new StrengthTraining(12, 24, 16),
+            2 // Средний приоритет (вспомогательное для задних дельт)
         ));
 
-        // Поясница (2 упражнения)
+        // Поясница
         exercises.Add(new Exercise(
             "Становая тяга",
             new List<Muscle>
@@ -595,7 +614,8 @@ public class ExerciseManager
         new Muscle("Ягодичные", 20),
         new Muscle("Бицепс бедра", 15)
             },
-            new StrengthTraining(5, 141, 99)
+            new StrengthTraining(5, 141, 99),
+            1 // Высокий приоритет (базовое упражнение №1 для спины)
         ));
 
         exercises.Add(new Exercise(
@@ -605,11 +625,13 @@ public class ExerciseManager
         new Muscle("Поясница", 90),
         new Muscle("Ягодичные", 10)
             },
-            new StrengthTraining(12, 59, 41)
+            new StrengthTraining(12, 59, 41),
+            2 // Средний приоритет (вспомогательное)
         ));
         #endregion
+
         #region Плечи
-        // Передняя дельта (3 упражнения)
+        // Передняя дельта
         exercises.Add(new Exercise(
             "Армейский жим стоя",
             new List<Muscle>
@@ -618,7 +640,8 @@ public class ExerciseManager
         new Muscle("Средние дельты", 25),
         new Muscle("Трицепс", 15)
             },
-            new StrengthTraining(8, 56, 39)
+            new StrengthTraining(8, 56, 39),
+            1 // Высокий приоритет (базовое упражнение для плеч)
         ));
 
         exercises.Add(new Exercise(
@@ -629,7 +652,8 @@ public class ExerciseManager
         new Muscle("Средние дельты", 20),
         new Muscle("Трицепс", 10)
             },
-            new StrengthTraining(10, 59, 41)
+            new StrengthTraining(10, 59, 41),
+            1 // Высокий приоритет (базовое упражнение)
         ));
 
         exercises.Add(new Exercise(
@@ -639,10 +663,11 @@ public class ExerciseManager
         new Muscle("Передние дельты", 90),
         new Muscle("Средние дельты", 10)
             },
-            new StrengthTraining(12, 31, 22)
+            new StrengthTraining(12, 31, 22),
+            3 // Низкий приоритет (изолирующее)
         ));
 
-        // Средняя дельта (3 упражнения)
+        // Средняя дельта
         exercises.Add(new Exercise(
             "Махи гантелями в стороны стоя",
             new List<Muscle>
@@ -650,7 +675,8 @@ public class ExerciseManager
         new Muscle("Средние дельты", 95),
         new Muscle("Передние дельты", 5)
             },
-            new StrengthTraining(15, 37, 26)
+            new StrengthTraining(15, 37, 26),
+            2 // Средний приоритет (ключевое для средней дельты)
         ));
 
         exercises.Add(new Exercise(
@@ -661,7 +687,8 @@ public class ExerciseManager
         new Muscle("Трапеции", 20),
         new Muscle("Передние дельты", 10)
             },
-            new StrengthTraining(10, 47, 33)
+            new StrengthTraining(10, 47, 33),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         exercises.Add(new Exercise(
@@ -671,10 +698,11 @@ public class ExerciseManager
         new Muscle("Средние дельты", 90),
         new Muscle("Передние дельты", 10)
             },
-            new StrengthTraining(12, 40, 28)
+            new StrengthTraining(12, 40, 28),
+            3 // Низкий приоритет (изолирующее в тренажере)
         ));
 
-        // Задняя дельта (2 упражнения)
+        // Задняя дельта
         exercises.Add(new Exercise(
             "Махи гантелями в наклоне",
             new List<Muscle>
@@ -682,7 +710,8 @@ public class ExerciseManager
         new Muscle("Задние дельты", 85),
         new Muscle("Средние дельты", 15)
             },
-            new StrengthTraining(12, 32, 22)
+            new StrengthTraining(12, 32, 22),
+            2 // Средний приоритет (ключевое для задних дельт)
         ));
 
         exercises.Add(new Exercise(
@@ -692,11 +721,13 @@ public class ExerciseManager
         new Muscle("Задние дельты", 80),
         new Muscle("Средние дельты", 20)
             },
-            new StrengthTraining(12, 35, 25)
+            new StrengthTraining(12, 35, 25),
+            3 // Низкий приоритет (изолирующее в тренажере)
         ));
         #endregion
+
         #region Руки
-        // Бицепс (3 упражнения)
+        // Бицепс
         exercises.Add(new Exercise(
             "Подъем штанги на бицепс стоя",
             new List<Muscle>
@@ -704,7 +735,8 @@ public class ExerciseManager
         new Muscle("Бицепс", 95),
         new Muscle("Предплечья", 5)
             },
-            new StrengthTraining(8, 76, 47)
+            new StrengthTraining(8, 76, 47),
+            1 // Высокий приоритет (базовое упражнение для бицепса)
         ));
 
         exercises.Add(new Exercise(
@@ -714,7 +746,8 @@ public class ExerciseManager
         new Muscle("Бицепс", 90),
         new Muscle("Предплечья", 10)
             },
-            new StrengthTraining(10, 71, 44)
+            new StrengthTraining(10, 71, 44),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         exercises.Add(new Exercise(
@@ -724,10 +757,11 @@ public class ExerciseManager
         new Muscle("Бицепс", 70),
         new Muscle("Предплечья", 30)
             },
-            new StrengthTraining(10, 65, 40)
+            new StrengthTraining(10, 65, 40),
+            2 // Средний приоритет (вспомогательное для брахиалиса)
         ));
 
-        // Трицепс (3 упражнения)
+        // Трицепс
         exercises.Add(new Exercise(
             "Французский жим лежа (EZ-гриф)",
             new List<Muscle>
@@ -735,7 +769,8 @@ public class ExerciseManager
         new Muscle("Трицепс", 95),
         new Muscle("Передние дельты", 5)
             },
-            new StrengthTraining(10, 55, 38)
+            new StrengthTraining(10, 55, 38),
+            1 // Высокий приоритет (базовое упражнение для трицепса)
         ));
 
         exercises.Add(new Exercise(
@@ -746,7 +781,8 @@ public class ExerciseManager
         new Muscle("Низ груди", 10),
         new Muscle("Передние дельты", 5)
             },
-            new StrengthTraining(12, 18, 0)
+            new StrengthTraining(12, 18, 0),
+            1 // Высокий приоритет (базовое упражнение)
         ));
 
         exercises.Add(new Exercise(
@@ -755,17 +791,19 @@ public class ExerciseManager
             {
         new Muscle("Трицепс", 100)
             },
-            new StrengthTraining(12, 40, 28)
+            new StrengthTraining(12, 40, 28),
+            2 // Средний приоритет (вспомогательное/добивающее)
         ));
 
-        // Предплечья (2 упражнения)
+        // Предплечья
         exercises.Add(new Exercise(
             "Сгибание запястий со штангой сидя",
             new List<Muscle>
             {
         new Muscle("Предплечья", 100)
             },
-            new StrengthTraining(15, 25, 18)
+            new StrengthTraining(15, 25, 18),
+            3 // Низкий приоритет (изолирующее)
         ));
 
         exercises.Add(new Exercise(
@@ -774,11 +812,13 @@ public class ExerciseManager
             {
         new Muscle("Предплечья", 100)
             },
-            new StrengthTraining(15, 20, 14)
+            new StrengthTraining(15, 20, 14),
+            3 // Низкий приоритет (изолирующее)
         ));
         #endregion
+
         #region Ноги
-        // Квадрицепс (3 упражнения)
+        // Квадрицепс
         exercises.Add(new Exercise(
             "Приседания со штангой на спине",
             new List<Muscle>
@@ -788,7 +828,8 @@ public class ExerciseManager
         new Muscle("Бицепс бедра", 10),
         new Muscle("Поясница", 5)
             },
-            new StrengthTraining(6, 141, 94)
+            new StrengthTraining(6, 141, 94),
+            1 // Высокий приоритет (базовое упражнение №1 для ног)
         ));
 
         exercises.Add(new Exercise(
@@ -799,7 +840,8 @@ public class ExerciseManager
         new Muscle("Ягодичные", 15),
         new Muscle("Бицепс бедра", 5)
             },
-            new StrengthTraining(10, 212, 141)
+            new StrengthTraining(10, 212, 141),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         exercises.Add(new Exercise(
@@ -809,10 +851,11 @@ public class ExerciseManager
         new Muscle("Квадрицепс", 95),
         new Muscle("Ягодичные", 5)
             },
-            new StrengthTraining(12, 94, 66)
+            new StrengthTraining(12, 94, 66),
+            3 // Низкий приоритет (изолирующее)
         ));
 
-        // Ягодичные (3 упражнения)
+        // Ягодичные
         exercises.Add(new Exercise(
             "Румынская тяга",
             new List<Muscle>
@@ -821,7 +864,8 @@ public class ExerciseManager
         new Muscle("Бицепс бедра", 30),
         new Muscle("Поясница", 10)
             },
-            new StrengthTraining(8, 118, 82)
+            new StrengthTraining(8, 118, 82),
+            1 // Высокий приоритет (базовое для задней поверхности)
         ));
 
         exercises.Add(new Exercise(
@@ -832,7 +876,8 @@ public class ExerciseManager
         new Muscle("Квадрицепс", 20),
         new Muscle("Бицепс бедра", 10)
             },
-            new StrengthTraining(10, 88, 62)
+            new StrengthTraining(10, 88, 62),
+            2 // Средний приоритет (вспомогательное)
         ));
 
         exercises.Add(new Exercise(
@@ -843,10 +888,11 @@ public class ExerciseManager
         new Muscle("Бицепс бедра", 10),
         new Muscle("Поясница", 5)
             },
-            new StrengthTraining(10, 176, 124)
+            new StrengthTraining(10, 176, 124),
+            2 // Средний приоритет (вспомогательное, но эффективное для ягодиц)
         ));
 
-        // Бицепс бедра (2 упражнения)
+        // Бицепс бедра
         exercises.Add(new Exercise(
             "Сгибания ног лежа в тренажере",
             new List<Muscle>
@@ -854,7 +900,8 @@ public class ExerciseManager
         new Muscle("Бицепс бедра", 95),
         new Muscle("Ягодичные", 5)
             },
-            new StrengthTraining(12, 59, 41)
+            new StrengthTraining(12, 59, 41),
+            3 // Низкий приоритет (изолирующее)
         ));
 
         exercises.Add(new Exercise(
@@ -865,17 +912,19 @@ public class ExerciseManager
         new Muscle("Ягодичные", 20),
         new Muscle("Поясница", 10)
             },
-            new StrengthTraining(8, 124, 87)
+            new StrengthTraining(8, 124, 87),
+            1 // Высокий приоритет (базовое упражнение)
         ));
 
-        // Икры (2 упражнения)
+        // Икры
         exercises.Add(new Exercise(
             "Подъемы на носки стоя в тренажере",
             new List<Muscle>
             {
         new Muscle("Икры", 100)
             },
-            new StrengthTraining(15, 176, 124)
+            new StrengthTraining(15, 176, 124),
+            2 // Средний приоритет (основное для икр)
         ));
 
         exercises.Add(new Exercise(
@@ -884,22 +933,24 @@ public class ExerciseManager
             {
         new Muscle("Икры", 100)
             },
-            new StrengthTraining(15, 141, 99)
+            new StrengthTraining(15, 141, 99),
+            3 // Низкий приоритет (дополнительное для икр)
         ));
         #endregion
+
         #region Пресс
         exercises.Add(new Exercise(
-    "Скручивания на римском стуле",
-    new List<Muscle>
-    {
+            "Скручивания на римском стуле",
+            new List<Muscle>
+            {
         new Muscle("Верх пресса", 80),
         new Muscle("Низ пресса", 15),
         new Muscle("Косые мышцы", 5)
-    },
-    new StrengthTraining(15, 35, 25)
-));
+            },
+            new StrengthTraining(15, 35, 25),
+            2 // Средний приоритет (вспомогательное для пресса)
+        ));
 
-        // Низ пресса
         exercises.Add(new Exercise(
             "Подъемы ног в висе",
             new List<Muscle>
@@ -908,10 +959,10 @@ public class ExerciseManager
         new Muscle("Верх пресса", 10),
         new Muscle("Косые мышцы", 5)
             },
-            new Static(1,0)
+            new Static(1, 0),
+            1 // Высокий приоритет (базовое для пресса)
         ));
 
-        // Косые мышцы
         exercises.Add(new Exercise(
             "Боковые скручивания на полу",
             new List<Muscle>
@@ -919,10 +970,10 @@ public class ExerciseManager
         new Muscle("Косые мышцы", 90),
         new Muscle("Верх пресса", 10)
             },
-            new Static(1,0)
+            new Static(1, 0),
+            3 // Низкий приоритет (изолирующее для косых)
         ));
         #endregion
-
         return exercises;
     }
     #endregion
@@ -936,6 +987,7 @@ public class ExerciseManager
             name = exercise.name,
             specificParameters = exercise.specificParameters.DeepClone(exercise.specificParameters),
             muscles = exercise.muscles?.Select(m => Muscle.DeepClone(m)).ToList(),
+            priority = exercise.priority,
             id = exercise.id
         };
 
@@ -947,6 +999,12 @@ public class ExerciseManager
         {
             exercises[i].id = i;
         }
+        return exercises;
+    }
+    public static List<Exercise> GetExercisesByMuscle(Muscle muscle,int minPercentageOfWork = 50)
+    {
+        List<Exercise> exercises = ExerciseManager.Exercises;
+        exercises = exercises.Where(ex => ex.muscles.Where(m => m.percentageOfWork > minPercentageOfWork).Any(mus => mus.name == muscle.name)).ToList();
         return exercises;
     }
     #endregion

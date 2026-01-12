@@ -9,8 +9,8 @@ public class Muscle
     #region Параметры для файла
     public string name;
     public byte percentageOfWork;
-    public int weekWork;
     public bool canWork = true;
+    public Burden burden;
     public MuscleGroup muscleGroup;
 
     #endregion
@@ -47,11 +47,11 @@ public class Muscle
         this.name = name;
         this.muscleGroup = muscleGroup;
     }
-    public Muscle(string name, MuscleGroup muscleGroup, int weekWork)
+    public Muscle(string name, MuscleGroup muscleGroup, Burden burden)
     {
         this.name = name;
         this.muscleGroup = muscleGroup;
-        this.weekWork = weekWork;
+        this.burden = burden;
     }
     public Muscle(string name, byte percentageOfWork)
     {
@@ -86,6 +86,9 @@ public class Muscle
     private static readonly string path = DataPath.Path() + "MuscleData.json";
     private static DateTime cashUpdate;
     private static List<Muscle> _musclesCash;
+
+
+
     #region Класс обертка
     [System.Serializable]
     public class MusclesWrapper
@@ -97,6 +100,8 @@ public class Muscle
         }
     }
     #endregion
+
+
     private static List<Muscle> Load()
     {
         return JsonUtility.FromJson<MusclesWrapper>(File.ReadAllText(path)).muscles;
@@ -111,52 +116,51 @@ public class Muscle
 
         #region Грудь
 
-        muscles.Add(new Muscle("Верх груди", MuscleGroup.chest));
-        muscles.Add(new Muscle("Середина груди", MuscleGroup.chest));
-        muscles.Add(new Muscle("Низ груди", MuscleGroup.chest));
-        muscles.Add(new Muscle("Внутренняя часть груди", MuscleGroup.chest));
+        muscles.Add(new Muscle("Верх груди", MuscleGroup.chest, new Burden(4, 12)));
+        muscles.Add(new Muscle("Середина груди", MuscleGroup.chest, new Burden(4, 12)));
+        muscles.Add(new Muscle("Низ груди", MuscleGroup.chest, new Burden(3, 9)));
+        muscles.Add(new Muscle("Внутренняя часть груди", MuscleGroup.chest, new Burden(2, 6)));
 
         #endregion
         #region Спина
 
-        muscles.Add(new Muscle("Широчайшие", MuscleGroup.back));
-        muscles.Add(new Muscle("Трапеции", MuscleGroup.back));
-        muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back));
-        muscles.Add(new Muscle("Поясница", MuscleGroup.back));
+        muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(8, 18)));
+        muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(4, 9)));
+        muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(3, 7)));
+        muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(3, 6)));
 
         #endregion
         #region Плечи
-        muscles.Add(new Muscle("Передние дельты", MuscleGroup.deltoid));
-        muscles.Add(new Muscle("Средние дельты", MuscleGroup.deltoid));
-        muscles.Add(new Muscle("Задние дельты", MuscleGroup.deltoid));
+        muscles.Add(new Muscle("Передние дельты", MuscleGroup.deltoid, new Burden(4, 9)));
+        muscles.Add(new Muscle("Средние дельты", MuscleGroup.deltoid, new Burden(5, 12)));
+        muscles.Add(new Muscle("Задние дельты", MuscleGroup.deltoid, new Burden(4, 12)));
 
         #endregion
         #region Руки
-        muscles.Add(new Muscle("Бицепс", MuscleGroup.hands));
-        muscles.Add(new Muscle("Трицепс", MuscleGroup.hands));
-        muscles.Add(new Muscle("Предплечья", MuscleGroup.hands));
+        muscles.Add(new Muscle("Бицепс", MuscleGroup.hands, new Burden(6, 12)));
+        muscles.Add(new Muscle("Трицепс", MuscleGroup.hands, new Burden(6, 14)));
+        muscles.Add(new Muscle("Предплечья", MuscleGroup.hands, new Burden(5, 10)));
 
         #endregion
         #region Ноги
 
-        muscles.Add(new Muscle("Квадрицепс", MuscleGroup.legs));
-        muscles.Add(new Muscle("Бицепс бедра", MuscleGroup.legs));
-        muscles.Add(new Muscle("Ягодичные", MuscleGroup.legs));
-        muscles.Add(new Muscle("Икры", MuscleGroup.legs));
+        muscles.Add(new Muscle("Квадрицепс", MuscleGroup.legs, new Burden(8, 16)));
+        muscles.Add(new Muscle("Бицепс бедра", MuscleGroup.legs, new Burden(6, 12)));
+        muscles.Add(new Muscle("Ягодичные", MuscleGroup.legs, new Burden(6, 12)));
+        muscles.Add(new Muscle("Икры", MuscleGroup.legs, new Burden(8, 18)));
 
         #endregion
         #region Кор
-        muscles.Add(new Muscle("Верх пресса", MuscleGroup.core));
-        muscles.Add(new Muscle("Низ пресса", MuscleGroup.core));
-        muscles.Add(new Muscle("Косые мышцы", MuscleGroup.core));
+        muscles.Add(new Muscle("Верх пресса", MuscleGroup.core, new Burden(5, 10)));
+        muscles.Add(new Muscle("Низ пресса", MuscleGroup.core, new Burden(4, 8)));
+        muscles.Add(new Muscle("Косые мышцы", MuscleGroup.core, new Burden(3, 6)));
 
         #endregion
         return muscles;
     }
 
-
     #endregion
-    
+
 }
 [System.Serializable]
 public enum MuscleGroup
@@ -167,4 +171,17 @@ public enum MuscleGroup
     hands,
     legs,
     core,
+}
+[System.Serializable]
+public class Burden
+{
+    public float workingApproaches; //параметр отслеживующий нагрузку на мышцу
+    public int MaxDayWA { get{ return (int)(MaxDayWA * Coefficcient); } private set{ } }// сколько можно делать подходов на мышцу в день
+    public int MaxWeekWA { get { return (int)(MaxWeekWA * Coefficcient); } private set { } }// сколько можно делать подходов на мышцу в неделю
+    public float Coefficcient { get; set; } = 1;
+    public Burden(int maxDayBurden, int maxWeekBurden)
+    {
+        this.MaxDayWA = maxDayBurden;
+        this.MaxWeekWA = maxWeekBurden;
+    }
 }

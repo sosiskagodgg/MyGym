@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 public class CreateFile : MonoBehaviour
 {
     string ap;
@@ -8,7 +9,7 @@ public class CreateFile : MonoBehaviour
     {
         ap = Application.persistentDataPath;
         Create();
-        //Test();
+        Test();
     }
     void Create()
     {
@@ -24,8 +25,10 @@ public class CreateFile : MonoBehaviour
             week.SaveWeek();
         }
     }
-    public static void Test(string s)
+    public static void Test()
     {
-        Debug.Log(s);
+        StringBuilder stringBilder = new StringBuilder();
+        SetOfExercises.GetExercisesByMuscleWeekWA(Muscle.GetMuscleByName("Середина груди"),20, stringBilder);
+        Debug.Log(stringBilder.ToString());
     }
 }
