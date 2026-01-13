@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 public class CreateFile : MonoBehaviour
 {
-    string ap;
     private void Awake()
     {
-        ap = Application.persistentDataPath;
         Create();
         Test();
     }
@@ -24,11 +22,18 @@ public class CreateFile : MonoBehaviour
             var week = Week.week;
             week.SaveWeek();
         }
+        if (!File.Exists(Muscle.path))
+        {
+            var muscles = Muscle.Muscles;
+            Muscle.Muscles = muscles;
+        }
     }
     public static void Test()
     {
-        StringBuilder stringBilder = new StringBuilder();
-        SetOfExercises.GetExercisesByMuscleWeekWA(Muscle.GetMuscleByName("Середина груди"),20, stringBilder);
-        Debug.Log(stringBilder.ToString());
+        StringBuilder stringBuilder = new StringBuilder();
+        CreateProgram.DistributeExercises(ExerciseManager.Exercises,Muscle.Muscles,MuscleGroup.muscleGroups,150, stringBuilder);
+        
+        Debug.Log(stringBuilder.ToString());
     }
+    public static void DebugLog(string message) {  Debug.Log(message); }
 }

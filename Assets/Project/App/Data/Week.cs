@@ -24,6 +24,11 @@ public class Week
             }
             return _cachedWeek;
         }
+        set 
+        {
+            _cachedWeek = value;
+            value.SaveWeek();
+        }
     }
     public static Week EmptyWeek = new Week()
     {
@@ -177,6 +182,16 @@ public class SetOfExercises
             return "Пустой сет";
         }
     }
+
+    public static int Count(List<SetOfExercises> setsOfExercises)
+    {
+        int count = 0;
+        for (int i = 0; i < setsOfExercises.Count; i++)
+        {
+            count += setsOfExercises[i].exercises.Count;
+        }
+        return count;
+    }
     #endregion
 
     #region Клонирование
@@ -200,7 +215,7 @@ public class SetOfExercises
     #endregion
 
     #region Автоматическое создание сетов
-    public static List<Exercise> GetExercisesByMuscleGroup(int exercisesCount, MuscleGroup targetMuscleGroup)
+    public static List<Exercise> GetExercisesByMuscleGroup( MuscleGroup targetMuscleGroup,int exercisesCount = 0)
     {
         List<Exercise> fullExercises = ExerciseManager.Exercises.Where(exercise =>
         {
@@ -221,6 +236,7 @@ public class SetOfExercises
         })
         .ToList();
         List<Exercise> returnList = new();
+        if (exercisesCount == 0) exercisesCount = fullExercises.Count;
         for (int i = 0; i < exercisesCount; i++)
         {
             if (fullExercises.Count > i)
@@ -289,7 +305,7 @@ public class SetOfExercises
             $"Итого создано {setOfExercises.Count} сетов, " +
             $"всего {setOfExercises.Sum(s => s.exercises.Count)} упражнений");
 
-        return setOfExercises;
+        return setOfExercises.OrderBy(ex => ex.exercises[0].priority).ToList();
     }
 
     #endregion

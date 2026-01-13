@@ -337,7 +337,7 @@ public class Static : SpecificParameters
     public override string GetDescription(string name) => Description.GetDescriptionByName(name);
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
-        throw new NotImplementedException();
+        
     }
 
 
