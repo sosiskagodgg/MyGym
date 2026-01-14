@@ -83,9 +83,24 @@ public class Week
             Days[i].Sort();
         }
         #endregion
-
     }
+    public void SetParametrs()
+    {
+        Week setWeek = Week.week;
+        for (int i1 = 0; setWeek.Days.Count > i1; i1++)
+        {
+            for (int i2 = 0; setWeek.Days[i1].setsOfExercises.Count > i2; i2++)
+            {
+                for (int i3 = 0; setWeek.Days[i1].setsOfExercises[i2].exercises.Count > i3; i3++)
+                {
+                    setWeek.Days[i1].setsOfExercises[i2].exercises[i3].specificParameters.SetParametrs(Player.LoadPlayer());
+                }
+            }
 
+
+        }
+        Week.week = setWeek;
+    }
 }
 [System.Serializable]
 public class Day
@@ -93,6 +108,7 @@ public class Day
     #region Параметры и конструкторы
     public byte num;
     public string name;
+    public string programName;
     public List<SetOfExercises> setsOfExercises;
     public Day() { }
     public Day(byte num, string name, List<SetOfExercises> setsOfExercises)
@@ -258,12 +274,12 @@ public class SetOfExercises
         // 2. Если нет упражнений - возвращаем пустой список
         if (listExercises.Count == 0)
         {
-            debugString?.AppendLine($"Нет упражнений для мышцы: {muscle.name}");
+            debugString?.AppendLine($"      Нет упражнений для мышцы: {muscle.name}");
             return setOfExercises;
         }
 
-        debugString?.AppendLine($"Для мышцы '{muscle.name}' найдено {listExercises.Count} упражнений");
-        debugString?.AppendLine($"Необходимо распределить {weekWA} подходов за неделю");
+        debugString?.AppendLine($"      Для мышцы '{muscle.name}' найдено {listExercises.Count} упражнений");
+        debugString?.AppendLine($"      Необходимо распределить {weekWA} подходов за неделю");
 
         // 3. Простой алгоритм распределения
         int remainingWA = weekWA;
@@ -284,7 +300,7 @@ public class SetOfExercises
             ));
 
             debugString?.AppendLine(
-                $"  Добавлен сет: '{currentExercise.name}' " +
+                $"            Добавлен сет: '{currentExercise.name}' " +
                 $"(приоритет {currentExercise.priority}) - {setsForThisStep} подходов");
 
             // Уменьшаем оставшиеся подходы
@@ -302,7 +318,7 @@ public class SetOfExercises
         }
 
         debugString?.AppendLine(
-            $"Итого создано {setOfExercises.Count} сетов, " +
+            $"      Итого создано {setOfExercises.Count} сетов, " +
             $"всего {setOfExercises.Sum(s => s.exercises.Count)} упражнений");
 
         return setOfExercises.OrderBy(ex => ex.exercises[0].priority).ToList();

@@ -51,7 +51,7 @@ public class SizeFilterAndVerticalGroup : MonoBehaviour
             };
         }
     }
-    #endif
+#endif
 
     #endregion
 
@@ -84,6 +84,7 @@ public class SizeFilterAndVerticalGroup : MonoBehaviour
     {
         float height = padding.Top + padding.Bottom;
         for (int i = 0; i < childrenRt.Count; i++) { height += childrenRt[i].rect.height + Spacing; }
+        contentRt??=GetComponent<RectTransform>();
         contentRt.sizeDelta = new Vector2(contentRt.sizeDelta.x, height);
     }
     #endregion
@@ -91,7 +92,7 @@ public class SizeFilterAndVerticalGroup : MonoBehaviour
     #region Вертикал лей аут методы
     private void HeightDistribution(List<RectTransform> childrenRt)
     {
-        float y = childrenRt?[0] != null ? -childrenRt[0].rect.height / 2 - padding.Top: 0;
+        float y = childrenRt?.Count>0 ? -childrenRt[0].rect.height / 2 - padding.Top: 0;
         for (int i = 0; i < childrenRt.Count; i++) 
         {
             childrenRt[i].anchoredPosition = new Vector2(childrenRt[i].anchoredPosition.x,y);

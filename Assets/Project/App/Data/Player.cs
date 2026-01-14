@@ -14,32 +14,45 @@ public class Player
     #endregion
 
     #region Загрузка - Сохранение
-    static Player lastPlayer;
+
+    public static Player player 
+    {
+        get 
+        {
+            return LoadPlayer();
+        }
+        set
+        {
+            value.SavePlayer();
+            _player = value;
+        }
+    }
+
+    static Player _player;
     public static DateTime updateTime;
     public static string path => DataPath.Path() + "/PlayerData.json";
     public void SavePlayer()
     {
         File.WriteAllText(path, JsonUtility.ToJson(this, true));
-        updateTime = DateTime.Now;
+        updateTime = File.GetLastWriteTime(path);
 
     }
     public static Player LoadPlayer()
     {
         if (!File.Exists(path))
         {
-            lastPlayer = new Player();
-            lastPlayer.SavePlayer();
+            _player = new Player();
+            _player.SavePlayer();
             Debug.Log($"Файла {path} не существует ");
-            return lastPlayer;
+            return _player;
         }
-        string secondLine = File.ReadLines(path).ElementAt(1);
         if (File.GetLastWriteTime(path) != updateTime)
         {
-            lastPlayer = JsonUtility.FromJson<Player>(File.ReadAllText(path));
+            _player = JsonUtility.FromJson<Player>(File.ReadAllText(path));
             Debug.Log("Игрок был загружен из файла");
         }
 
-        return lastPlayer;
+        return _player;
     }
     #endregion
 }

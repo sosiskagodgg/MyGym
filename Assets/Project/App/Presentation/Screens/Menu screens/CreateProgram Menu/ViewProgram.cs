@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +17,19 @@ public class ViewProgram : MonoBehaviour
     [SerializeField] Button[] buttons; // Для привязки событий на дабл клик
     [SerializeField] GameObject description;//для описания
     public static GameObject Description;
+    
+    public void UpdateProgramNames()
+    {
+        for (int i = 0; i < buttons.Length; i++) 
+        {
+            buttons[i].GetComponentsInChildren<TextMeshProUGUI>().FirstOrDefault(n=>n.gameObject.name== "название тренеровки").text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
+        }
+
+    }
+    private void OnEnable()
+    {
+        UpdateProgramNames();
+    }
     private static void Set_Description(GameObject Description) => ViewProgram.Description = Description;
     #region для обновления
     static public List<GameObject> instList = new List<GameObject>();

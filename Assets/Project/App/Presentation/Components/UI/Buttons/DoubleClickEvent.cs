@@ -6,6 +6,7 @@ public class DoubleClickEvent : MonoBehaviour
 {
     public bool isClick = false;
     public event EventHandler<string> DoubleClick;
+    [SerializeField] bool deactiveOnDoubleClick;
     private void OnDisable()
     {
         isClick = false;
@@ -17,7 +18,7 @@ public class DoubleClickEvent : MonoBehaviour
 
     public void CheackDoubleClick()
     {
-        if (isClick) { DoubleClick?.Invoke(this, gameObject.name);isClick = false;} 
+        if (isClick) { DoubleClick?.Invoke(this, gameObject.name);isClick = false;if (deactiveOnDoubleClick) gameObject.SetActive(false); } 
         else
         {
             isClick = true;

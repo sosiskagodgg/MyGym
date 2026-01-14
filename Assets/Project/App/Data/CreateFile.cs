@@ -2,12 +2,12 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System;
 public class CreateFile : MonoBehaviour
 {
     private void Awake()
     {
         Create();
-        Test();
     }
     void Create()
     {
@@ -28,12 +28,8 @@ public class CreateFile : MonoBehaviour
             Muscle.Muscles = muscles;
         }
     }
-    public static void Test()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        CreateProgram.DistributeExercises(ExerciseManager.Exercises,Muscle.Muscles,MuscleGroup.muscleGroups,150, stringBuilder);
-        
-        Debug.Log(stringBuilder.ToString());
-    }
+
+
+
     public static void DebugLog(string message) {  Debug.Log(message); }
 }
