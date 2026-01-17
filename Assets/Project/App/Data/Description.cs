@@ -17,7 +17,7 @@ public class Description
     static List<Description> Descriptions = GetFullDescription();
     public static string GetDescriptionByName(string name) 
     {
-        string description = Descriptions.Find(d => d.name == name).description;
+        string description = Descriptions.FirstOrDefault(d => d.name == name).description;
         return description == null ? "Описания еще нет": description;
     }
 

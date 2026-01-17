@@ -20,7 +20,7 @@ public class SetGoal : MonoBehaviour
             case "Recovery": player.treningParametrs.goal = Goal.Recovery;break;
             default: Debug.Log($"Ошибка цель {goal} не существует");break;
         }
-        player.SavePlayer();
+        Player.player = player;
     }
 
     public void OpenDiscription(string goal) 

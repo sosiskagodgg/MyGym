@@ -25,7 +25,15 @@ public class ForCanvas : MonoBehaviour
 
     public static void UpdateCanvas()
     {
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        try
+        {
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        }
+        catch (System.Exception)
+        {
+
+            
+        }
     }
 }

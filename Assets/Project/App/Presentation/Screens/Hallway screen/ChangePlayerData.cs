@@ -22,7 +22,7 @@ public class ChangePlayerData : MonoBehaviour
             percentageOfFat = (byte)percentageOfFatScrollBar.Value,
             experience = (byte)experienceScrollBar.Value
         };
-        player.SavePlayer();
+        Player.player = player;
     }
     void SetScrollBarPos()
     {

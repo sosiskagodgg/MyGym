@@ -43,7 +43,7 @@ public class Week
         new Day(6, "Воскресенье", new List<SetOfExercises>())
     }
     };
-    private static bool isFileFind;
+
     private static Week _cachedWeek;
     private static DateTime _lastLoadTime;
     public void SaveWeek()
@@ -51,6 +51,7 @@ public class Week
         Days ??= new List<Day>();
         Sort();
         File.WriteAllText(path, JsonUtility.ToJson(this, true));
+
     }
     public static void SaveDay(Day day)
     {
@@ -64,12 +65,13 @@ public class Week
 
         if (!File.Exists(path))
         {
-            isFileFind = true; EmptyWeek.SaveWeek(); return EmptyWeek;
+            EmptyWeek.SaveWeek(); return EmptyWeek;
         }
         else
         {
             Week result;
             result = JsonUtility.FromJson<Week>(File.ReadAllText(path));
+            Debug.Log("неделя загруженна из файла");
             return result == null ? EmptyWeek : result;
         }
 
@@ -96,54 +98,9 @@ public class Week
                     setWeek.Days[i1].setsOfExercises[i2].exercises[i3].specificParameters.SetParametrs(Player.LoadPlayer());
                 }
             }
-
-
         }
         Week.week = setWeek;
     }
-}
-[System.Serializable]
-public class Day
-{
-    #region Параметры и конструкторы
-    public byte num;
-    public string name;
-    public string programName;
-    public List<SetOfExercises> setsOfExercises;
-    public Day() { }
-    public Day(byte num, string name, List<SetOfExercises> setsOfExercises)
-    {
-        this.num = num;
-        this.name = name;
-        this.setsOfExercises = setsOfExercises;
-    }
-
-
-    #endregion
-    #region Загрузка - Сохранение - Обновление
-    public void UpdateSetOfExercises(SetOfExercises setOfExercises)
-    {
-        byte i = (byte)setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
-        setsOfExercises[i] = setOfExercises;
-        Week.SaveDay(this);
-    }
-    public void AddSetOfExercises(SetOfExercises setOfExercises)
-    {
-        setsOfExercises.Add(setOfExercises);
-        Week.SaveDay(this);
-    }
-    #endregion
-    #region Соритровка
-    public void Sort()
-    {
-        for (int i = 0; i < setsOfExercises.Count; i++)
-        {
-            setsOfExercises[i].id = (byte)i;
-        }
-    }
-    #endregion
-
-
 }
 [System.Serializable]
 public class SetOfExercises

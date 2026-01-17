@@ -27,6 +27,10 @@ public class CreateFile : MonoBehaviour
             var muscles = Muscle.Muscles;
             Muscle.Muscles = muscles;
         }
+        if (!File.Exists(Day.path))
+        {
+            var f = Day.ActiveDay;
+        }
     }
 
 

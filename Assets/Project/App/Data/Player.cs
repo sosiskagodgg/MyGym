@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.InputSystem.XR.TrackedPoseDriver;
 [System.Serializable]
 public class Player
@@ -31,10 +32,12 @@ public class Player
     static Player _player;
     public static DateTime updateTime;
     public static string path => DataPath.Path() + "/PlayerData.json";
-    public void SavePlayer()
+    private void SavePlayer()
     {
         File.WriteAllText(path, JsonUtility.ToJson(this, true));
         updateTime = File.GetLastWriteTime(path);
+        _player = this;
+        Debug.Log("игрок записан в файл");
 
     }
     public static Player LoadPlayer()
@@ -49,6 +52,7 @@ public class Player
         if (File.GetLastWriteTime(path) != updateTime)
         {
             _player = JsonUtility.FromJson<Player>(File.ReadAllText(path));
+            updateTime = File.GetLastWriteTime(path);
             Debug.Log("Игрок был загружен из файла");
         }
 

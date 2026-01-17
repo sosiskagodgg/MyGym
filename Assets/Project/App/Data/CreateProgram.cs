@@ -302,7 +302,7 @@ public class CreateProgram : MonoBehaviour
                     Week.week.Days[1].programName = "Спина";
                     Week.week.Days[2].programName = "Ноги";
                     Week.week.Days[3].programName = "Плечи";
-                    Week.week.Days[3].programName = "Кор";
+                    Week.week.Days[4].programName = "Кор";
                     return new List<List<Muscle>>
                     {
                         new List<Muscle>

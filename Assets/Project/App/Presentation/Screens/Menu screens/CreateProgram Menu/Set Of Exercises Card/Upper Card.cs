@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -21,14 +22,25 @@ public class UpperCard : MonoBehaviour
 
     void CreateLowerCard()
     {
-        if (setOfExercises == null) throw new NotImplementedException($"setOfExercises == null");
+        if (setOfExercises == null&& setOfExercises.exercises.Count==0) throw new NotImplementedException($"setOfExercises == null");
         for (int i = 0; setOfExercises.exercises.Count > i; i++)
         {
             var inst = Instantiate(lowerCard, upperCard);
-            inst.GetComponent<LowerCard>().exercise = setOfExercises.exercises[i];
-            inst.GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponent<LowerCard>().exercise.specificParameters.ToString();
+            inst.GetComponentInChildren<LowerCard>().exercise = setOfExercises.exercises[i];
+            try
+            {
+                inst.GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponentInChildren<LowerCard>().exercise.specificParameters.ToString();
+            }
+            catch 
+            { 
+                inst.transform.Find("Lower Visual").GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponentInChildren<LowerCard>().exercise.specificParameters.ToString();
+            }
+
+            
         }
         ForCanvas.UpdateCanvas();
+        if (setOfExercises.exercises.Count == 0) gameObject.SetActive(false);
+
     }
     public void SetActive()
     {
@@ -78,4 +90,5 @@ public class UpperCard : MonoBehaviour
         ViewProgram.Description.GetComponentInChildren<TextMeshProUGUI>().text = Description.GetDescriptionByName(setOfExercises.exercises[0].name);
     }
     #endregion
+
 }

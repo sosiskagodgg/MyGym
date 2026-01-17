@@ -15,6 +15,10 @@ public class ViewProgram : MonoBehaviour
     [SerializeField] GameObject upperCard;
 
     [SerializeField] Button[] buttons; // Для привязки событий на дабл клик
+    [SerializeField] GameObject[] treningNames;
+    
+      
+
     [SerializeField] GameObject description;//для описания
     public static GameObject Description;
     
@@ -22,7 +26,7 @@ public class ViewProgram : MonoBehaviour
     {
         for (int i = 0; i < buttons.Length; i++) 
         {
-            buttons[i].GetComponentsInChildren<TextMeshProUGUI>().FirstOrDefault(n=>n.gameObject.name== "название тренеровки").text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
+            treningNames[i].GetComponent<TextMeshProUGUI>().text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
         }
 
     }
@@ -63,25 +67,25 @@ public class ViewProgram : MonoBehaviour
         programWindow.SetActive(true);
         switch (name)
         {
-            case "Monday":
+            case "Понедельник":
                 CreateUpperCards(0);
                 break;
-            case "Tuesday":
+            case "Вторник":
                 CreateUpperCards(1);
                 break;
-            case "Wednesday":
+            case "Среда":
                 CreateUpperCards(2);
                 break;
-            case "Thursday":
+            case "Четверг":
                 CreateUpperCards(3);
                 break;
-            case "Friday":
+            case "Пятница":
                 CreateUpperCards(4);
                 break;
-            case "Saturday":
+            case "Субота":
                 CreateUpperCards(5);
                 break;
-            case "Sunday":
+            case "Воскресенье":
                 CreateUpperCards(6);
                 break;
             default:

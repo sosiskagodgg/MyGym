@@ -24,7 +24,7 @@ public class SetStreetOrGym : MonoBehaviour
     }
     void Save()
     {
-        player.SavePlayer();
+        Player.player = player;
         GymOrStreetChange?.Invoke(this, EventArgs.Empty);
     }
     void DebugLog(object sender, EventArgs e)
