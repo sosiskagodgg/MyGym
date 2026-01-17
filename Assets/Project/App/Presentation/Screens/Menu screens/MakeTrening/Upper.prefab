@@ -152,7 +152,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2372549752301060343}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3833193501697118588}
+        m_TargetAssemblyTypeName: UpperCard, Assembly-CSharp
+        m_MethodName: Delite
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3067696413078543218
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,17 +674,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperCard
   DestroyWithMe: {fileID: 7108133793478834900}
+  isActiveDay: 1
   setOfExercises:
     exercises: []
     id: 0
   upperCard: {fileID: 2570384237415204370}
   lowerCard: {fileID: 1641004034399695824, guid: 0837e43e60a9aee4e81512aad6fe783d, type: 3}
   ToOpen:
-  - {fileID: 636670178278458091}
-  - {fileID: 4757728147188930256}
-  - {fileID: 6990139399089608048}
-  ToClose:
   - {fileID: 7108133793478834900}
+  ToClose:
+  - {fileID: 636670178278458091}
+  - {fileID: 6990139399089608048}
+  - {fileID: 4757728147188930256}
   references:
     version: 2
     RefIds: []
@@ -785,6 +798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonHoldEvent
   timeHeld: 0.5
+  isButtonHeld: 0
 --- !u!114 &2864881093653460370
 MonoBehaviour:
   m_ObjectHideFlags: 0

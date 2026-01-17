@@ -17,11 +17,12 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] SizeFilterAndVerticalGroup sizeFilterAndVerticalGroup;
 
     [Header("Настройки")]
-    [SerializeField] int min;
-    [SerializeField] int max;
+    [SerializeField] public int min;
+    [SerializeField] public int max;
     [SerializeField] bool setCastomStart;
     [SerializeField] int startY;
     [SerializeField] int fontSize;
+    [SerializeField] bool isAutoCreate = true;
 
     [Header("Настройки Магнита")]
     [SerializeField] RectTransform magnit;
@@ -29,8 +30,10 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] float magnitRange;
     [Header("Вывод")]
     [SerializeField] public string value;
+    public delegate void Int(GameObject obj,int value);
+    public event Int valueChanged;
     [SerializeField] public bool isPress;
-    [SerializeField] public bool isDontChange = true;
+    [SerializeField] public bool isDontChange;
     #endregion
     #region Проверка зажат ли скрол рект
     public void OnPointerUp(PointerEventData eventData)
@@ -47,12 +50,12 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     private void OnEnable()
     {
-        CreateTextObjects();
+        if(isAutoCreate)CreateTextObjects();
     }
     #endregion
     #region Методы для создания текстовых обьектов
     private List<GameObject> instantiateObjects = new();
-    private void CreateTextObjects()
+    public void CreateTextObjects()
     {
         for(int i = 0;max - min+1 > i; i++)
         {
@@ -100,7 +103,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         return nearest;
     }
 
-
+    int lastValue;
     private void Update() 
     {
         contentRt ??= content.GetComponent<RectTransform>();
@@ -109,7 +112,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
         if (nearestRt == null)  Debug.LogError("Нет ближающего обьекта");
 
-        if (nearestRt.transform.position.y - magnit.position.y >= magnitRange && !isPress &&!isDontChange) 
+        if (nearestRt.transform.position.y - magnit.position.y >= magnitRange &&!isPress &&!isDontChange) 
         {
             contentRt.transform.position = new Vector2(contentRt.transform.position.x, contentRt.transform.position.y-speed);
         }
@@ -119,6 +122,11 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         }
         if (nearestRt.transform.position.y - magnit.position.y <= -magnitRange && nearestRt.transform.position.y - magnit.position.y >= magnitRange) isDontChange = false;
         value = nearest.GetComponentInChildren<TextMeshProUGUI>()?.text ?? "0";
+        if(lastValue!= System.Convert.ToInt32(value))
+        {
+            valueChanged?.Invoke(gameObject,System.Convert.ToInt32(value));
+            lastValue = System.Convert.ToInt32(value);
+        }
     }
     #endregion
 }

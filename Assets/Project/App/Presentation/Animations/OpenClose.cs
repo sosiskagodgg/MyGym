@@ -9,11 +9,11 @@ public class OpenClose : MonoBehaviour
     {
         foreach (GameObject go in toOpen)
         {
-            go.SetActive(run);
+            if (go != null) go.SetActive(run);
         }
         foreach (GameObject go in toClose)
         {
-            go.SetActive(!run);
+            if(go!=null) go.SetActive(!run);
         }
         run = !run;
     }

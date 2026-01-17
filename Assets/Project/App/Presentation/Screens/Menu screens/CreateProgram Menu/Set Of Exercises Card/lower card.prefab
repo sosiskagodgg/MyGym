@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3507595166885636932}
   - component: {fileID: 7260432389659995776}
   - component: {fileID: 1621917442281021247}
+  - component: {fileID: 5143423262371563684}
   m_Layer: 0
   m_Name: lower card
   m_TagString: Untagged
@@ -116,10 +117,16 @@ MonoBehaviour:
     specificParameters:
       rid: -2
     muscles: []
+    priority: 0
     id: 0
-  ToOpen:
+  textMeshProUGUI: {fileID: 1386084719403206506}
+  scrollText: {fileID: 8064695685458734013, guid: b50ff269b9fa5654c8a0efe2eb39f9c8, type: 3}
+  button: {fileID: 6643492467789550377, guid: 4236332e6e3b2a5429a205fb95a4fb57, type: 3}
+  modifierMax: 1.3
+  modifierMin: 0.7
+  ToOpenOnPress:
   - {fileID: 4855089551921794616}
-  ToClose:
+  ToCloseOnPress:
   - {fileID: 6680568662460663639}
   - {fileID: 4271601699689975004}
   references:
@@ -211,6 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonHoldEvent
   timeHeld: 0.5
+  isButtonHeld: 0
 --- !u!114 &1621917442281021247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +226,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1062206234923678344}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
   m_Name: 
@@ -237,6 +245,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5143423262371563684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062206234923678344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &4271601699689975004
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,9 +593,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2824582135077623211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 82.5, y: -12.5}
   m_SizeDelta: {x: 165, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5442654000089842749

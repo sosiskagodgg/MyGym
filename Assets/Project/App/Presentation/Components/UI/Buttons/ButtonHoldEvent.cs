@@ -8,7 +8,7 @@ public class ButtonHoldEvent : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     [SerializeField] float timeHeld = 0.5f;
     public event EventHandler<float> Held;
     #region Работа с event датой на кнопке
-    private bool isButtonHeld = false;
+    [SerializeField]  private bool isButtonHeld = false;
     public void OnPointerDown(PointerEventData eventData)
     {
         isButtonHeld = true;

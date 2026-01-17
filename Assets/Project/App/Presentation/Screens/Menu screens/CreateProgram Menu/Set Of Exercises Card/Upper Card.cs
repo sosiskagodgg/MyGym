@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class UpperCard : MonoBehaviour
 {
     [SerializeField] GameObject DestroyWithMe;
+    [SerializeField] bool isActiveDay;
     #region Awake
     private void Awake()
     {
@@ -69,12 +70,24 @@ public class UpperCard : MonoBehaviour
     #region Удаление - Копирование
     public void Delite()
     {
-        byte ind = (byte)ViewProgram.day.setsOfExercises.FindIndex(set=>set.id==setOfExercises.id);
-        ViewProgram.day.setsOfExercises.Remove(ViewProgram.day.setsOfExercises[ind]);
-        ViewProgram.day.Sort();
-        Week.SaveDay(ViewProgram.day);
-        ViewProgram.UpdateProgram();
-        DestroyWithMe.SetActive(false);
+        
+        if(!isActiveDay)
+        {
+            byte ind = (byte)ViewProgram.day.setsOfExercises.FindIndex(set=>set.id==setOfExercises.id);
+            ViewProgram.day.setsOfExercises.Remove(ViewProgram.day.setsOfExercises[ind]);
+            ViewProgram.day.Sort();
+            Week.SaveDay(ViewProgram.day);
+            ViewProgram.UpdateProgram();
+        }
+        else
+        {
+            byte ind = (byte)Day.ActiveDay.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
+            Day.ActiveDay.setsOfExercises.Remove(Day.ActiveDay.setsOfExercises[ind]);
+            Day.ActiveDay.Sort();
+            Day.ActiveDay = Day.ActiveDay;
+            OpenStartTrening.UpdateActiveDayCards();
+        }
+            DestroyWithMe?.SetActive(false);
     }
     public void Copy()
     {

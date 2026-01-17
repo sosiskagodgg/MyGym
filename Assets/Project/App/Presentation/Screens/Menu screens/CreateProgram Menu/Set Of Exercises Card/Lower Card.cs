@@ -1,36 +1,193 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class LowerCard : MonoBehaviour
 {
     public Exercise exercise;
-    private void Awake()
+
+
+
+
+    #region Создание и насткройка текст скрола
+
+    [Header("для создания скрол текста")]
+    [SerializeField] TextMeshProUGUI textMeshProUGUI;
+    [SerializeField] GameObject scrollText;
+    [SerializeField] GameObject button;
+    [SerializeField] float modifierMax = 1.3f;
+    [SerializeField] float modifierMin = 0.7f;
+    private void FindMiddleOfNumberGroups(TextMeshProUGUI text,out int count,out List<Vector2> groupCenters,out List<int> groupValues)
+    {
+        groupCenters = new List<Vector2>();
+        groupValues = new List<int>();
+
+        text.ForceMeshUpdate();
+        TMP_TextInfo textInfo = text.textInfo;
+
+        List<List<Vector2>> digitGroups = new List<List<Vector2>>();
+        List<StringBuilder> digitValues = new List<StringBuilder>();
+        List<Vector2> currentGroup = null;
+        StringBuilder currentValue = null;
+
+        // Собираем цифры в группы (последовательности подряд идущих цифр)
+        for (int i = 0; i < textInfo.characterCount; i++)
+        {
+            TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
+
+            if (charInfo.isVisible && char.IsDigit(charInfo.character))
+            {
+                // Начало новой группы цифр
+                if (currentGroup == null)
+                {
+                    currentGroup = new List<Vector2>();
+                    digitGroups.Add(currentGroup);
+
+                    currentValue = new StringBuilder();
+                    digitValues.Add(currentValue);
+                }
+
+                // Добавляем центр текущей цифры в группу
+                Vector2 center = (charInfo.bottomLeft + charInfo.topRight) / 2f;
+                currentGroup.Add(center);
+
+                // Добавляем цифру к значению
+                currentValue.Append(charInfo.character);
+            }
+            else
+            {
+                currentGroup = null; // Не цифра - сбрасываем группу
+                currentValue = null;
+            }
+        }
+
+        // Вычисляем центр каждой группы и преобразуем значения
+        for (int i = 0; i < digitGroups.Count; i++)
+        {
+            var group = digitGroups[i];
+            if (group.Count > 0)
+            {
+                // Среднее арифметическое всех центров в группе
+                Vector2 groupCenter = Vector2.zero;
+                foreach (var point in group)
+                {
+                    groupCenter += point;
+                }
+                groupCenter /= group.Count;
+
+                groupCenters.Add(groupCenter);
+
+                // Преобразуем собранные цифры в число
+                if (digitValues[i] != null && digitValues[i].Length > 0)
+                {
+                    string valueStr = digitValues[i].ToString();
+                    if (int.TryParse(valueStr, out int value))
+                    {
+                        groupValues.Add(value);
+                    }
+                    else
+                    {
+                        groupValues.Add(0); // или какое-то значение по умолчанию
+                    }
+                }
+            }
+        }
+
+        count = groupCenters.Count;
+    }
+    private void CreateButtons()
+    {
+        FindMiddleOfNumberGroups(textMeshProUGUI, out int count, out List<Vector2> groupCenters, out List<int> groupValues);
+        Debug.Log(count);
+
+        for (int i = 0; i < count; i++)
+        {
+
+            Vector2 localCoords = groupCenters[i];
+            int localValue = groupValues[i];
+
+            var obj = Instantiate(button, transform);
+            (obj.transform as RectTransform).anchoredPosition = localCoords;
+            Debug.Log($"{localCoords}  {localValue}");
+            obj.GetComponent<Button>().onClick.AddListener(() => CreateScrollText(localCoords, localValue));
+        }
+    }
+    private void CreateScrollText(Vector2 coordinates,int value)
+    {
+
+        var newScrollText = Instantiate(scrollText,transform);
+
+        (newScrollText.transform as RectTransform).anchoredPosition = coordinates;
+
+        NumberSelectorUI scrollCompontent = newScrollText.GetComponent<NumberSelectorUI>();
+
+        int max = (int)(value * modifierMax);
+        int min = (int)(value * modifierMin);
+        scrollCompontent.max = max;
+        scrollCompontent.min = min;
+        scrollCompontent.CreateTextObjects();
+        scrollCompontent.valueChanged += StartCloseTime;
+    }
+    private void StartCloseTime(GameObject obj,int i)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Close(obj));
+    }
+    private IEnumerator Close(GameObject obj)
+    {
+        yield return new WaitForSeconds(3f);
+        Debug.Log($"Итоговое число {obj.GetComponent<NumberSelectorUI>().value}");
+        GameObject.Destroy(obj);
+    }
+
+
+
+    #endregion
+
+    #region монобихейвор методы
+    private void OnEnable()
     {
         buttonHoldEvent = GetComponent<ButtonHoldEvent>();
         buttonHoldEvent.Held += Held;
+        StartCoroutine(Enumerator());
+        IEnumerator Enumerator()
+        {
+            yield return new WaitForEndOfFrame();
+            CreateButtons();
+        }
     }
-    public void DebugStringBilder() 
+    private void OnDisable()
     {
-        if(exercise == null)  throw new Exception("Упражнение пустое!"); 
-        if(exercise.specificParameters == null) throw new Exception("Специальные параметры пустые!");
-        if(exercise.specificParameters.debugString == null ) throw new Exception("Дебаг стринг пустой!");
-        if (exercise.specificParameters.debugString == null) Debug.Log("Дебаг стринг пустой");
-        Debug.Log(exercise.specificParameters.debugString.ToString());
+        buttonHoldEvent = GetComponent<ButtonHoldEvent>();
+        buttonHoldEvent.Held -= Held;
     }
+    #endregion
+
+    #region Дебаг
+    public void DebugStringBilder()
+    {
+        Debug.Log(exercise.specificParameters.debugString.ToString());
+    } 
+    #endregion
+
     #region Обработка зажатия кнопки
     private ButtonHoldEvent buttonHoldEvent;
     [Header("меню взаимодействия")]
-    [SerializeField] GameObject[] ToOpen;
-    [SerializeField] GameObject[] ToClose;
-    bool open;
+    [SerializeField] GameObject[] ToOpenOnPress;
+    [SerializeField] GameObject[] ToCloseOnPress;
+    bool openOnPress;
     void Held(object obj, float time)
     {
-        for (int i = 0; i < ToOpen.Length; i++) { ToOpen[i].SetActive(open); }
-        for (int i = 0; i < ToClose.Length; i++) { ToClose[i].SetActive(!open); }
-        open = !open;
+        for (int i = 0; i < ToOpenOnPress.Length; i++) { ToOpenOnPress[i].SetActive(openOnPress); }
+        for (int i = 0; i < ToCloseOnPress.Length; i++) { ToCloseOnPress[i].SetActive(!openOnPress); }
+        openOnPress = !openOnPress;
     }
     #endregion
+ 
     #region Копирование удаление
     UpperCard upperCard;
     Day day;

@@ -33,6 +33,11 @@ public class ViewProgram : MonoBehaviour
     private void OnEnable()
     {
         UpdateProgramNames();
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick += OpenProgram;
+        }
+        Set_Description(description);
     }
     private static void Set_Description(GameObject Description) => ViewProgram.Description = Description;
     #region для обновления
@@ -44,15 +49,7 @@ public class ViewProgram : MonoBehaviour
     public static Day day; // для работы с текушим днем
 
     #region для привязки,отвязки событий
-    private void Awake()
-    {
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            buttons[i].GetComponent<DoubleClickEvent>().DoubleClick += OpenProgram;
-        }
-        Set_Description(description);
-    }
-    private void OnDestroy()
+    private void OnDisable()
     {
         for (int i = 0; i < buttons.Length; i++)
         {
