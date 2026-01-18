@@ -118,6 +118,7 @@ MonoBehaviour:
       rid: -2
     muscles: []
     priority: 0
+    isStreet: 0
     id: 0
   textMeshProUGUI: {fileID: 1386084719403206506}
   scrollText: {fileID: 8064695685458734013, guid: b50ff269b9fa5654c8a0efe2eb39f9c8, type: 3}
@@ -228,7 +229,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1062206234923678344}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
   m_Name: 
@@ -595,9 +596,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2824582135077623211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 95, y: -16.33795}
   m_SizeDelta: {x: 190, y: 30.176}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5442654000089842749

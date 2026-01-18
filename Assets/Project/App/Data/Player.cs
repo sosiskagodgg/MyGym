@@ -2,16 +2,16 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using static UnityEngine.InputSystem.XR.TrackedPoseDriver;
+using UnityEngine.Analytics;
 [System.Serializable]
 public class Player
 {
     #region Параметры и конструкторы
 
     public string name;
-    public byte weight, height, age, percentageOfFat, experience;
+    public int weight, height, age, percentageOfFat, experience;
     public TreningParametrs treningParametrs;
+    public Gender gender;
     #endregion
 
     #region Загрузка - Сохранение

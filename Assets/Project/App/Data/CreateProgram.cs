@@ -153,6 +153,7 @@ public class CreateProgram : MonoBehaviour
 
     public static void CreateStrengthTraining(float intensity, int daysCount, int weekWA, StringBuilder DB = null)
     {
+        intensity *= ExerciseManager.Coefficient.VolumeTolerance;
         Week.week = Week.EmptyWeek;
         DB?.AppendLine(); 
 

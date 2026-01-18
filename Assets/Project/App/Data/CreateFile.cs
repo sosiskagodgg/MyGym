@@ -8,6 +8,7 @@ public class CreateFile : MonoBehaviour
     [SerializeField] GameObject description;
     private void Awake()
     {
+        Test();
         Create();
         description.SetActive(true);
         description.SetActive(false);
@@ -38,6 +39,9 @@ public class CreateFile : MonoBehaviour
     }
 
 
-
+    void Test()
+    {
+        Week.week.Days[6].AddSetOfExercises(new SetOfExercises(new Exercise("Бег",new List<Muscle>(),new Walk(10,5,500)),1));
+    }
     public static void DebugLog(string message) {  Debug.Log(message); }
 }

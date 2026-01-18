@@ -1,4 +1,4 @@
-
+п»ї
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,29 +6,29 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 
-#region Основной класс
+#region РћСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ
 [System.Serializable]
 public class Exercise
 {
-    #region Параметры и конструктор
+    #region РџР°СЂР°РјРµС‚СЂС‹ Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     public string name;
     [SerializeReference]
     public SpecificParameters specificParameters;
     public List<Muscle> muscles;
     public int priority;
-
-    public Exercise(string name, List<Muscle> muscles, SpecificParameters specificParameters,int priority = 4)
+    public bool isStreet;
+    public Exercise(string name, List<Muscle> muscles, SpecificParameters specificParameters, int priority = 4, bool isStreet=false)
     {
         this.name = name;
         this.specificParameters = specificParameters;
         this.muscles = muscles;
         this.priority = priority;
-
+        this.isStreet = isStreet;
     }
     public Exercise() { }
     #endregion
 
-    #region Работа с ID
+    #region Р Р°Р±РѕС‚Р° СЃ ID
     public short id;
 
 
@@ -37,7 +37,7 @@ public class Exercise
 } 
 #endregion
 
-#region Доп классы
+#region Р”РѕРї РєР»Р°СЃСЃС‹
 public abstract class SpecificParameters
 {
     public abstract override string ToString();
@@ -55,54 +55,54 @@ public abstract class SpecificParameters
     protected string GetHourWord(int hours)
     {
         int lastTwo = hours % 100;
-        if (lastTwo >= 11 && lastTwo <= 14) return "часов";
+        if (lastTwo >= 11 && lastTwo <= 14) return "С‡Р°СЃРѕРІ";
 
         return (hours % 10) switch
         {
-            1 => "час",
-            2 or 3 or 4 => "часа",
-            _ => "часов"
+            1 => "С‡Р°СЃ",
+            2 or 3 or 4 => "С‡Р°СЃР°",
+            _ => "С‡Р°СЃРѕРІ"
         };
     }
     protected string GetMinuteWord(int minutes)
     {
         int lastTwo = minutes % 100;
-        if (lastTwo >= 11 && lastTwo <= 14) return "минут";
+        if (lastTwo >= 11 && lastTwo <= 14) return "РјРёРЅСѓС‚";
 
         return (minutes % 10) switch
         {
-            1 => "минута",
-            2 or 3 or 4 => "минуты",
-            _ => "минут"
+            1 => "РјРёРЅСѓС‚Р°",
+            2 or 3 or 4 => "РјРёРЅСѓС‚С‹",
+            _ => "РјРёРЅСѓС‚"
         };
     }
     protected string GetSecondsWord(int seconds)
     {
         int lastTwo = seconds % 100;
-        if (lastTwo >= 11 && lastTwo <= 14) return "секунд";
+        if (lastTwo >= 11 && lastTwo <= 14) return "СЃРµРєСѓРЅРґ";
 
         return (seconds % 10) switch
         {
-            1 => "секунда",
-            2 or 3 or 4 => "секунды",
-            _ => "секунд"
+            1 => "СЃРµРєСѓРЅРґР°",
+            2 or 3 or 4 => "СЃРµРєСѓРЅРґС‹",
+            _ => "СЃРµРєСѓРЅРґ"
         };
     }
 }
 public class Walk : SpecificParameters
 {
-    #region Переменные и конструкторы
+    #region РџРµСЂРµРјРµРЅРЅС‹Рµ Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
     private string _description;
-    private byte _kmPerHour;
-    private byte _kilometers;
-    private short _meters;
-    private byte _angle;
+    public byte _kmPerHour;
+    public byte _kilometers;
+    public short _meters;
+    public byte _angle;
     public Walk(byte kmPerHour, byte kilometers, short meters,  byte angle = 0)
     {
             if (kmPerHour == 0)
-            throw new ArgumentException("Скорость не может быть нулевой");
+            throw new ArgumentException("РЎРєРѕСЂРѕСЃС‚СЊ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅСѓР»РµРІРѕР№");
         if (meters >= 1000)
-            throw new ArgumentException("Метры должны быть меньше 1000");
+            throw new ArgumentException("РњРµС‚СЂС‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ 1000");
 
         _kmPerHour = kmPerHour;
         _kilometers = kilometers;
@@ -128,8 +128,8 @@ public class Walk : SpecificParameters
         }
 
         return (hours, minutes);
-    }// Основной метод расчета времени
-    #region Методы для вывода информации
+    }// РћСЃРЅРѕРІРЅРѕР№ РјРµС‚РѕРґ СЂР°СЃС‡РµС‚Р° РІСЂРµРјРµРЅРё
+    #region РњРµС‚РѕРґС‹ РґР»СЏ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё
     private string FormatTimeString()
     {
         var (hours, minutes) = CalculateTime();
@@ -142,7 +142,7 @@ public class Walk : SpecificParameters
     private string FormatDistanceString()
     {
         if (_kilometers == 0 && _meters == 0)
-            return "0 метров";
+            return "0 РјРµС‚СЂРѕРІ";
 
         if (_kilometers == 0)
             return $"{_meters} {GetMeterWord(_meters)}";
@@ -151,12 +151,12 @@ public class Walk : SpecificParameters
             return $"{_kilometers} {GetKilometerWord(_kilometers)}";
 
         return $"{_kilometers} {GetKilometerWord(_kilometers)} " +
-               $"и {_meters} {GetMeterWord(_meters)}";
+               $"Рё {_meters} {GetMeterWord(_meters)}";
     }
     private string GetKilometerWord(int km) =>
-        GetNounForm(km, "километр", "километра", "километров");
+        GetNounForm(km, "РєРёР»РѕРјРµС‚СЂ", "РєРёР»РѕРјРµС‚СЂР°", "РєРёР»РѕРјРµС‚СЂРѕРІ");
     private string GetMeterWord(int meters) =>
-        GetNounForm(meters, "метр", "метра", "метров");
+        GetNounForm(meters, "РјРµС‚СЂ", "РјРµС‚СЂР°", "РјРµС‚СЂРѕРІ");
     private string GetNounForm(int number, string form1, string form2, string form5)
     {
         int n = Math.Abs(number % 100);
@@ -170,14 +170,14 @@ public class Walk : SpecificParameters
         };
     }
     private string FormatAngleString() =>
-        _angle == 0 ? string.Empty : $"Угол подъема: {_angle}°";
+        _angle == 0 ? string.Empty : $"РЈРіРѕР» РїРѕРґСЉРµРјР°: {_angle}В°";
     #endregion
-    #region Методы для расчета параметров
+    #region РњРµС‚РѕРґС‹ РґР»СЏ СЂР°СЃС‡РµС‚Р° РїР°СЂР°РјРµС‚СЂРѕРІ
 
 
 
     #endregion
-    #region Основные публичные методы
+    #region РћСЃРЅРѕРІРЅС‹Рµ РїСѓР±Р»РёС‡РЅС‹Рµ РјРµС‚РѕРґС‹
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
         if (specificParameters is Walk walkToClone)
@@ -190,18 +190,18 @@ public class Walk : SpecificParameters
             );
         }
 
-        throw new ArgumentException("Параметр должен быть типа Walk", nameof(specificParameters));
+        throw new ArgumentException("РџР°СЂР°РјРµС‚СЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‚РёРїР° Walk", nameof(specificParameters));
     }
-    public override void SetParametrs(Player player, byte ApproachNumber = 0) { throw new NotImplementedException(); }
+    public override void SetParametrs(Player player, byte ApproachNumber = 0) {  }
     public override string ToString() => $"{_kilometers}.{_meters:D3}";
     public override string GetDescription(string name)
     {
         var parts = new List<string>
         {
             _description,
-            $"Скорость: {_kmPerHour} км/ч",
-            $"Время: {FormatTimeString()}",
-            $"Дистанция: {FormatDistanceString()}"
+            $"РЎРєРѕСЂРѕСЃС‚СЊ: {_kmPerHour} РєРј/С‡",
+            $"Р’СЂРµРјСЏ: {FormatTimeString()}",
+            $"Р”РёСЃС‚Р°РЅС†РёСЏ: {FormatDistanceString()}"
         };
 
         var angleStr = FormatAngleString();
@@ -212,18 +212,18 @@ public class Walk : SpecificParameters
     }
     public override void SetNewParametrs(List<float> newParametrs)
     {
-        throw new NotImplementedException();
+        _kilometers = (byte)newParametrs[0];
+        _meters = (byte)newParametrs[1];
     }
-
     public override List<float> GetParametrs()
     {
-        throw new NotImplementedException();
+        return new List<float> { _kilometers, _meters };
     }
     #endregion
 }
 public class StrengthTraining : SpecificParameters
 {
-    #region Переменные и конструкторы
+    #region РџРµСЂРµРјРµРЅРЅС‹Рµ Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
     public byte workWeight;
     public byte repetitions;
     public byte onePm;
@@ -238,31 +238,42 @@ public class StrengthTraining : SpecificParameters
     }
 
     #endregion
-    #region Методы для расчета параметров
+    #region РњРµС‚РѕРґС‹ РґР»СЏ СЂР°СЃС‡РµС‚Р° РїР°СЂР°РјРµС‚СЂРѕРІ
 
     private void SetWorkWeight(Player player)
     {
         StringBuilder debugString = new StringBuilder();
         if (repetitions != 0 && onePm != 0 && twelvePm != 0 && player.weight!=0)
         {
-            debugString.AppendLine($"Параметры игрока\n" +
-                $"Вес - {player.weight}\n" 
+            debugString.AppendLine($"РџР°СЂР°РјРµС‚СЂС‹ РёРіСЂРѕРєР°\n" +
+                $"Р’РµСЃ - {player.weight}\n" 
 
 
 
                 );
-            debugString.AppendLine($"Параметры упражнения\n" +
-            $"1 пм  - {this.onePm}\n"+
-            $"12 пм  - {this.twelvePm}\n"
+            debugString.AppendLine($"РџР°СЂР°РјРµС‚СЂС‹ СѓРїСЂР°Р¶РЅРµРЅРёСЏ\n" +
+            $"1 РїРј  - {this.onePm}\n"+
+            $"12 РїРј  - {this.twelvePm}\n"
 
 
             );
             float onePm = player.weight*((float)this.onePm/100);
-            debugString.AppendLine($"Эталонный 1 пм - {(short)onePm}кг");
+            debugString.AppendLine($"Р­С‚Р°Р»РѕРЅРЅС‹Р№ 1 РїРј - {(short)onePm}РєРі");
             float twelvePm = player.weight * ((float)this.twelvePm / 100);
-            debugString.AppendLine($"Эталонный 12 пм - {(short)twelvePm}");
+            debugString.AppendLine($"Р­С‚Р°Р»РѕРЅРЅС‹Р№ 12 РїРј - {(short)twelvePm}");
             workWeight = (byte)GetWorkWeightByRepetitions(onePm, twelvePm,repetitions);
-            debugString.AppendLine($"Эталонный {repetitions} пм - {workWeight}");
+            debugString.AppendLine($"Р­С‚Р°Р»РѕРЅРЅС‹Р№ {repetitions} РїРј - {workWeight}");
+            workWeight = (byte)((int)workWeight *ExerciseManager.Coefficient.StrengthCoefficient);
+            debugString.AppendLine($"РёС‚РѕРіРѕРІС‹Р№ {workWeight} - РєРѕРёС„РёС†РµРЅС‚ СЃРёР»С‹ - {ExerciseManager.Coefficient.StrengthCoefficient}");
+
+            debugString.AppendLine();
+            debugString.AppendLine();
+            debugString.AppendLine();
+            debugString.AppendLine();
+            debugString.AppendLine(ExerciseManager.Coefficient.GetDebugReport());
+
+
+
         }
         this.debugString = debugString.ToString();
     }
@@ -279,7 +290,7 @@ public class StrengthTraining : SpecificParameters
 
 
     #endregion
-    #region Публичные методы
+    #region РџСѓР±Р»РёС‡РЅС‹Рµ РјРµС‚РѕРґС‹
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
         if (specificParameters is StrengthTraining strengthToClone)
@@ -296,7 +307,7 @@ public class StrengthTraining : SpecificParameters
             };
             return clone;
         }
-        throw new ArgumentException("Параметр должен быть типа StrengthTraining", nameof(specificParameters));
+        throw new ArgumentException("РџР°СЂР°РјРµС‚СЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‚РёРїР° StrengthTraining", nameof(specificParameters));
     }
     public override void SetParametrs(Player player, byte ApproachNumber = 0) 
     {
@@ -304,9 +315,9 @@ public class StrengthTraining : SpecificParameters
     }
     public override string ToString()
     {
-        if (workWeight > 0 && repetitions > 0) { return $"{workWeight} кг на {repetitions} раз"; }
-        else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
-        else return "Ошибка : повторений < 1";
+        if (workWeight > 0 && repetitions > 0) { return $"{workWeight} РєРі РЅР° {repetitions} СЂР°Р·"; }
+        else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} СЂР°Р·";
+        else return "РћС€РёР±РєР° : РїРѕРІС‚РѕСЂРµРЅРёР№ < 1";
     }
     public override string GetDescription(string name)
     {
@@ -322,7 +333,7 @@ public class StrengthTraining : SpecificParameters
         }
         else
         {
-            throw new ArgumentException($"неверное число параметров должно быть 2, а щас - {newParametrs.Count}");
+            throw new ArgumentException($"РЅРµРІРµСЂРЅРѕРµ С‡РёСЃР»Рѕ РїР°СЂР°РјРµС‚СЂРѕРІ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ 2, Р° С‰Р°СЃ - {newParametrs.Count}");
         }
     }
 
@@ -334,7 +345,7 @@ public class StrengthTraining : SpecificParameters
 }
 public class Static : SpecificParameters
 {
-    #region Переменные и конструкторы 
+    #region РџРµСЂРµРјРµРЅРЅС‹Рµ Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹ 
     public byte minutes;
     public byte seconds;
     public Static( byte minutes, byte seconds)
@@ -344,7 +355,7 @@ public class Static : SpecificParameters
     }
 
     #endregion
-    #region Публичные методы
+    #region РџСѓР±Р»РёС‡РЅС‹Рµ РјРµС‚РѕРґС‹
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
         if (specificParameters is Static staticToClone)
@@ -352,7 +363,7 @@ public class Static : SpecificParameters
             return new Static(staticToClone.minutes, staticToClone.seconds);
         }
 
-        throw new ArgumentException("Параметр должен быть типа Static", nameof(specificParameters));
+        throw new ArgumentException("РџР°СЂР°РјРµС‚СЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‚РёРїР° Static", nameof(specificParameters));
     }
     public override string ToString()
     {
@@ -387,15 +398,94 @@ public class Static : SpecificParameters
 
     #endregion
 }
+public class Stretching : SpecificParameters
+{
+    public float seconds;
+
+    #region РїСѓР±Р»РёС‡РЅС‹Рµ РјРµС‚РѕРґС‹
+    public override SpecificParameters DeepClone(SpecificParameters specificParameters)
+    {
+        return new Stretching()
+        {
+            seconds = (specificParameters as Stretching).seconds
+        };
+    }
+
+    public override string GetDescription(string name)
+    {
+        return Description.GetDescriptionByName(name);
+    }
+
+    public override List<float> GetParametrs()
+    {
+        return new List<float> { seconds };
+    }
+
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        seconds = newParametrs[0];
+    }
+
+    public override void SetParametrs(Player player, byte ApproachNumber = 0)
+    {
+        
+    }
+
+    public override string ToString()
+    {
+        return $"{seconds} {GetSecondsWord((int)seconds)}";
+    } 
+    #endregion
+}
+public class Calisthenics : SpecificParameters
+{
+    public int replications;
+    public Calisthenics(int replications)
+    {
+        this.replications = replications;
+    }
+    #region РїСѓР±Р»РёС‡РЅС‹Рµ РјРµС‚РѕРґС‹
+    public override SpecificParameters DeepClone(SpecificParameters specificParameters)
+    {
+        return new Calisthenics((specificParameters as Calisthenics).replications);
+    }
+
+    public override string GetDescription(string name)
+    {
+        return Description.GetDescriptionByName(name);
+    }
+
+    public override List<float> GetParametrs()
+    {
+        return new List<float> {replications };
+    }
+
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        replications = (int)newParametrs[0];
+    }
+
+    public override void SetParametrs(Player player, byte ApproachNumber = 0)
+    {
+        replications = (int)(replications * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient);
+    }
+
+    public override string ToString()
+    {
+        return $"{replications} СЂР°Р·";
+    } 
+    #endregion
+}
+
 #endregion
 
-#region Менеджер
+#region РњРµРЅРµРґР¶РµСЂ
 [System.Serializable]
 public class ExerciseManager
 {
-    #region Загрузка - сохранение
+    #region Р—Р°РіСЂСѓР·РєР° - СЃРѕС…СЂР°РЅРµРЅРёРµ
 
-    #region Конструкторы
+    #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
     public ExerciseManager(List<Exercise> exercises)
     {
         this.exercises = exercises;
@@ -403,7 +493,7 @@ public class ExerciseManager
     public ExerciseManager() { }
     #endregion
 
-    #region Статичные поля
+    #region РЎС‚Р°С‚РёС‡РЅС‹Рµ РїРѕР»СЏ
     private static DateTime _lastLoadTime;
     public static string path { get { return $"{DataPath.Path()}/ExerciseData.json"; } }
 
@@ -433,7 +523,7 @@ public class ExerciseManager
         int index = exercises.FindIndex(e => e.name == exercise.name);
 
         if (index == -1)
-            throw new KeyNotFoundException($"Упражнение '{exercise.name}' не найдено");
+            throw new KeyNotFoundException($"РЈРїСЂР°Р¶РЅРµРЅРёРµ '{exercise.name}' РЅРµ РЅР°Р№РґРµРЅРѕ");
 
         exercises[index] = exercise;
         Save(exercises);
@@ -441,7 +531,7 @@ public class ExerciseManager
     public static Exercise GetExercisesByName(string name)
     {
         var exercise = Exercises.FirstOrDefault(e => e.name == name);
-        return exercise == null? throw new KeyNotFoundException($"Упражнение '{name}' не найдено"): exercise; 
+        return exercise == null? throw new KeyNotFoundException($"РЈРїСЂР°Р¶РЅРµРЅРёРµ '{name}' РЅРµ РЅР°Р№РґРµРЅРѕ"): exercise; 
     }
     private static List<Exercise> Load()
     {
@@ -456,573 +546,704 @@ public class ExerciseManager
     }
     #endregion
 
-    #region Нестатичные поля
+    #region РќРµСЃС‚Р°С‚РёС‡РЅС‹Рµ РїРѕР»СЏ
     [SerializeField] private List<Exercise> exercises;
 
     #endregion
 
     #endregion
 
-    #region Создание упражнений
+    #region РЎРѕР·РґР°РЅРёРµ СѓРїСЂР°Р¶РЅРµРЅРёР№
     private static List<Exercise> GetBaseExercises()
     {
 
         List<Exercise> exercises = new List<Exercise>();
-        #region Грудь
-        // Верх груди
+        #region С‚РѕР»СЊРєРѕ Р·Р°Р»
+        #region Р“СЂСѓРґСЊ
+        // Р’РµСЂС… РіСЂСѓРґРё
         exercises.Add(new Exercise(
-            "Жим гантелей на наклонной скамье",
+            "Р–РёРј РіР°РЅС‚РµР»РµР№ РЅР° РЅР°РєР»РѕРЅРЅРѕР№ СЃРєР°РјСЊРµ",
             new List<Muscle>
             {
-        new Muscle("Верх груди", 70),
-        new Muscle("Передние дельты", 20),
-        new Muscle("Трицепс", 10)
+        new Muscle("Р’РµСЂС… РіСЂСѓРґРё", 70),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 20),
+        new Muscle("РўСЂРёС†РµРїСЃ", 10)
             },
             new StrengthTraining(8, 90, 65),
-            2 // Средний приоритет (не самая базовая вариация жима)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РЅРµ СЃР°РјР°СЏ Р±Р°Р·РѕРІР°СЏ РІР°СЂРёР°С†РёСЏ Р¶РёРјР°)
         ));
         exercises.Add(new Exercise(
-            "Подъемы гантелей лежа на наклонной скамье",
+            "РџРѕРґСЉРµРјС‹ РіР°РЅС‚РµР»РµР№ Р»РµР¶Р° РЅР° РЅР°РєР»РѕРЅРЅРѕР№ СЃРєР°РјСЊРµ",
             new List<Muscle>
             {
-        new Muscle("Верх груди", 85),
-        new Muscle("Передние дельты", 15)
+        new Muscle("Р’РµСЂС… РіСЂСѓРґРё", 85),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 15)
             },
             new StrengthTraining(12, 35, 25),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
-        // Середина груди
+        // РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё
         exercises.Add(new Exercise(
-            "Сведения в кроссовере через верхние блоки",
+            "РЎРІРµРґРµРЅРёСЏ РІ РєСЂРѕСЃСЃРѕРІРµСЂРµ С‡РµСЂРµР· РІРµСЂС…РЅРёРµ Р±Р»РѕРєРё",
             new List<Muscle>
             {
-        new Muscle("Середина груди", 90),
-        new Muscle("Передние дельты", 10)
+        new Muscle("РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё", 90),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(12, 40, 30),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
         exercises.Add(new Exercise(
-            "Жим лежа",
+            "Р–РёРј Р»РµР¶Р°",
             new List<Muscle>
             {
-        new Muscle("Середина груди", 65),
-        new Muscle("Трицепс", 25),
-        new Muscle("Передние дельты", 10)
+        new Muscle("РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё", 65),
+        new Muscle("РўСЂРёС†РµРїСЃ", 25),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(10, 117, 82),
-            1 // Высокий приоритет (базовое упражнение №1)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ в„–1)
         ));
         exercises.Add(new Exercise(
-            "Пуловер с гантелью лежа поперек скамьи",
+            "РџСѓР»РѕРІРµСЂ СЃ РіР°РЅС‚РµР»СЊСЋ Р»РµР¶Р° РїРѕРїРµСЂРµРє СЃРєР°РјСЊРё",
             new List<Muscle>
             {
-        new Muscle("Середина груди", 70),
-        new Muscle("Широчайшие", 25),
-        new Muscle("Трицепс", 5)
+        new Muscle("РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё", 70),
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 25),
+        new Muscle("РўСЂРёС†РµРїСЃ", 5)
             },
             new StrengthTraining(12, 45, 35),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
-        // Низ груди
-        exercises.Add(new Exercise(
-            "Отжимания на брусьях с акцентом на грудь",
-            new List<Muscle>
-            {
-        new Muscle("Низ груди", 60),
-        new Muscle("Трицепс", 30),
-        new Muscle("Передние дельты", 10)
-            },
-            new StrengthTraining(8, 25, 0),
-            1 // Высокий приоритет (базовое упражнение)
-        ));
         #endregion
 
-        #region Спина
-        // Широчайшие мышцы
-        exercises.Add(new Exercise(
-            "Подтягивания широким хватом",
-            new List<Muscle>
-            {
-        new Muscle("Широчайшие", 80),
-        new Muscle("Бицепс", 15),
-        new Muscle("Предплечья", 5)
-            },
-            new StrengthTraining(8, 25, -10),
-            1 // Высокий приоритет (базовое упражнение №1)
-        ));
+        #region РЎРїРёРЅР°
+        // РЁРёСЂРѕС‡Р°Р№С€РёРµ РјС‹С€С†С‹
+
 
         exercises.Add(new Exercise(
-            "Тяга верхнего блока широким хватом к груди",
+            "РўСЏРіР° РІРµСЂС…РЅРµРіРѕ Р±Р»РѕРєР° С€РёСЂРѕРєРёРј С…РІР°С‚РѕРј Рє РіСЂСѓРґРё",
             new List<Muscle>
             {
-        new Muscle("Широчайшие", 75),
-        new Muscle("Ромбовидные", 15),
-        new Muscle("Бицепс", 10)
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 75),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 15),
+        new Muscle("Р‘РёС†РµРїСЃ", 10)
             },
             new StrengthTraining(12, 143, 100),
-            2 // Средний приоритет (аналог подтягиваний)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р°РЅР°Р»РѕРі РїРѕРґС‚СЏРіРёРІР°РЅРёР№)
         ));
 
         exercises.Add(new Exercise(
-            "Тяга штанги в наклоне (хват на ширине плеч)",
+            "РўСЏРіР° С€С‚Р°РЅРіРё РІ РЅР°РєР»РѕРЅРµ (С…РІР°С‚ РЅР° С€РёСЂРёРЅРµ РїР»РµС‡)",
             new List<Muscle>
             {
-        new Muscle("Широчайшие", 60),
-        new Muscle("Ромбовидные", 25),
-        new Muscle("Задние дельты", 10),
-        new Muscle("Бицепс", 5)
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 60),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 25),
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 10),
+        new Muscle("Р‘РёС†РµРїСЃ", 5)
             },
             new StrengthTraining(8, 106, 74),
-            1 // Высокий приоритет (базовое упражнение)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Тяга горизонтального блока узким хватом",
+            "РўСЏРіР° РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРіРѕ Р±Р»РѕРєР° СѓР·РєРёРј С…РІР°С‚РѕРј",
             new List<Muscle>
             {
-        new Muscle("Широчайшие", 70),
-        new Muscle("Ромбовидные", 20),
-        new Muscle("Бицепс", 10)
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 70),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 20),
+        new Muscle("Р‘РёС†РµРїСЃ", 10)
             },
             new StrengthTraining(10, 94, 66),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
-        // Трапециевидные мышцы
+        // РўСЂР°РїРµС†РёРµРІРёРґРЅС‹Рµ РјС‹С€С†С‹
         exercises.Add(new Exercise(
-            "Шраги со штангой сзади",
+            "РЁСЂР°РіРё СЃРѕ С€С‚Р°РЅРіРѕР№ СЃР·Р°РґРё",
             new List<Muscle>
             {
-        new Muscle("Трапеции", 100),
+        new Muscle("РўСЂР°РїРµС†РёРё", 100),
             },
             new StrengthTraining(15, 42, 29),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Шраги с гантелями",
+            "РЁСЂР°РіРё СЃ РіР°РЅС‚РµР»СЏРјРё",
             new List<Muscle>
             {
-        new Muscle("Трапеции", 100),
+        new Muscle("РўСЂР°РїРµС†РёРё", 100),
             },
             new StrengthTraining(12, 84, 59),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Тяга штанги к подбородку широким хватом",
+            "РўСЏРіР° С€С‚Р°РЅРіРё Рє РїРѕРґР±РѕСЂРѕРґРєСѓ С€РёСЂРѕРєРёРј С…РІР°С‚РѕРј",
             new List<Muscle>
             {
-        new Muscle("Трапеции", 80),
-        new Muscle("Передние дельты", 20),
+        new Muscle("РўСЂР°РїРµС†РёРё", 80),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 20),
             },
             new StrengthTraining(10, 47, 33),
-            2 // Средний приоритет (вспомогательное для дельт и трапеций)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ РґР»СЏ РґРµР»СЊС‚ Рё С‚СЂР°РїРµС†РёР№)
         ));
 
-        // Ромбовидные мышцы
+        // Р РѕРјР±РѕРІРёРґРЅС‹Рµ РјС‹С€С†С‹
         exercises.Add(new Exercise(
-            "Тяга Т-грифа с упором в грудь",
+            "РўСЏРіР° Рў-РіСЂРёС„Р° СЃ СѓРїРѕСЂРѕРј РІ РіСЂСѓРґСЊ",
             new List<Muscle>
             {
-        new Muscle("Ромбовидные", 65),
-        new Muscle("Широчайшие", 25),
-        new Muscle("Задние дельты", 10)
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 65),
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 25),
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(10, 106, 74),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Разведение гантелей в наклоне",
+            "Р Р°Р·РІРµРґРµРЅРёРµ РіР°РЅС‚РµР»РµР№ РІ РЅР°РєР»РѕРЅРµ",
             new List<Muscle>
             {
-        new Muscle("Задние дельты", 70),
-        new Muscle("Ромбовидные", 20),
-        new Muscle("Трапеции", 10)
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 70),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 20),
+        new Muscle("РўСЂР°РїРµС†РёРё", 10)
             },
             new StrengthTraining(12, 24, 16),
-            2 // Средний приоритет (вспомогательное для задних дельт)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ РґР»СЏ Р·Р°РґРЅРёС… РґРµР»СЊС‚)
         ));
 
-        // Поясница
+        // РџРѕСЏСЃРЅРёС†Р°
         exercises.Add(new Exercise(
-            "Становая тяга",
+            "РЎС‚Р°РЅРѕРІР°СЏ С‚СЏРіР°",
             new List<Muscle>
             {
-        new Muscle("Поясница", 40),
-        new Muscle("Широчайшие", 25),
-        new Muscle("Ягодичные", 20),
-        new Muscle("Бицепс бедра", 15)
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 40),
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 25),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 20),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 15)
             },
             new StrengthTraining(5, 141, 99),
-            1 // Высокий приоритет (базовое упражнение №1 для спины)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ в„–1 РґР»СЏ СЃРїРёРЅС‹)
         ));
 
         exercises.Add(new Exercise(
-            "Гиперэкстензия с дополнительным весом",
+            "Р“РёРїРµСЂСЌРєСЃС‚РµРЅР·РёСЏ СЃ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рј РІРµСЃРѕРј",
             new List<Muscle>
             {
-        new Muscle("Поясница", 90),
-        new Muscle("Ягодичные", 10)
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 90),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 10)
             },
             new StrengthTraining(12, 59, 41),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
         #endregion
 
-        #region Плечи
-        // Передняя дельта
+        #region РџР»РµС‡Рё
+        // РџРµСЂРµРґРЅСЏСЏ РґРµР»СЊС‚Р°
         exercises.Add(new Exercise(
-            "Армейский жим стоя",
+            "РђСЂРјРµР№СЃРєРёР№ Р¶РёРј СЃС‚РѕСЏ",
             new List<Muscle>
             {
-        new Muscle("Передние дельты", 60),
-        new Muscle("Средние дельты", 25),
-        new Muscle("Трицепс", 15)
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 60),
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 25),
+        new Muscle("РўСЂРёС†РµРїСЃ", 15)
             },
             new StrengthTraining(8, 56, 39),
-            1 // Высокий приоритет (базовое упражнение для плеч)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ РґР»СЏ РїР»РµС‡)
         ));
 
         exercises.Add(new Exercise(
-            "Жим гантелей сидя",
+            "Р–РёРј РіР°РЅС‚РµР»РµР№ СЃРёРґСЏ",
             new List<Muscle>
             {
-        new Muscle("Передние дельты", 70),
-        new Muscle("Средние дельты", 20),
-        new Muscle("Трицепс", 10)
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 70),
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 20),
+        new Muscle("РўСЂРёС†РµРїСЃ", 10)
             },
             new StrengthTraining(10, 59, 41),
-            1 // Высокий приоритет (базовое упражнение)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Подъемы гантелей перед собой",
+            "РџРѕРґСЉРµРјС‹ РіР°РЅС‚РµР»РµР№ РїРµСЂРµРґ СЃРѕР±РѕР№",
             new List<Muscle>
             {
-        new Muscle("Передние дельты", 90),
-        new Muscle("Средние дельты", 10)
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 90),
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(12, 31, 22),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
-        // Средняя дельта
+        // РЎСЂРµРґРЅСЏСЏ РґРµР»СЊС‚Р°
         exercises.Add(new Exercise(
-            "Махи гантелями в стороны стоя",
+            "РњР°С…Рё РіР°РЅС‚РµР»СЏРјРё РІ СЃС‚РѕСЂРѕРЅС‹ СЃС‚РѕСЏ",
             new List<Muscle>
             {
-        new Muscle("Средние дельты", 95),
-        new Muscle("Передние дельты", 5)
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 95),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 5)
             },
             new StrengthTraining(15, 37, 26),
-            2 // Средний приоритет (ключевое для средней дельты)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РєР»СЋС‡РµРІРѕРµ РґР»СЏ СЃСЂРµРґРЅРµР№ РґРµР»СЊС‚С‹)
         ));
 
         exercises.Add(new Exercise(
-            "Тяга штанги к подбородку широким хватом",
+            "РўСЏРіР° С€С‚Р°РЅРіРё Рє РїРѕРґР±РѕСЂРѕРґРєСѓ С€РёСЂРѕРєРёРј С…РІР°С‚РѕРј",
             new List<Muscle>
             {
-        new Muscle("Средние дельты", 70),
-        new Muscle("Трапеции", 20),
-        new Muscle("Передние дельты", 10)
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 70),
+        new Muscle("РўСЂР°РїРµС†РёРё", 20),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(10, 47, 33),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Махи в стороны в тренажере",
+            "РњР°С…Рё РІ СЃС‚РѕСЂРѕРЅС‹ РІ С‚СЂРµРЅР°Р¶РµСЂРµ",
             new List<Muscle>
             {
-        new Muscle("Средние дельты", 90),
-        new Muscle("Передние дельты", 10)
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 90),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
             },
             new StrengthTraining(12, 40, 28),
-            3 // Низкий приоритет (изолирующее в тренажере)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ РІ С‚СЂРµРЅР°Р¶РµСЂРµ)
         ));
 
-        // Задняя дельта
+        // Р—Р°РґРЅСЏСЏ РґРµР»СЊС‚Р°
         exercises.Add(new Exercise(
-            "Махи гантелями в наклоне",
+            "РњР°С…Рё РіР°РЅС‚РµР»СЏРјРё РІ РЅР°РєР»РѕРЅРµ",
             new List<Muscle>
             {
-        new Muscle("Задние дельты", 85),
-        new Muscle("Средние дельты", 15)
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 85),
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 15)
             },
             new StrengthTraining(12, 32, 22),
-            2 // Средний приоритет (ключевое для задних дельт)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РєР»СЋС‡РµРІРѕРµ РґР»СЏ Р·Р°РґРЅРёС… РґРµР»СЊС‚)
         ));
 
         exercises.Add(new Exercise(
-            "Разведения в тренажере Peck-Deck",
+            "Р Р°Р·РІРµРґРµРЅРёСЏ РІ С‚СЂРµРЅР°Р¶РµСЂРµ Peck-Deck",
             new List<Muscle>
             {
-        new Muscle("Задние дельты", 80),
-        new Muscle("Средние дельты", 20)
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 80),
+        new Muscle("РЎСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 20)
             },
             new StrengthTraining(12, 35, 25),
-            3 // Низкий приоритет (изолирующее в тренажере)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ РІ С‚СЂРµРЅР°Р¶РµСЂРµ)
         ));
         #endregion
 
-        #region Руки
-        // Бицепс
+        #region Р СѓРєРё
+        // Р‘РёС†РµРїСЃ
         exercises.Add(new Exercise(
-            "Подъем штанги на бицепс стоя",
+            "РџРѕРґСЉРµРј С€С‚Р°РЅРіРё РЅР° Р±РёС†РµРїСЃ СЃС‚РѕСЏ",
             new List<Muscle>
             {
-        new Muscle("Бицепс", 95),
-        new Muscle("Предплечья", 5)
+        new Muscle("Р‘РёС†РµРїСЃ", 95),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 5)
             },
             new StrengthTraining(8, 76, 47),
-            1 // Высокий приоритет (базовое упражнение для бицепса)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ РґР»СЏ Р±РёС†РµРїСЃР°)
         ));
 
         exercises.Add(new Exercise(
-            "Подъем гантелей на бицепс сидя",
+            "РџРѕРґСЉРµРј РіР°РЅС‚РµР»РµР№ РЅР° Р±РёС†РµРїСЃ СЃРёРґСЏ",
             new List<Muscle>
             {
-        new Muscle("Бицепс", 90),
-        new Muscle("Предплечья", 10)
+        new Muscle("Р‘РёС†РµРїСЃ", 90),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 10)
             },
             new StrengthTraining(10, 71, 44),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Молотковые сгибания с гантелями",
+            "РњРѕР»РѕС‚РєРѕРІС‹Рµ СЃРіРёР±Р°РЅРёСЏ СЃ РіР°РЅС‚РµР»СЏРјРё",
             new List<Muscle>
             {
-        new Muscle("Бицепс", 70),
-        new Muscle("Предплечья", 30)
+        new Muscle("Р‘РёС†РµРїСЃ", 70),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 30)
             },
             new StrengthTraining(10, 65, 40),
-            2 // Средний приоритет (вспомогательное для брахиалиса)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ РґР»СЏ Р±СЂР°С…РёР°Р»РёСЃР°)
         ));
 
-        // Трицепс
+        // РўСЂРёС†РµРїСЃ
         exercises.Add(new Exercise(
-            "Французский жим лежа (EZ-гриф)",
+            "Р¤СЂР°РЅС†СѓР·СЃРєРёР№ Р¶РёРј Р»РµР¶Р° (EZ-РіСЂРёС„)",
             new List<Muscle>
             {
-        new Muscle("Трицепс", 95),
-        new Muscle("Передние дельты", 5)
+        new Muscle("РўСЂРёС†РµРїСЃ", 95),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 5)
             },
             new StrengthTraining(10, 55, 38),
-            1 // Высокий приоритет (базовое упражнение для трицепса)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ РґР»СЏ С‚СЂРёС†РµРїСЃР°)
         ));
 
         exercises.Add(new Exercise(
-            "Отжимания на брусьях (акцент на трицепс)",
+            "РћС‚Р¶РёРјР°РЅРёСЏ РЅР° Р±СЂСѓСЃСЊСЏС… (Р°РєС†РµРЅС‚ РЅР° С‚СЂРёС†РµРїСЃ)",
             new List<Muscle>
             {
-        new Muscle("Трицепс", 85),
-        new Muscle("Низ груди", 10),
-        new Muscle("Передние дельты", 5)
+        new Muscle("РўСЂРёС†РµРїСЃ", 85),
+        new Muscle("РќРёР· РіСЂСѓРґРё", 10),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 5)
             },
             new StrengthTraining(12, 18, 0),
-            1 // Высокий приоритет (базовое упражнение)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Разгибания на трицепс в верхнем блоке с канатом",
+            "Р Р°Р·РіРёР±Р°РЅРёСЏ РЅР° С‚СЂРёС†РµРїСЃ РІ РІРµСЂС…РЅРµРј Р±Р»РѕРєРµ СЃ РєР°РЅР°С‚РѕРј",
             new List<Muscle>
             {
-        new Muscle("Трицепс", 100)
+        new Muscle("РўСЂРёС†РµРїСЃ", 100)
             },
             new StrengthTraining(12, 40, 28),
-            2 // Средний приоритет (вспомогательное/добивающее)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ/РґРѕР±РёРІР°СЋС‰РµРµ)
         ));
 
-        // Предплечья
+        // РџСЂРµРґРїР»РµС‡СЊСЏ
         exercises.Add(new Exercise(
-            "Сгибание запястий со штангой сидя",
+            "РЎРіРёР±Р°РЅРёРµ Р·Р°РїСЏСЃС‚РёР№ СЃРѕ С€С‚Р°РЅРіРѕР№ СЃРёРґСЏ",
             new List<Muscle>
             {
-        new Muscle("Предплечья", 100)
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 100)
             },
             new StrengthTraining(15, 25, 18),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Разгибание запястий со штангой сидя",
+            "Р Р°Р·РіРёР±Р°РЅРёРµ Р·Р°РїСЏСЃС‚РёР№ СЃРѕ С€С‚Р°РЅРіРѕР№ СЃРёРґСЏ",
             new List<Muscle>
             {
-        new Muscle("Предплечья", 100)
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 100)
             },
             new StrengthTraining(15, 20, 14),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
         #endregion
 
-        #region Ноги
-        // Квадрицепс
+        #region РќРѕРіРё
+        // РљРІР°РґСЂРёС†РµРїСЃ
         exercises.Add(new Exercise(
-            "Приседания со штангой на спине",
+            "РџСЂРёСЃРµРґР°РЅРёСЏ СЃРѕ С€С‚Р°РЅРіРѕР№ РЅР° СЃРїРёРЅРµ",
             new List<Muscle>
             {
-        new Muscle("Квадрицепс", 60),
-        new Muscle("Ягодичные", 25),
-        new Muscle("Бицепс бедра", 10),
-        new Muscle("Поясница", 5)
+        new Muscle("РљРІР°РґСЂРёС†РµРїСЃ", 60),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 25),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 10),
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 5)
             },
             new StrengthTraining(6, 141, 94),
-            1 // Высокий приоритет (базовое упражнение №1 для ног)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ в„–1 РґР»СЏ РЅРѕРі)
         ));
 
         exercises.Add(new Exercise(
-            "Жим ногами в тренажере",
+            "Р–РёРј РЅРѕРіР°РјРё РІ С‚СЂРµРЅР°Р¶РµСЂРµ",
             new List<Muscle>
             {
-        new Muscle("Квадрицепс", 80),
-        new Muscle("Ягодичные", 15),
-        new Muscle("Бицепс бедра", 5)
+        new Muscle("РљРІР°РґСЂРёС†РµРїСЃ", 80),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 15),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 5)
             },
             new StrengthTraining(10, 212, 141),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Разгибания ног в тренажере",
+            "Р Р°Р·РіРёР±Р°РЅРёСЏ РЅРѕРі РІ С‚СЂРµРЅР°Р¶РµСЂРµ",
             new List<Muscle>
             {
-        new Muscle("Квадрицепс", 95),
-        new Muscle("Ягодичные", 5)
+        new Muscle("РљРІР°РґСЂРёС†РµРїСЃ", 95),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 5)
             },
             new StrengthTraining(12, 94, 66),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
-        // Ягодичные
+        // РЇРіРѕРґРёС‡РЅС‹Рµ
         exercises.Add(new Exercise(
-            "Румынская тяга",
+            "Р СѓРјС‹РЅСЃРєР°СЏ С‚СЏРіР°",
             new List<Muscle>
             {
-        new Muscle("Ягодичные", 60),
-        new Muscle("Бицепс бедра", 30),
-        new Muscle("Поясница", 10)
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 60),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 30),
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 10)
             },
             new StrengthTraining(8, 118, 82),
-            1 // Высокий приоритет (базовое для задней поверхности)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ РґР»СЏ Р·Р°РґРЅРµР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё)
         ));
 
         exercises.Add(new Exercise(
-            "Выпады со штангой",
+            "Р’С‹РїР°РґС‹ СЃРѕ С€С‚Р°РЅРіРѕР№",
             new List<Muscle>
             {
-        new Muscle("Ягодичные", 70),
-        new Muscle("Квадрицепс", 20),
-        new Muscle("Бицепс бедра", 10)
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 70),
+        new Muscle("РљРІР°РґСЂРёС†РµРїСЃ", 20),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 10)
             },
             new StrengthTraining(10, 88, 62),
-            2 // Средний приоритет (вспомогательное)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Ягодичный мост со штангой",
+            "РЇРіРѕРґРёС‡РЅС‹Р№ РјРѕСЃС‚ СЃРѕ С€С‚Р°РЅРіРѕР№",
             new List<Muscle>
             {
-        new Muscle("Ягодичные", 85),
-        new Muscle("Бицепс бедра", 10),
-        new Muscle("Поясница", 5)
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 85),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 10),
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 5)
             },
             new StrengthTraining(10, 176, 124),
-            2 // Средний приоритет (вспомогательное, но эффективное для ягодиц)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ, РЅРѕ СЌС„С„РµРєС‚РёРІРЅРѕРµ РґР»СЏ СЏРіРѕРґРёС†)
         ));
 
-        // Бицепс бедра
+        // Р‘РёС†РµРїСЃ Р±РµРґСЂР°
         exercises.Add(new Exercise(
-            "Сгибания ног лежа в тренажере",
+            "РЎРіРёР±Р°РЅРёСЏ РЅРѕРі Р»РµР¶Р° РІ С‚СЂРµРЅР°Р¶РµСЂРµ",
             new List<Muscle>
             {
-        new Muscle("Бицепс бедра", 95),
-        new Muscle("Ягодичные", 5)
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 95),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 5)
             },
             new StrengthTraining(12, 59, 41),
-            3 // Низкий приоритет (изолирующее)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ)
         ));
 
         exercises.Add(new Exercise(
-            "Становая тяга на прямых ногах",
+            "РЎС‚Р°РЅРѕРІР°СЏ С‚СЏРіР° РЅР° РїСЂСЏРјС‹С… РЅРѕРіР°С…",
             new List<Muscle>
             {
-        new Muscle("Бицепс бедра", 70),
-        new Muscle("Ягодичные", 20),
-        new Muscle("Поясница", 10)
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 70),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 20),
+        new Muscle("РџРѕСЏСЃРЅРёС†Р°", 10)
             },
             new StrengthTraining(8, 124, 87),
-            1 // Высокий приоритет (базовое упражнение)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
         ));
 
-        // Икры
+        // РРєСЂС‹
         exercises.Add(new Exercise(
-            "Подъемы на носки стоя в тренажере",
+            "РџРѕРґСЉРµРјС‹ РЅР° РЅРѕСЃРєРё СЃС‚РѕСЏ РІ С‚СЂРµРЅР°Р¶РµСЂРµ",
             new List<Muscle>
             {
-        new Muscle("Икры", 100)
+        new Muscle("РРєСЂС‹", 100)
             },
             new StrengthTraining(15, 176, 124),
-            2 // Средний приоритет (основное для икр)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РѕСЃРЅРѕРІРЅРѕРµ РґР»СЏ РёРєСЂ)
         ));
 
         exercises.Add(new Exercise(
-            "Подъемы на носки сидя",
+            "РџРѕРґСЉРµРјС‹ РЅР° РЅРѕСЃРєРё СЃРёРґСЏ",
             new List<Muscle>
             {
-        new Muscle("Икры", 100)
+        new Muscle("РРєСЂС‹", 100)
             },
             new StrengthTraining(15, 141, 99),
-            3 // Низкий приоритет (дополнительное для икр)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ РґР»СЏ РёРєСЂ)
         ));
         #endregion
 
-        #region Пресс
+        #region РџСЂРµСЃСЃ
         exercises.Add(new Exercise(
-            "Скручивания на римском стуле",
+            "РЎРєСЂСѓС‡РёРІР°РЅРёСЏ РЅР° СЂРёРјСЃРєРѕРј СЃС‚СѓР»Рµ",
             new List<Muscle>
             {
-        new Muscle("Верх пресса", 80),
-        new Muscle("Низ пресса", 15),
-        new Muscle("Косые мышцы", 5)
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 80),
+        new Muscle("РќРёР· РїСЂРµСЃСЃР°", 15),
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 5)
             },
             new StrengthTraining(15, 35, 25),
-            2 // Средний приоритет (вспомогательное для пресса)
+            2 // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕРµ РґР»СЏ РїСЂРµСЃСЃР°)
         ));
 
         exercises.Add(new Exercise(
-            "Подъемы ног в висе",
+            "РџРѕРґСЉРµРјС‹ РЅРѕРі РІ РІРёСЃРµ",
             new List<Muscle>
             {
-        new Muscle("Низ пресса", 85),
-        new Muscle("Верх пресса", 10),
-        new Muscle("Косые мышцы", 5)
+        new Muscle("РќРёР· РїСЂРµСЃСЃР°", 85),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 10),
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 5)
             },
             new Static(1, 0),
-            1 // Высокий приоритет (базовое для пресса)
+            1 // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ РґР»СЏ РїСЂРµСЃСЃР°)
         ));
 
         exercises.Add(new Exercise(
-            "Боковые скручивания на полу",
+            "Р‘РѕРєРѕРІС‹Рµ СЃРєСЂСѓС‡РёРІР°РЅРёСЏ РЅР° РїРѕР»Сѓ",
             new List<Muscle>
             {
-        new Muscle("Косые мышцы", 90),
-        new Muscle("Верх пресса", 10)
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 90),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 10)
             },
             new Static(1, 0),
-            3 // Низкий приоритет (изолирующее для косых)
+            3 // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ РґР»СЏ РєРѕСЃС‹С…)
         ));
+        #endregion
+
+        #endregion
+
+        #region СѓР»РёС†Р°
+        #region РЎРёР»РѕРІС‹Рµ
+
+        exercises.Add(new Exercise(
+            "РћС‚Р¶РёРјР°РЅРёСЏ РЅР° Р±СЂСѓСЃСЊСЏС… СЃ Р°РєС†РµРЅС‚РѕРј РЅР° РіСЂСѓРґСЊ",
+            new List<Muscle>
+            {
+        new Muscle("РќРёР· РіСЂСѓРґРё", 60),
+        new Muscle("РўСЂРёС†РµРїСЃ", 30),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 10)
+            },
+            new Calisthenics(12),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РћС‚Р¶РёРјР°РЅРёСЏ РѕС‚ РїРѕР»Р° (РєР»Р°СЃСЃРёС‡РµСЃРєРёРµ)",
+            new List<Muscle>
+            {
+        new Muscle("РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё", 52),  // Р‘С‹Р»Рѕ: "Р“СЂСѓРґСЊ (СЃСЂРµРґРЅСЏСЏ С‡Р°СЃС‚СЊ)"
+        new Muscle("РўСЂРёС†РµРїСЃ", 30),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 15),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 3)       // Р‘С‹Р»Рѕ: "РџСЂРµСЃСЃ"
+                                           // РЈР±СЂР°РЅРѕ: "РџРµСЂРµРґРЅСЏСЏ Р·СѓР±С‡Р°С‚Р°СЏ" (2%) - РЅРµС‚ РІ Р±Р°Р·РѕРІРѕРј СЃРїРёСЃРєРµ
+            },
+            new Calisthenics(35),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РћС‚Р¶РёРјР°РЅРёСЏ СЃ С€РёСЂРѕРєРѕР№ РїРѕСЃС‚Р°РЅРѕРІРєРѕР№ СЂСѓРє",
+            new List<Muscle>
+            {
+        new Muscle("РЎРµСЂРµРґРёРЅР° РіСЂСѓРґРё", 60),  // Р‘С‹Р»Рѕ: "Р“СЂСѓРґСЊ (РІРЅРµС€РЅСЏСЏ С‡Р°СЃС‚СЊ)"
+        new Muscle("РўСЂРёС†РµРїСЃ", 20),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 15),
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 3),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 2)       // Р‘С‹Р»Рѕ: "РџСЂРµСЃСЃ"
+            },
+            new Calisthenics(20),
+            2, true // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р°РєС†РµРЅС‚ РЅР° РіСЂСѓРґСЊ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РђР»РјР°Р·РЅС‹Рµ РѕС‚Р¶РёРјР°РЅРёСЏ (СѓР·РєРёР№ С…РІР°С‚)",
+            new List<Muscle>
+            {
+        new Muscle("РўСЂРёС†РµРїСЃ", 65),
+        new Muscle("Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ С‡Р°СЃС‚СЊ РіСЂСѓРґРё", 25),  // Р‘С‹Р»Рѕ: "Р“СЂСѓРґСЊ (РІРЅСѓС‚СЂРµРЅРЅСЏСЏ С‡Р°СЃС‚СЊ)"
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 8),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 2)
+            },
+            new Calisthenics(20),
+            2, true // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р°РєС†РµРЅС‚ РЅР° С‚СЂРёС†РµРїСЃ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РћС‚Р¶РёРјР°РЅРёСЏ СЃ РЅРѕРіР°РјРё РЅР° РІРѕР·РІС‹С€РµРЅРёРё",
+            new List<Muscle>
+            {
+        new Muscle("Р’РµСЂС… РіСЂСѓРґРё", 55),
+        new Muscle("РўСЂРёС†РµРїСЃ", 25),
+        new Muscle("РџРµСЂРµРґРЅРёРµ РґРµР»СЊС‚С‹", 15),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 3),      // Р‘С‹Р»Рѕ: "РџСЂРµСЃСЃ"
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 2)       // Р‘С‹Р»Рѕ: "РљРѕСЃР°СЏ РјС‹С€С†Р° Р¶РёРІРѕС‚Р°"
+            },
+            new Calisthenics(25),
+            2, true // РЎСЂРµРґРЅРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р°РєС†РµРЅС‚ РЅР° РІРµСЂС… РіСЂСѓРґРё)
+        ));
+
+        exercises.Add(new Exercise(
+            "РџРѕРґС‚СЏРіРёРІР°РЅРёСЏ С€РёСЂРѕРєРёРј С…РІР°С‚РѕРј",
+            new List<Muscle>
+            {
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 80),
+        new Muscle("Р‘РёС†РµРїСЃ", 15),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 5)
+            },
+            new Calisthenics(6),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ в„–1)
+        ));
+
+        exercises.Add(new Exercise(
+            "РџРѕРґС‚СЏРіРёРІР°РЅРёСЏ (СЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ С…РІР°С‚)",
+            new List<Muscle>
+            {
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 75),
+        new Muscle("Р‘РёС†РµРїСЃ", 15),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 5),
+        new Muscle("Р—Р°РґРЅРёРµ РґРµР»СЊС‚С‹", 3),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 2)
+            },
+            new Calisthenics(12),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ в„–1 РґР»СЏ СЃРїРёРЅС‹)
+        ));
+
+        exercises.Add(new Exercise(
+            "РџРѕРґС‚СЏРіРёРІР°РЅРёСЏ РѕР±СЂР°С‚РЅС‹Рј С…РІР°С‚РѕРј",
+            new List<Muscle>
+            {
+        new Muscle("РЁРёСЂРѕС‡Р°Р№С€РёРµ", 70),
+        new Muscle("Р‘РёС†РµРїСЃ", 25),
+        new Muscle("РџСЂРµРґРїР»РµС‡СЊСЏ", 3),
+        new Muscle("Р РѕРјР±РѕРІРёРґРЅС‹Рµ", 2)
+            },
+            new Calisthenics(15),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РџСЂРёСЃРµРґР°РЅРёСЏ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РІРµСЃРѕРј",
+            new List<Muscle>
+            {
+        new Muscle("РљРІР°РґСЂРёС†РµРїСЃ", 65),
+        new Muscle("РЇРіРѕРґРёС‡РЅС‹Рµ", 25),
+        new Muscle("Р‘РёС†РµРїСЃ Р±РµРґСЂР°", 5),
+        new Muscle("РРєСЂС‹", 3),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 2)       // Р‘С‹Р»Рѕ: "РџСЂРµСЃСЃ"
+            },
+            new Calisthenics(25),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (С„СѓРЅРґР°РјРµРЅС‚Р°Р»СЊРЅРѕРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ)
+        ));
+
+        exercises.Add(new Exercise(
+            "РџРѕРґСЉРµРјС‹ РЅРѕРі РІ РІРёСЃРµ",
+            new List<Muscle>
+            {
+        new Muscle("РќРёР· РїСЂРµСЃСЃР°", 85),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 10),     // Р‘С‹Р»Рѕ: "Р’РµСЂС… РїСЂРµСЃСЃР°"
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 5)       // Р‘С‹Р»Рѕ: "РљРѕСЃС‹Рµ РјС‹С€С†С‹"
+            },
+            new Static(1, 0),
+            1, true // Р’С‹СЃРѕРєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (Р±Р°Р·РѕРІРѕРµ РґР»СЏ РїСЂРµСЃСЃР°)
+        ));
+
+        exercises.Add(new Exercise(
+            "Р‘РѕРєРѕРІС‹Рµ СЃРєСЂСѓС‡РёРІР°РЅРёСЏ РЅР° РїРѕР»Сѓ",
+            new List<Muscle>
+            {
+        new Muscle("РљРѕСЃС‹Рµ РјС‹С€С†С‹", 90),
+        new Muscle("Р’РµСЂС… РїСЂРµСЃСЃР°", 10)      // Р‘С‹Р»Рѕ: "Р’РµСЂС… РїСЂРµСЃСЃР°"
+            },
+            new Static(1, 0),
+            3, true // РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ (РёР·РѕР»РёСЂСѓСЋС‰РµРµ РґР»СЏ РєРѕСЃС‹С…)
+        ));
+
+        #endregion
+
         #endregion
         return exercises;
     }
     #endregion
 
-    #region Взаимодействие с упражнением
+    #region Р’Р·Р°РёРјРѕРґРµР№СЃС‚РІРёРµ СЃ СѓРїСЂР°Р¶РЅРµРЅРёРµРј
 
     public static Exercise DeepClone(Exercise exercise)
     {
@@ -1050,6 +1271,530 @@ public class ExerciseManager
         List<Exercise> exercises = ExerciseManager.Exercises;
         exercises = exercises.Where(ex => ex.muscles.Where(m => m.percentageOfWork > minPercentageOfWork).Any(mus => mus.name == muscle.name)).ToList();
         return exercises;
+    }
+    #endregion
+
+    #region РљР»Р°СЃСЃ СЃ РєРѕРµС„РёС†РµРЅС‚Р°РјРё
+    public static class Coefficient
+    {
+        static Player player { get { return Player.player; } set { } }
+        public static float StrengthCoefficient { get { return GetStrengthCoefficient(); } private set { } }
+        public static float EnduranceCoefficient { get { return GetEnduranceCoefficient(); } private set { } }
+        public static float VolumeTolerance { get { return GetVolumeTolerance(); } private set { } }
+
+        // Р’Р»РѕР¶РµРЅРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РѕС‚Р»Р°РґРѕС‡РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
+        private static class DebugInfo
+        {
+            // РСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ РёРіСЂРѕРєР°
+            public static int PlayerWeight;
+            public static int PlayerAge;
+            public static int PlayerExperience;
+            public static int PlayerBodyFat;
+
+            // РњРѕРґРёС„РёРєР°С‚РѕСЂС‹ РґР»СЏ СЃРёР»С‹
+            public static float StrWeightMod;
+            public static float StrAgeMod;
+            public static float StrExpMod;
+            public static float StrBodyfatMod;
+            public static float StrFinal;
+
+            // РњРѕРґРёС„РёРєР°С‚РѕСЂС‹ РґР»СЏ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё
+            public static float EndWeightMod;
+            public static float EndAgeMod;
+            public static float EndExpMod;
+            public static float EndBodyfatMod;
+            public static float EndFinal;
+
+            // РњРѕРґРёС„РёРєР°С‚РѕСЂС‹ РґР»СЏ РїРµСЂРµРЅРѕСЃРёРјРѕСЃС‚Рё РѕР±СЉРµРјР°
+            public static float VolAgeMod;
+            public static float VolExpMod;
+            public static float VolBodyfatMod;
+            public static float VolDailyMod;
+            public static float VolFinal;
+
+            // РњРµС‚РѕРґ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РґР°РЅРЅС‹С… РёРіСЂРѕРєР°
+            public static void UpdatePlayerData()
+            {
+                PlayerWeight = player.weight;
+                PlayerAge = player.age;
+                PlayerExperience = player.experience;
+                PlayerBodyFat = player.percentageOfFat;
+            }
+        }
+
+        // РџСѓР±Р»РёС‡РЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РѕС‚С‡РµС‚Р°
+        public static string GetDebugReport()
+        {
+            // Р’С‹Р·С‹РІР°РµРј СЂР°СЃС‡РµС‚ РІСЃРµС… РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ, С‡С‚РѕР±С‹ РѕР±РЅРѕРІРёС‚СЊ DebugInfo
+            float strength = StrengthCoefficient;
+            float endurance = EnduranceCoefficient;
+            float volume = VolumeTolerance;
+
+            StringBuilder report = new StringBuilder();
+
+            // Р—Р°РіРѕР»РѕРІРѕРє СЃ РґР°РЅРЅС‹РјРё РёРіСЂРѕРєР°
+            report.AppendLine("=== РћРўР§Р•Рў Рћ Р РђРЎР§Р•РўР• РљРћР­Р¤Р¤РР¦РР•РќРўРћР’ ===");
+            report.AppendLine($"Р”Р°РЅРЅС‹Рµ РёРіСЂРѕРєР°: Р’РµСЃ={DebugInfo.PlayerWeight}РєРі, Р’РѕР·СЂР°СЃС‚={DebugInfo.PlayerAge}Р»РµС‚, ");
+            report.AppendLine($"РћРїС‹С‚={DebugInfo.PlayerExperience}РјРµСЃ, %Р¶РёСЂР°={DebugInfo.PlayerBodyFat}%");
+            report.AppendLine();
+
+            // 1. РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРёР»С‹
+            report.AppendLine("1. РљРћР­Р¤Р¤РР¦РР•РќРў РЎРР›Р«:");
+            report.AppendLine($"   вЂў Р’РµСЃРѕРІРѕР№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.StrWeightMod:F3} ({(DebugInfo.StrWeightMod >= 1 ? "+" : "")}{(DebugInfo.StrWeightMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў Р’РѕР·СЂР°СЃС‚РЅРѕР№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.StrAgeMod:F3} ({(DebugInfo.StrAgeMod >= 1 ? "+" : "")}{(DebugInfo.StrAgeMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ РѕРїС‹С‚Р°: {DebugInfo.StrExpMod:F3} ({(DebugInfo.StrExpMod >= 1 ? "+" : "")}{(DebugInfo.StrExpMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ %Р¶РёСЂР°: {DebugInfo.StrBodyfatMod:F3} ({(DebugInfo.StrBodyfatMod >= 1 ? "+" : "")}{(DebugInfo.StrBodyfatMod - 1) * 100:F1}%)");
+            report.AppendLine($"   = РРўРћР“Рћ: {DebugInfo.StrFinal:F3} (СЃРёР»Р° {(DebugInfo.StrFinal >= 1 ? "РІС‹С€Рµ" : "РЅРёР¶Рµ")} РЅР° {Mathf.Abs(DebugInfo.StrFinal - 1) * 100:F1}% РѕС‚ СЌС‚Р°Р»РѕРЅР°)");
+            report.AppendLine();
+
+            // 2. РљРѕСЌС„С„РёС†РёРµРЅС‚ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё
+            report.AppendLine("2. РљРћР­Р¤Р¤РР¦РР•РќРў Р’Р«РќРћРЎР›РР’РћРЎРўР:");
+            report.AppendLine($"   вЂў Р’РµСЃРѕРІРѕР№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.EndWeightMod:F3} ({(DebugInfo.EndWeightMod >= 1 ? "+" : "")}{(DebugInfo.EndWeightMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў Р’РѕР·СЂР°СЃС‚РЅРѕР№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.EndAgeMod:F3} ({(DebugInfo.EndAgeMod >= 1 ? "+" : "")}{(DebugInfo.EndAgeMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ РѕРїС‹С‚Р°: {DebugInfo.EndExpMod:F3} ({(DebugInfo.EndExpMod >= 1 ? "+" : "")}{(DebugInfo.EndExpMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ %Р¶РёСЂР°: {DebugInfo.EndBodyfatMod:F3} ({(DebugInfo.EndBodyfatMod >= 1 ? "+" : "")}{(DebugInfo.EndBodyfatMod - 1) * 100:F1}%)");
+            report.AppendLine($"   = РРўРћР“Рћ: {DebugInfo.EndFinal:F3} (РІС‹РЅРѕСЃР»РёРІРѕСЃС‚СЊ {(DebugInfo.EndFinal >= 1 ? "РІС‹С€Рµ" : "РЅРёР¶Рµ")} РЅР° {Mathf.Abs(DebugInfo.EndFinal - 1) * 100:F1}% РѕС‚ СЌС‚Р°Р»РѕРЅР°)");
+            report.AppendLine();
+
+            // 3. РљРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРЅРѕСЃРёРјРѕСЃС‚Рё РѕР±СЉРµРјР°
+            report.AppendLine("3. РљРћР­Р¤Р¤РР¦РР•РќРў РџР•Р Р•РќРћРЎРРњРћРЎРўР РћР‘РЄР•РњРђ:");
+            report.AppendLine($"   вЂў Р’РѕР·СЂР°СЃС‚РЅРѕР№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.VolAgeMod:F3} ({(DebugInfo.VolAgeMod >= 1 ? "+" : "")}{(DebugInfo.VolAgeMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ РѕРїС‹С‚Р°: {DebugInfo.VolExpMod:F3} ({(DebugInfo.VolExpMod >= 1 ? "+" : "")}{(DebugInfo.VolExpMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РњРѕРґРёС„РёРєР°С‚РѕСЂ %Р¶РёСЂР°: {DebugInfo.VolBodyfatMod:F3} ({(DebugInfo.VolBodyfatMod >= 1 ? "+" : "")}{(DebugInfo.VolBodyfatMod - 1) * 100:F1}%)");
+            report.AppendLine($"   вЂў РЎСѓС‚РѕС‡РЅС‹Р№ РјРѕРґРёС„РёРєР°С‚РѕСЂ: {DebugInfo.VolDailyMod:F3} (С‡Р°СЃС‚РѕС‚Р° С‚СЂРµРЅРёСЂРѕРІРѕРє)");
+            report.AppendLine($"   = РРўРћР“Рћ: {DebugInfo.VolFinal:F3} (РѕР±СЉРµРј {(DebugInfo.VolFinal >= 1 ? "РІС‹С€Рµ" : "РЅРёР¶Рµ")} РЅР° {Mathf.Abs(DebugInfo.VolFinal - 1) * 100:F1}% РѕС‚ СЌС‚Р°Р»РѕРЅР°)");
+            report.AppendLine();
+
+            // РС‚РѕРіРѕРІС‹Рµ СЂРµРєРѕРјРµРЅРґР°С†РёРё
+            report.AppendLine("=== Р Р•РљРћРњР•РќР”РђР¦РР ===");
+            report.AppendLine($"1. Р Р°Р±РѕС‡РёР№ РІРµСЃ: РёСЃРїРѕР»СЊР·СѓР№С‚Рµ {strength:F2} Г— РІР°С€ СЌС‚Р°Р»РѕРЅРЅС‹Р№ РІРµСЃ");
+            report.AppendLine($"2. РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРІС‚РѕСЂРµРЅРёР№: РёСЃРїРѕР»СЊР·СѓР№С‚Рµ {endurance:F2} Г— РІР°С€Рё СЌС‚Р°Р»РѕРЅРЅС‹Рµ РїРѕРІС‚РѕСЂРµРЅРёСЏ");
+            report.AppendLine($"3. РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРґС…РѕРґРѕРІ РІ РЅРµРґРµР»СЋ: РёСЃРїРѕР»СЊР·СѓР№С‚Рµ {volume:F2} Г— РІР°С€ СЌС‚Р°Р»РѕРЅРЅС‹Р№ РЅРµРґРµР»СЊРЅС‹Р№ РѕР±СЉРµРј");
+            report.AppendLine();
+            report.AppendLine($"РџСЂРёРјРµСЂ: РµСЃР»Рё РІР°С€ СЌС‚Р°Р»РѕРЅРЅС‹Р№ Р¶РёРј = 100РєРі РЅР° 8 СЂР°Р·, 20 РїРѕРґС…РѕРґРѕРІ/РЅРµРґРµР»СЋ:");
+            report.AppendLine($"вЂў Р¤Р°РєС‚РёС‡РµСЃРєРёР№ РІРµСЃ: {100 * strength:F1}РєРі");
+            report.AppendLine($"вЂў Р¤Р°РєС‚РёС‡РµСЃРєРёРµ РїРѕРІС‚РѕСЂРµРЅРёСЏ: {8 * endurance:F1} СЂР°Р·");
+            report.AppendLine($"вЂў Р¤Р°РєС‚РёС‡РµСЃРєРёРµ РїРѕРґС…РѕРґС‹/РЅРµРґРµР»СЋ: {20 * volume:F1}");
+
+            return report.ToString();
+        }
+
+        private static float GetStrengthCoefficient()
+        {
+            DebugInfo.UpdatePlayerData();
+
+            // 1. Р’Р•РЎРћР’РћР™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float weightMod;
+            switch (player.weight)
+            {
+                case int w when w <= 60:
+                    weightMod = 1.12f;
+                    break;
+                case int w when w <= 70:
+                    weightMod = 1.06f;
+                    break;
+                case int w when w <= 80:
+                    weightMod = 1.02f;
+                    break;
+                case 85:
+                    weightMod = 1.00f;
+                    break;
+                case int w when w <= 95:
+                    weightMod = 0.98f;
+                    break;
+                case int w when w <= 110:
+                    weightMod = 0.94f;
+                    break;
+                default:
+                    weightMod = 0.90f;
+                    break;
+            }
+            DebugInfo.StrWeightMod = weightMod;
+
+            // 2. Р’РћР—Р РђРЎРўРќРћР™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float ageMod;
+            switch (player.age)
+            {
+                case <= 15:
+                    ageMod = 0.80f;
+                    break;
+                case 16:
+                    ageMod = 0.90f;
+                    break;
+                case 17:
+                    ageMod = 1.00f;
+                    break;
+                case 18:
+                    ageMod = 1.05f;
+                    break;
+                case >= 19 and <= 20:
+                    ageMod = 1.08f;
+                    break;
+                case >= 21 and <= 25:
+                    ageMod = 1.12f;
+                    break;
+                case >= 26 and <= 35:
+                    ageMod = 1.10f;
+                    break;
+                case >= 36 and <= 50:
+                    ageMod = 1.00f;
+                    break;
+                case >= 51 and <= 60:
+                    ageMod = 0.90f;
+                    break;
+                default:
+                    ageMod = 0.80f;
+                    break;
+            }
+            DebugInfo.StrAgeMod = ageMod;
+
+            // 3. РљРћР­Р¤Р¤РР¦РР•РќРў РћРџР«РўРђ
+            float expMod;
+            switch (player.experience)
+            {
+                case 0:
+                    expMod = 0.60f;
+                    break;
+                case <= 3:
+                    expMod = 0.70f;
+                    break;
+                case <= 6:
+                    expMod = 0.80f;
+                    break;
+                case <= 9:
+                    expMod = 0.90f;
+                    break;
+                case <= 12:
+                    expMod = 0.96f;
+                    break;
+                case 13:
+                    expMod = 0.98f;
+                    break;
+                case 14:
+                    expMod = 1.00f;
+                    break;
+                case <= 18:
+                    expMod = 1.03f;
+                    break;
+                case <= 24:
+                    expMod = 1.06f;
+                    break;
+                case <= 36:
+                    expMod = 1.10f;
+                    break;
+                case <= 60:
+                    expMod = 1.15f;
+                    break;
+                default:
+                    expMod = 1.20f;
+                    break;
+            }
+            DebugInfo.StrExpMod = expMod;
+
+            // 4. РљРћР­Р¤Р¤РР¦РР•РќРў РџР РћР¦Р•РќРўРђ Р–РР Рђ
+            float bodyCompMod;
+            switch (player.percentageOfFat)
+            {
+                case <= 10:
+                    bodyCompMod = 1.08f;
+                    break;
+                case <= 12:
+                    bodyCompMod = 1.04f;
+                    break;
+                case <= 14:
+                    bodyCompMod = 1.02f;
+                    break;
+                case 15:
+                    bodyCompMod = 1.00f;
+                    break;
+                case <= 17:
+                    bodyCompMod = 0.98f;
+                    break;
+                case <= 20:
+                    bodyCompMod = 0.95f;
+                    break;
+                case <= 25:
+                    bodyCompMod = 0.90f;
+                    break;
+                default:
+                    bodyCompMod = 0.85f;
+                    break;
+            }
+            DebugInfo.StrBodyfatMod = bodyCompMod;
+
+            // РС‚РѕРіРѕРІС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚
+            float finalCoefficient = weightMod * ageMod * expMod * bodyCompMod;
+            finalCoefficient = Mathf.Clamp(finalCoefficient, 0.2f, 2f);
+            DebugInfo.StrFinal = finalCoefficient;
+
+            return finalCoefficient;
+        }
+
+        private static float GetEnduranceCoefficient()
+        {
+            DebugInfo.UpdatePlayerData();
+
+            // 1. Р’Р•РЎРћР’РћР™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float weightMod;
+            switch (player.weight)
+            {
+                case int w when w <= 60:
+                    weightMod = 1.24f;
+                    break;
+                case int w when w <= 70:
+                    weightMod = 1.12f;
+                    break;
+                case int w when w <= 80:
+                    weightMod = 1.05f;
+                    break;
+                case 85:
+                    weightMod = 1.00f;
+                    break;
+                case int w when w <= 95:
+                    weightMod = 0.95f;
+                    break;
+                case int w when w <= 110:
+                    weightMod = 0.88f;
+                    break;
+                default:
+                    weightMod = 0.82f;
+                    break;
+            }
+            DebugInfo.EndWeightMod = weightMod;
+
+            // 2. Р’РћР—Р РђРЎРўРќРћР™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float ageMod;
+            switch (player.age)
+            {
+                case <= 15:
+                    ageMod = 0.85f;
+                    break;
+                case 16:
+                    ageMod = 0.92f;
+                    break;
+                case 17:
+                    ageMod = 1.00f;
+                    break;
+                case 18:
+                    ageMod = 1.05f;
+                    break;
+                case >= 19 and <= 22:
+                    ageMod = 1.08f;
+                    break;
+                case >= 23 and <= 28:
+                    ageMod = 1.12f;
+                    break;
+                case >= 29 and <= 35:
+                    ageMod = 1.10f;
+                    break;
+                case >= 36 and <= 45:
+                    ageMod = 1.00f;
+                    break;
+                case >= 46 and <= 55:
+                    ageMod = 0.90f;
+                    break;
+                default:
+                    ageMod = 0.80f;
+                    break;
+            }
+            DebugInfo.EndAgeMod = ageMod;
+
+            // 3. РљРћР­Р¤Р¤РР¦РР•РќРў РћРџР«РўРђ
+            float expMod;
+            switch (player.experience)
+            {
+                case 0:
+                    expMod = 0.65f;
+                    break;
+                case <= 2:
+                    expMod = 0.75f;
+                    break;
+                case <= 5:
+                    expMod = 0.85f;
+                    break;
+                case <= 8:
+                    expMod = 0.92f;
+                    break;
+                case <= 11:
+                    expMod = 0.97f;
+                    break;
+                case 12:
+                    expMod = 0.99f;
+                    break;
+                case 13:
+                    expMod = 0.995f;
+                    break;
+                case 14:
+                    expMod = 1.000f;
+                    break;
+                case <= 18:
+                    expMod = 1.03f;
+                    break;
+                case <= 24:
+                    expMod = 1.06f;
+                    break;
+                case <= 36:
+                    expMod = 1.10f;
+                    break;
+                case <= 48:
+                    expMod = 1.12f;
+                    break;
+                default:
+                    expMod = 1.15f;
+                    break;
+            }
+            DebugInfo.EndExpMod = expMod;
+
+            // 4. РљРћР­Р¤Р¤РР¦РР•РќРў РџР РћР¦Р•РќРўРђ Р–РР Рђ
+            float bodyfatMod;
+            switch (player.percentageOfFat)
+            {
+                case <= 10:
+                    bodyfatMod = 1.06f;
+                    break;
+                case <= 12:
+                    bodyfatMod = 1.03f;
+                    break;
+                case <= 14:
+                    bodyfatMod = 1.01f;
+                    break;
+                case 15:
+                    bodyfatMod = 1.00f;
+                    break;
+                case <= 18:
+                    bodyfatMod = 0.97f;
+                    break;
+                case <= 22:
+                    bodyfatMod = 0.92f;
+                    break;
+                case <= 27:
+                    bodyfatMod = 0.86f;
+                    break;
+                default:
+                    bodyfatMod = 0.80f;
+                    break;
+            }
+            DebugInfo.EndBodyfatMod = bodyfatMod;
+
+            // РС‚РѕРіРѕРІС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚
+            float finalCoefficient = weightMod * ageMod * expMod * bodyfatMod;
+            finalCoefficient = Mathf.Clamp(finalCoefficient, 0.5f, 1.5f);
+            DebugInfo.EndFinal = finalCoefficient;
+
+            return finalCoefficient;
+        }
+
+        private static float GetVolumeTolerance()
+        {
+            DebugInfo.UpdatePlayerData();
+
+            // 1. Р’РћР—Р РђРЎРўРќРћР™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float ageMod;
+            switch (player.age)
+            {
+                case <= 16:
+                    ageMod = 1.05f;
+                    break;
+                case 17:
+                    ageMod = 1.00f;
+                    break;
+                case >= 18 and <= 22:
+                    ageMod = 1.10f;
+                    break;
+                case >= 23 and <= 30:
+                    ageMod = 1.05f;
+                    break;
+                case >= 31 and <= 40:
+                    ageMod = 0.95f;
+                    break;
+                case >= 41 and <= 50:
+                    ageMod = 0.85f;
+                    break;
+                default:
+                    ageMod = 0.75f;
+                    break;
+            }
+            DebugInfo.VolAgeMod = ageMod;
+
+            // 2. РљРћР­Р¤Р¤РР¦РР•РќРў РћРџР«РўРђ
+            float expMod;
+            switch (player.experience)
+            {
+                case 0:
+                    expMod = 0.60f;
+                    break;
+                case <= 3:
+                    expMod = 0.70f;
+                    break;
+                case <= 6:
+                    expMod = 0.80f;
+                    break;
+                case <= 12:
+                    expMod = 0.90f;
+                    break;
+                case 13:
+                    expMod = 0.95f;
+                    break;
+                case 14:
+                    expMod = 1.00f;
+                    break;
+                case <= 18:
+                    expMod = 1.05f;
+                    break;
+                case <= 24:
+                    expMod = 1.10f;
+                    break;
+                case <= 36:
+                    expMod = 1.15f;
+                    break;
+                case <= 60:
+                    expMod = 1.20f;
+                    break;
+                default:
+                    expMod = 1.25f;
+                    break;
+            }
+            DebugInfo.VolExpMod = expMod;
+
+            // 3. РљРћР­Р¤Р¤РР¦РР•РќРў РџР РћР¦Р•РќРўРђ Р–РР Рђ
+            float bodyfatMod;
+            switch (player.percentageOfFat)
+            {
+                case <= 12:
+                    bodyfatMod = 0.95f;
+                    break;
+                case <= 14:
+                    bodyfatMod = 1.02f;
+                    break;
+                case 15:
+                    bodyfatMod = 1.00f;
+                    break;
+                case <= 18:
+                    bodyfatMod = 0.98f;
+                    break;
+                case <= 22:
+                    bodyfatMod = 0.92f;
+                    break;
+                case <= 27:
+                    bodyfatMod = 0.85f;
+                    break;
+                default:
+                    bodyfatMod = 0.75f;
+                    break;
+            }
+            DebugInfo.VolBodyfatMod = bodyfatMod;
+
+            // 4. РЎРЈРўРћР§РќР«Р™ РљРћР­Р¤Р¤РР¦РР•РќРў
+            float dailyMod = 1.0f;
+            DebugInfo.VolDailyMod = dailyMod;
+
+            // РС‚РѕРіРѕРІС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚
+            float finalCoefficient = ageMod * expMod * bodyfatMod * dailyMod;
+            finalCoefficient = Mathf.Clamp(finalCoefficient, 0.4f, 1.6f);
+            DebugInfo.VolFinal = finalCoefficient;
+
+            return finalCoefficient;
+        }
     }
     #endregion
 } 
