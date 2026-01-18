@@ -179,12 +179,18 @@ MonoBehaviour:
   setCastomStart: 0
   startY: 0
   fontSize: 0
+  isAutoCreate: 1
+  isAutoColor: 1
   magnit: {fileID: 2242739282227077490}
-  speed: 0.01
-  magnitRange: 0.02
+  durationAnimation: 1
+  magnitRange: 0.01
   value: 
   isPress: 0
   isDontChange: 1
+  isPlayingAnimation: 0
+  localId: 0
+  isScrolling: 0
+  scrollRect: {fileID: 8678031913610212815}
 --- !u!1 &8333184923875788738
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,6 +24,7 @@ public class CreateFile : MonoBehaviour
         }
         if (!File.Exists(Muscle.path))
         {
+            var grup = MuscleGroup.muscleGroups;
             var muscles = Muscle.Muscles;
             Muscle.Muscles = muscles;
         }

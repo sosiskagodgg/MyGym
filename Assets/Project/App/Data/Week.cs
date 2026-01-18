@@ -39,7 +39,7 @@ public class Week
         new Day(2, "Среда", new List<SetOfExercises>()),
         new Day(3, "Четверг", new List<SetOfExercises>()),
         new Day(4, "Пятница", new List<SetOfExercises>()),
-        new Day(5, "Суббота", new List<SetOfExercises>()),
+        new Day(5, "Субота", new List<SetOfExercises>()),
         new Day(6, "Воскресенье", new List<SetOfExercises>())
     }
     };

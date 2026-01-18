@@ -54,24 +54,17 @@ public class Day
             path ??= DataPath.Path() + "/DayData.json";
             // Проверяем, изменился ли день недели
             DayOfWeek currentDayOfWeek = DateTime.Now.DayOfWeek;
-
-            // Если день недели изменился или данные не инициализированы
+            int dayIndex = (int)currentDayOfWeek;
+            dayIndex = currentDayOfWeek == DayOfWeek.Sunday ? 6 : ((int)currentDayOfWeek - 1);
             if (_lastCheckedDay != currentDayOfWeek || _activeDay == null)
             {
                 _lastCheckedDay = currentDayOfWeek;
 
-                // Получаем соответствующий день из Week.week.days
-                int dayIndex = (int)currentDayOfWeek;
-
-                // В C# DayOfWeek: Sunday = 0, Monday = 1, ..., Saturday = 6
-                // Но если вам нужно: Monday = 0, Sunday = 6, то:
-                dayIndex = currentDayOfWeek == DayOfWeek.Sunday ? 6 : ((int)currentDayOfWeek - 1);
-
+                Debug.Log(dayIndex);
                 if (Week.week != null && Week.week.Days != null && dayIndex < Week.week.Days.Count)
                 {
                     _activeDay = Week.week.Days[dayIndex];
-                    // Кэшируем время обновления
-                    _cachedDayTime = DateTime.Now;
+                    
                 }
             }
 
@@ -97,12 +90,13 @@ public class Day
         {
             path ??= DataPath.Path() + "/DayData.json";
             _activeDay = value;
-            updateTime = DateTime.Now;
+            
             // Сохраняем в файл, если нужно
             if (path != null)
             {
-                File.WriteAllText(path, JsonUtility.ToJson(value));
+                File.WriteAllText(path, JsonUtility.ToJson(value,true));
             }
+            updateTime = File.GetLastWriteTime(path);
         }
     }
     public static void RefreshActiveDay()
@@ -111,7 +105,6 @@ public class Day
     }
     // Добавляем приватные поля для отслеживания дня недели
     private static DayOfWeek? _lastCheckedDay = null;
-    private static DateTime _cachedDayTime;
     private static Day _activeDay;
     private static DateTime updateTime;
 

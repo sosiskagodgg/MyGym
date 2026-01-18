@@ -44,6 +44,13 @@ public abstract class SpecificParameters
     public abstract string GetDescription(string name);
     public abstract void SetParametrs(Player player,byte ApproachNumber = 0);
     public abstract SpecificParameters DeepClone(SpecificParameters specificParameters);
+    public abstract void SetNewParametrs(List<float> newParametrs);
+    public abstract List<float> GetParametrs();
+
+
+
+
+
     public string debugString;
     protected string GetHourWord(int hours)
     {
@@ -203,6 +210,15 @@ public class Walk : SpecificParameters
 
         return string.Join(Environment.NewLine, parts.Where(p => !string.IsNullOrEmpty(p)));
     }
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override List<float> GetParametrs()
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 }
 public class StrengthTraining : SpecificParameters
@@ -288,13 +304,31 @@ public class StrengthTraining : SpecificParameters
     }
     public override string ToString()
     {
-        if (workWeight > 0 && repetitions > 0) { return $"{workWeight}кг на {repetitions} раз"; }
+        if (workWeight > 0 && repetitions > 0) { return $"{workWeight} кг на {repetitions} раз"; }
         else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
         else return "Ошибка : повторений < 1";
     }
     public override string GetDescription(string name)
     {
         return Description.GetDescriptionByName(name);
+    }
+
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        if(newParametrs.Count == 2)
+        {
+            workWeight = (byte)newParametrs[0];
+            repetitions = (byte)newParametrs[1];
+        }
+        else
+        {
+            throw new ArgumentException($"неверное число параметров должно быть 2, а щас - {newParametrs.Count}");
+        }
+    }
+
+    public override List<float> GetParametrs()
+    {
+        return new List<float> { (float)workWeight,(float)repetitions};
     }
     #endregion
 }
@@ -338,6 +372,16 @@ public class Static : SpecificParameters
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
         
+    }
+
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public override List<float> GetParametrs()
+    {
+        return null;
     }
 
 

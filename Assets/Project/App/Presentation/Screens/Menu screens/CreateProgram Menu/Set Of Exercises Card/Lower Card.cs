@@ -21,6 +21,8 @@ public class LowerCard : MonoBehaviour
     [SerializeField] GameObject button;
     [SerializeField] float modifierMax = 1.3f;
     [SerializeField] float modifierMin = 0.7f;
+    [Header("дебаг")]
+    [SerializeField] List<float> parametrs;
     private void FindMiddleOfNumberGroups(TextMeshProUGUI text,out int count,out List<Vector2> groupCenters,out List<int> groupValues)
     {
         groupCenters = new List<Vector2>();
@@ -102,21 +104,20 @@ public class LowerCard : MonoBehaviour
     private void CreateButtons()
     {
         FindMiddleOfNumberGroups(textMeshProUGUI, out int count, out List<Vector2> groupCenters, out List<int> groupValues);
-        Debug.Log(count);
-
+        parametrs = exercise.specificParameters.GetParametrs();
         for (int i = 0; i < count; i++)
         {
 
             Vector2 localCoords = groupCenters[i];
             int localValue = groupValues[i];
+            int indexParametr = i;
 
             var obj = Instantiate(button, transform);
             (obj.transform as RectTransform).anchoredPosition = localCoords;
-            Debug.Log($"{localCoords}  {localValue}");
-            obj.GetComponent<Button>().onClick.AddListener(() => CreateScrollText(localCoords, localValue));
+            obj.GetComponent<Button>().onClick.AddListener(() => CreateScrollText(localCoords, localValue, indexParametr));
         }
     }
-    private void CreateScrollText(Vector2 coordinates,int value)
+    private void CreateScrollText(Vector2 coordinates,int value,int indexParametr)
     {
 
         var newScrollText = Instantiate(scrollText,transform);
@@ -129,18 +130,22 @@ public class LowerCard : MonoBehaviour
         int min = (int)(value * modifierMin);
         scrollCompontent.max = max;
         scrollCompontent.min = min;
+        scrollCompontent.localId = indexParametr;
+        scrollCompontent.fontSize = textMeshProUGUI.fontSize;
         scrollCompontent.CreateTextObjects();
         scrollCompontent.valueChanged += StartCloseTime;
     }
     private void StartCloseTime(GameObject obj,int i)
     {
-        StopAllCoroutines();
+        this.StopAllCoroutines();
         StartCoroutine(Close(obj));
     }
     private IEnumerator Close(GameObject obj)
     {
+        NumberSelectorUI numberSelectorUI=obj.GetComponent<NumberSelectorUI>();
         yield return new WaitForSeconds(3f);
-        Debug.Log($"Итоговое число {obj.GetComponent<NumberSelectorUI>().value}");
+        parametrs[numberSelectorUI.localId] = Convert.ToInt32(numberSelectorUI.value);
+        UpdateExercise(parametrs);
         GameObject.Destroy(obj);
     }
 
@@ -188,32 +193,51 @@ public class LowerCard : MonoBehaviour
     }
     #endregion
  
-    #region Копирование удаление
+    #region Копирование удаление обновление
     UpperCard upperCard;
     Day day;
     SetOfExercises setOfExercises;
+    [SerializeField] bool isActiveDay;
     public void Delite()
     {
         upperCard ??= GetComponentInParent<UpperCard>();
-        day ??= ViewProgram.day;
+        if (!isActiveDay) day = ViewProgram.day;
+        else day = Day.ActiveDay;
         setOfExercises ??= upperCard.setOfExercises;
         int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Remove(day.setsOfExercises[i].exercises[i2]);
-        Week.SaveDay(day);
+        if (!isActiveDay) Week.SaveDay(day);
+        else Day.ActiveDay = Day.ActiveDay;
         ViewProgram.UpdateProgram();
     }
     public void Copy()
     {
         upperCard ??= GetComponentInParent<UpperCard>();
-        day ??= ViewProgram.day;
+        if (!isActiveDay) day = ViewProgram.day;
+        else day = Day.ActiveDay;
         setOfExercises ??= upperCard.setOfExercises;
         int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Insert(i2,ExerciseManager.DeepClone(day.setsOfExercises[i].exercises[i2]));
         day.setsOfExercises[i].Sort();
-        Week.SaveDay(day);
+        if (!isActiveDay) Week.SaveDay(day);
+        else Day.ActiveDay = Day.ActiveDay;
         ViewProgram.UpdateProgram();
     }
+    public void UpdateExercise(List<float> newParametrs)
+    {
+        upperCard ??= GetComponentInParent<UpperCard>();
+        if (!isActiveDay) day = ViewProgram.day;
+        else day = Day.ActiveDay;
+        setOfExercises ??= upperCard.setOfExercises;
+        int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
+        int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
+        day.setsOfExercises[i].exercises[i2].specificParameters.SetNewParametrs(newParametrs);
+        if (!isActiveDay) { Week.SaveDay(day); ViewProgram.UpdateProgram(); }
+        else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
+  
+    }
+    
     #endregion
 }

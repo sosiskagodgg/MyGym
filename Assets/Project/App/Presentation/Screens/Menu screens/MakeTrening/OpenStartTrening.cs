@@ -4,10 +4,15 @@ public class OpenStartTrening : MonoBehaviour
 {
     [SerializeField] GameObject upper;
     [SerializeField] Transform content;
+
+    [SerializeField] GameObject description;//для описания
+    public static GameObject _description;
+
     private delegate void Void();
     private static event Void UpdateActiveDayCard;
     private void OnEnable()
     {
+        _description = description;
         CreateCards();
         UpdateActiveDayCard += UpdateCards;
     }
@@ -21,8 +26,10 @@ public class OpenStartTrening : MonoBehaviour
     }
     private void UpdateCards()
     {
+        content.GetComponentInParent<OnEnableSetY>().enabled = false;
         gameObject.SetActive(false);   
         gameObject.SetActive(true);
+        content.GetComponentInParent<OnEnableSetY>().enabled = true  ;
     }
     void CreateCards()
     {

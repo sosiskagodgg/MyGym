@@ -72,7 +72,7 @@ public class ExercisesSwap : SwapLeftRight
         DeliteExercise(swipedRight);
         contentSizeFitter.enabled = true;
         verticalLayoutGroup.enabled = true;
-        UpdateActiveCards.UpdateCards();
+        OpenStartTrening.UpdateActiveDayCards();
     }
     private IEnumerator BackAnimation()
     {

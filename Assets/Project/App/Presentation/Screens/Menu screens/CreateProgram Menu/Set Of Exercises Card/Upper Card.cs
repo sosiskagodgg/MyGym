@@ -91,16 +91,33 @@ public class UpperCard : MonoBehaviour
     }
     public void Copy()
     {
-        byte ind = (byte)ViewProgram.day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
-        ViewProgram.day.setsOfExercises.Insert(ind, setOfExercises.DeepClone(ViewProgram.day.setsOfExercises[ind]));
-        ViewProgram.day.Sort();
-        Week.SaveDay(ViewProgram.day);
-        ViewProgram.UpdateProgram();
+        Day day = isActiveDay ? Day.ActiveDay : ViewProgram.day;
+        byte ind = (byte)day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
+        day.setsOfExercises.Insert(ind, setOfExercises.DeepClone(day.setsOfExercises[ind]));
+        day.Sort();
+        if(!isActiveDay)
+        {   
+            Week.SaveDay(ViewProgram.day);
+            ViewProgram.UpdateProgram();
+        }
+        else
+        {
+            Day.ActiveDay = day;
+            OpenStartTrening.UpdateActiveDayCards();
+        }
     }
     public void OpenDiscription()
     {
-        ViewProgram.Description.SetActive(true);
-        ViewProgram.Description.GetComponentInChildren<TextMeshProUGUI>().text = Description.GetDescriptionByName(setOfExercises.exercises[0].name);
+        if(!isActiveDay)
+        {
+            ViewProgram.Description.SetActive(true);
+            ViewProgram.Description.GetComponentInChildren<TextMeshProUGUI>().text = Description.GetDescriptionByName(setOfExercises.exercises[0].name);
+        }
+        else 
+        {
+            OpenStartTrening._description.SetActive(true);
+            OpenStartTrening._description.GetComponentInChildren<TextMeshProUGUI>().text = Description.GetDescriptionByName(setOfExercises.exercises[0].name);
+        }
     }
     #endregion
 

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
+using System.Collections;
 
 public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -15,18 +16,20 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                      RectTransform contentRt;
     [SerializeField] GameObject textObject;
     [SerializeField] SizeFilterAndVerticalGroup sizeFilterAndVerticalGroup;
+    
 
     [Header("Настройки")]
     [SerializeField] public int min;
     [SerializeField] public int max;
     [SerializeField] bool setCastomStart;
     [SerializeField] int startY;
-    [SerializeField] int fontSize;
+    [SerializeField] public float fontSize;
     [SerializeField] bool isAutoCreate = true;
+    [SerializeField] bool isAutoColor = true;
 
     [Header("Настройки Магнита")]
     [SerializeField] RectTransform magnit;
-    [SerializeField] float speed;
+    [SerializeField] float durationAnimation;
     [SerializeField] float magnitRange;
     [Header("Вывод")]
     [SerializeField] public string value;
@@ -34,6 +37,23 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     public event Int valueChanged;
     [SerializeField] public bool isPress;
     [SerializeField] public bool isDontChange;
+    [SerializeField] public bool isPlayingAnimation;
+    [SerializeField] public int localId;
+    [SerializeField] public bool isScrolling;
+    [SerializeField] ScrollRect scrollRect;
+    private bool IsScrolling
+    {
+        get
+        {
+            if (scrollRect == null) return false;
+
+            isScrolling= Mathf.Abs(scrollRect.velocity.x) > 0.1f ||
+                   Mathf.Abs(scrollRect.velocity.y) > 0.1f;
+
+            return Mathf.Abs(scrollRect.velocity.x) > 0.1f ||
+                   Mathf.Abs(scrollRect.velocity.y) > 0.1f;
+        }
+    }
     #endregion
     #region Проверка зажат ли скрол рект
     public void OnPointerUp(PointerEventData eventData)
@@ -44,6 +64,9 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     public void OnPointerDown(PointerEventData eventData)
     {
         isPress = true;
+        isDontChange = false;
+        StopAllCoroutines();
+        isPlayingAnimation = false;
     }
     #endregion
     #region Монобихейвор методы(awake и тд)
@@ -51,6 +74,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     private void OnEnable()
     {
         if(isAutoCreate)CreateTextObjects();
+       // StartCoroutine(SetContentPosition(GetTargetPos(FindNearestByY(content, magnit).transform as RectTransform, magnit, contentRt)));
     }
     #endregion
     #region Методы для создания текстовых обьектов
@@ -104,29 +128,62 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     }
 
     int lastValue;
+    Image parentImage;
+    Image image;
     private void Update() 
     {
         contentRt ??= content.GetComponent<RectTransform>();
         GameObject nearest = FindNearestByY(content,magnit);
         RectTransform nearestRt = nearest.GetComponent<RectTransform>();
-
         if (nearestRt == null)  Debug.LogError("Нет ближающего обьекта");
 
-        if (nearestRt.transform.position.y - magnit.position.y >= magnitRange &&!isPress &&!isDontChange) 
-        {
-            contentRt.transform.position = new Vector2(contentRt.transform.position.x, contentRt.transform.position.y-speed);
-        }
-        else if(nearestRt.transform.position.y - magnit.position.y <= -magnitRange&& !isPress&& !isDontChange)
-        {
-            contentRt.transform.position = new Vector2(contentRt.transform.position.x, contentRt.transform.position.y + speed);
-        }
-        if (nearestRt.transform.position.y - magnit.position.y <= -magnitRange && nearestRt.transform.position.y - magnit.position.y >= magnitRange) isDontChange = false;
+        if (!isPlayingAnimation && !IsScrolling&&!isPress) StartCoroutine(SetContentPosition(GetTargetPos(FindNearestByY(content, magnit).transform as RectTransform, magnit, contentRt)));
+        #region Изменения цвета
+        parentImage ??= transform.parent.GetComponentInParent<Image>();
+        image ??= transform.GetComponent<Image>();
+        if (isAutoColor)
+            if (parentImage.color != image.color) image.color = parentImage.color;
+        #endregion
+
+        #region Событие изменения значения
         value = nearest.GetComponentInChildren<TextMeshProUGUI>()?.text ?? "0";
-        if(lastValue!= System.Convert.ToInt32(value))
+        if (lastValue != System.Convert.ToInt32(value))
         {
-            valueChanged?.Invoke(gameObject,System.Convert.ToInt32(value));
+            valueChanged?.Invoke(gameObject, System.Convert.ToInt32(value));
             lastValue = System.Convert.ToInt32(value);
-        }
+        } 
+        #endregion
     }
+    private Vector2 GetTargetPos(RectTransform Obj,RectTransform magnit,RectTransform content)
+    {
+        Vector3 targetWorldPos = Obj.position;
+
+        // 2. Вычисляем разницу по Y между целевой точкой и объектом контента
+        float yDifference = magnit.position.y - targetWorldPos.y;
+        
+        // 3. Сдвигаем весь контент на эту разницу
+        Vector3 newContentPos = content.position;
+        newContentPos.y += yDifference;
+        return newContentPos;
+    }
+    private IEnumerator SetContentPosition(Vector2  targetPos)
+    {
+        isPlayingAnimation = true;
+        float elapsed = 0f;
+        Vector2 startPos = contentRt.position;
+        while (elapsed < durationAnimation)
+        {
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / durationAnimation;
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            contentRt.position = Vector2.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+        isPlayingAnimation= false;
+    }
+
+
     #endregion
 }

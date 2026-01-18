@@ -317,7 +317,18 @@ public class MuscleGroup
     }
     public static MuscleGroup GetMuscleGroupByName(string name)
     {
-        return muscleGroups.FirstOrDefault(mG => mG.name == name);
+        try
+        {
+            return muscleGroups.FirstOrDefault(mG => mG.name == name);
+        }
+        catch
+        {
+            return CreateMuscleGroups().FirstOrDefault(mG => mG.name == name);
+        }
+
+
+
+    
     }
     public static List<SetOfExercises> GetExercisesByMuscleGroupWeekWA(MuscleGroup muscleGroup, int WeekWA, StringBuilder debugString = null)
     {

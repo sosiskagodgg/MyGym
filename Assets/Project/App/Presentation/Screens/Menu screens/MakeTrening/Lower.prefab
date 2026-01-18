@@ -151,12 +151,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.6
+  m_fontSize: 20
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 0
-  m_fontSizeMax: 27.6
+  m_fontSizeMin: 15
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 6626825383386118793}
   - component: {fileID: 3528060540618723419}
   - component: {fileID: 3075943049248922724}
+  - component: {fileID: 4148269757606500268}
   m_Layer: 5
   m_Name: Lower Visual
   m_TagString: Untagged
@@ -258,8 +259,15 @@ MonoBehaviour:
     muscles: []
     priority: 0
     id: 0
-  ToOpen: []
-  ToClose: []
+  textMeshProUGUI: {fileID: 4810774171632632500}
+  scrollText: {fileID: 8064695685458734013, guid: b50ff269b9fa5654c8a0efe2eb39f9c8, type: 3}
+  button: {fileID: 6643492467789550377, guid: 4236332e6e3b2a5429a205fb95a4fb57, type: 3}
+  modifierMax: 1.3
+  modifierMin: 0.7
+  parametrs: []
+  ToOpenOnPress: []
+  ToCloseOnPress: []
+  isActiveDay: 1
   references:
     version: 2
     RefIds:
@@ -278,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonHoldEvent
   timeHeld: 0.5
+  isButtonHeld: 0
 --- !u!222 &3173185687181031340
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -366,6 +375,20 @@ MonoBehaviour:
   colorLeft: {r: 0.13300997, g: 0.5754717, b: 0.15369467, a: 1}
   colorRight: {r: 0.7169812, g: 0.09807763, b: 0.09807763, a: 1}
   image: {fileID: 5821279123927684889}
+--- !u!114 &4148269757606500268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3185875792974709438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &6742790395567145718
 GameObject:
   m_ObjectHideFlags: 0
