@@ -201,6 +201,7 @@ MonoBehaviour:
     specificParameters:
       rid: -2
     muscles: []
+    priority: 0
     id: 0
   references:
     version: 2
@@ -466,7 +467,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 55535865315227324}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5429266404949562359}
+        m_TargetAssemblyTypeName: AddExerciseCard, Assembly-CSharp
+        m_MethodName: OpenDiscription
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &9086816603147902823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -726,12 +739,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 20
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 72
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

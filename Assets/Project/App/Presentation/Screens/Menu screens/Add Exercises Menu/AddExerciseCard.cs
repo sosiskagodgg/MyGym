@@ -10,4 +10,8 @@ public class AddExerciseCard : MonoBehaviour
         AddExerciseLowerMenu.Invoke(this, exercise);
         Canvas.ForceUpdateCanvases();
     }
+    public void OpenDiscription()
+    {
+        Description.OpenDescription(exercise);
+    }
 }

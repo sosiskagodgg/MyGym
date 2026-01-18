@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class DayMono : MonoBehaviour
 {
@@ -60,11 +61,11 @@ public class Day
             {
                 _lastCheckedDay = currentDayOfWeek;
 
-                Debug.Log(dayIndex);
                 if (Week.week != null && Week.week.Days != null && dayIndex < Week.week.Days.Count)
                 {
                     _activeDay = Week.week.Days[dayIndex];
-                    
+                    File.WriteAllText(path, JsonUtility.ToJson(_activeDay, true));
+                    Debug.Log("WriteAllText");
                 }
             }
 
@@ -75,6 +76,7 @@ public class Day
                 {
                     updateTime = File.GetLastWriteTime(path);
                     _activeDay = JsonUtility.FromJson<Day>(File.ReadAllText(path));
+                    Debug.Log("ReadAllText");
                     // Обновляем день недели при загрузке из файла
                     _lastCheckedDay = DateTime.Now.DayOfWeek;
                 }
@@ -95,6 +97,7 @@ public class Day
             if (path != null)
             {
                 File.WriteAllText(path, JsonUtility.ToJson(value,true));
+                Debug.Log("WriteAllText");
             }
             updateTime = File.GetLastWriteTime(path);
         }

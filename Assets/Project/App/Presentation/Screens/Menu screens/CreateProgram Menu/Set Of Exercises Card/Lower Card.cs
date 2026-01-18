@@ -101,6 +101,7 @@ public class LowerCard : MonoBehaviour
 
         count = groupCenters.Count;
     }
+    private List<GameObject> Buttons = new();
     private void CreateButtons()
     {
         FindMiddleOfNumberGroups(textMeshProUGUI, out int count, out List<Vector2> groupCenters, out List<int> groupValues);
@@ -113,6 +114,7 @@ public class LowerCard : MonoBehaviour
             int indexParametr = i;
 
             var obj = Instantiate(button, transform);
+            Buttons.Add(obj);
             (obj.transform as RectTransform).anchoredPosition = localCoords;
             obj.GetComponent<Button>().onClick.AddListener(() => CreateScrollText(localCoords, localValue, indexParametr));
         }
@@ -189,6 +191,7 @@ public class LowerCard : MonoBehaviour
     {
         for (int i = 0; i < ToOpenOnPress.Length; i++) { ToOpenOnPress[i].SetActive(openOnPress); }
         for (int i = 0; i < ToCloseOnPress.Length; i++) { ToCloseOnPress[i].SetActive(!openOnPress); }
+        for(int i = 0;i < Buttons.Count; i++) {  Buttons[i].SetActive(openOnPress); }
         openOnPress = !openOnPress;
     }
     #endregion
@@ -207,9 +210,9 @@ public class LowerCard : MonoBehaviour
         int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Remove(day.setsOfExercises[i].exercises[i2]);
-        if (!isActiveDay) Week.SaveDay(day);
-        else Day.ActiveDay = Day.ActiveDay;
-        ViewProgram.UpdateProgram();
+        if (!isActiveDay) {Week.SaveDay(day);ViewProgram.UpdateProgram(); }
+        else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
+        
     }
     public void Copy()
     {
@@ -221,9 +224,8 @@ public class LowerCard : MonoBehaviour
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Insert(i2,ExerciseManager.DeepClone(day.setsOfExercises[i].exercises[i2]));
         day.setsOfExercises[i].Sort();
-        if (!isActiveDay) Week.SaveDay(day);
-        else Day.ActiveDay = Day.ActiveDay;
-        ViewProgram.UpdateProgram();
+        if (!isActiveDay) { Week.SaveDay(day); ViewProgram.UpdateProgram(); }
+        else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
     }
     public void UpdateExercise(List<float> newParametrs)
     {

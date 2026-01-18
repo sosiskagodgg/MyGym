@@ -33,7 +33,7 @@ public class OpenStartTrening : MonoBehaviour
     }
     void CreateCards()
     {
-        Debug.Log($"создаем {Day.ActiveDay.setsOfExercises.Count} дней");
+        Debug.Log($"создаем {Day.ActiveDay.setsOfExercises.Count} сетов");
         for (int i = 0; i < Day.ActiveDay.setsOfExercises.Count; i++) 
         {
             GameObject obj = Instantiate(upper, content);

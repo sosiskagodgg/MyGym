@@ -5,9 +5,12 @@ using System.Text;
 using System;
 public class CreateFile : MonoBehaviour
 {
+    [SerializeField] GameObject description;
     private void Awake()
     {
         Create();
+        description.SetActive(true);
+        description.SetActive(false);
     }
     void Create()
     {

@@ -3,8 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
-public class Description
+using TMPro;
+public class Description :MonoBehaviour
 {
+    private static GameObject _description;
+    [SerializeField] TextMeshProUGUI textMeshPro;
+    private static TextMeshProUGUI _textMeshPro;
+    private void Awake()
+    {
+        _description = gameObject;
+        _textMeshPro = textMeshPro;
+    }
+
+    static public void OpenDescription(Exercise exercise)
+    {
+        _description.SetActive(true);
+        _textMeshPro.text = GetDescriptionByExercise(exercise);
+    }
     #region Параметры и конструкторы
     string name;
     string description;
@@ -20,7 +35,11 @@ public class Description
         Description description = Descriptions.FirstOrDefault(d => d.name == name);
         return description == null ? "Описания еще нет": description.description;
     }
-
+    public static string GetDescriptionByExercise(Exercise exercise)
+    {
+        Description description = Descriptions.FirstOrDefault(d => d.name == exercise.name);
+        return description == null ? "Описания еще нет" : description.description;
+    }
     private static List<Description> GetFullDescription()
     {
         List<Description> exerciseDescriptions = new List<Description>();
@@ -75,4 +94,5 @@ public class Description
 
         return exerciseDescriptions;
     }
+ 
 }
