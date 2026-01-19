@@ -20,13 +20,14 @@ public class ChangePlayerData : MonoBehaviour
             height = (byte)heightScrollBar.Value,
             age = (byte)ageScrollBar.Value,
             percentageOfFat = (byte)percentageOfFatScrollBar.Value,
-            experience = (byte)experienceScrollBar.Value
+            experience = (byte)experienceScrollBar.Value,
+            treningParametrs = Player.player.treningParametrs ?? new TreningParametrs() { gymOrStreet =GymOrStreet.Gym,goal = Goal.GainingMuscleMass}
         };
         Player.player = player;
     }
     void SetScrollBarPos()
     {
-        Player player = Player.LoadPlayer();
+        Player player = Player.player;
         inputField.text = player.name;
         weightScrollBar.SetScrollBarPos (player.weight);
         heightScrollBar.SetScrollBarPos (player.height);

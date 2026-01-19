@@ -6,7 +6,7 @@ public class SetStreetOrGym : MonoBehaviour
     public event EventHandler GymOrStreetChange;
     private void Awake()
     {
-        player = Player.LoadPlayer();
+        player = Player.player;
         CheackDataValid();
         GymOrStreetChange += DebugLog;
     }

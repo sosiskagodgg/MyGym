@@ -8,7 +8,7 @@ public class SetGoal : MonoBehaviour
     static TextMeshProUGUI text;
     public void SetGoals(string goal)
     {
-        player = Player.LoadPlayer();
+        player = Player.player;
         switch (goal)
         {
             case "WeightLoss": player.treningParametrs.goal = Goal.WeightLoss; break;

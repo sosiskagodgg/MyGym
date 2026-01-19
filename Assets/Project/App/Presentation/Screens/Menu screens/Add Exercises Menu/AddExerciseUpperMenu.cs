@@ -7,6 +7,11 @@ using UnityEngine.UI;
 
 public class AddExerciseUpperMenu : MonoBehaviour
 {
+    [SerializeField] Button baseEx;
+    [SerializeField] Button cardioEx;
+    [SerializeField] Button stretchingEx;
+    private Button lastClick;
+
     #region Вывод упражнений
     List<Exercise> exercises;
     List<Exercise> corectExercises;
@@ -23,8 +28,29 @@ public class AddExerciseUpperMenu : MonoBehaviour
     }
     void CreateWindows()
     {
-        ClearObj();
-        corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower())).ToList();
+
+        if (lastClick != null) 
+        {
+            if (lastClick == baseEx)
+            {
+                corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower())&& ((ex.specificParameters is StrengthTraining)|| (ex.specificParameters is Calisthenics))).ToList();
+            }
+            else if(lastClick == cardioEx)
+            {
+                corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower()) && (ex.specificParameters is Walk) ).ToList();
+            }
+            else if (lastClick == stretchingEx)
+            {
+                corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower()) && (ex.specificParameters is Stretching)).ToList();
+            }
+        }
+        else
+        {
+            corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower())).ToList();
+        }
+
+            ClearObj();
+
         for (int i = 0; corectExercises.Count > i; i++)
         {
             GameObject obj = Instantiate(card, content);
@@ -47,4 +73,9 @@ public class AddExerciseUpperMenu : MonoBehaviour
 
     #endregion
 
+    #region Установка диапазона упражнений
+    public void BaseExClick() { lastClick = baseEx; CreateWindows(); }
+    public void CardioExClick() { lastClick = cardioEx; CreateWindows(); }
+    public void StretchingExClick() { lastClick = stretchingEx; CreateWindows(); }
+    #endregion
 }

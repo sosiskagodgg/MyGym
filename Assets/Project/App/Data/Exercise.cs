@@ -1,10 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using UnityEngine;
 
 #region Основной класс
 [System.Serializable]
@@ -34,10 +36,10 @@ public class Exercise
 
     #endregion
 
-} 
+}
 #endregion
-
 #region Доп классы
+[System.Serializable]
 public abstract class SpecificParameters
 {
     public abstract override string ToString();
@@ -89,15 +91,17 @@ public abstract class SpecificParameters
         };
     }
 }
+[System.Serializable]
 public class Walk : SpecificParameters
 {
     #region Переменные и конструкторы
     private string _description;
-    public byte _kmPerHour;
+    public float _kmPerHour;
     public byte _kilometers;
     public short _meters;
     public byte _angle;
-    public Walk(byte kmPerHour, byte kilometers, short meters,  byte angle = 0)
+    public float MET;
+    public Walk(float kmPerHour, byte kilometers, short meters,  byte angle = 0)
     {
             if (kmPerHour == 0)
             throw new ArgumentException("Скорость не может быть нулевой");
@@ -108,6 +112,7 @@ public class Walk : SpecificParameters
         _kilometers = kilometers;
         _meters = meters;
         _angle = angle;
+        MET = GetMetBySpeed(_kmPerHour) * GetInclineCoefficient(angle);
     }
     public Walk() { }
     #endregion
@@ -214,25 +219,100 @@ public class Walk : SpecificParameters
     {
         _kilometers = (byte)newParametrs[0];
         _meters = (byte)newParametrs[1];
+        _kmPerHour = newParametrs[2];
+        _angle = (byte)newParametrs[3];
+        MET = GetMetBySpeed(newParametrs[2]) * GetInclineCoefficient(newParametrs[3]);
     }
     public override List<float> GetParametrs()
     {
-        return new List<float> { _kilometers, _meters };
+        return new List<float> { _kilometers, _meters , _kmPerHour ,_angle};
+    }
+    #endregion
+    #region Для расчета каллорий
+    public static float GetMetBySpeed(float speedKmH)
+    {
+        // Формула на основе Compendium of Physical Activities
+        return speedKmH switch
+        {
+            // Ходьба
+            <= 2.5f => 2.0f,      // Очень медленно
+            <= 3.0f => 2.8f,
+            <= 4.0f => 3.0f,      // Прогулка
+            <= 5.0f => 3.5f,      // Обычная ходьба
+            <= 6.0f => 4.3f,      // Быстрая ходьба
+            <= 7.0f => 5.0f,      // Очень быстрая ходьба
+
+            // Бег трусцой
+            <= 8.0f => 8.0f,      // 8 км/ч
+            <= 9.0f => 9.0f,      // 9 км/ч
+            <= 10.0f => 10.0f,    // 10 км/ч
+
+            // Бег
+            <= 11.0f => 11.0f,    // 11 км/ч
+            <= 12.0f => 12.3f,    // 12 км/ч
+            <= 13.0f => 13.5f,    // 13 км/ч
+            <= 14.0f => 14.5f,    // 14 км/ч
+            <= 15.0f => 15.8f,    // 15 км/ч
+            <= 16.0f => 17.0f,    // 16 км/ч
+
+            // Спринт
+            _ => 18.0f + (speedKmH - 16) * 1.5f // +1.5 MET за каждый км/ч сверх 16
+        };
+    }
+    public static float GetInclineCoefficient(float angleDegrees)
+    {
+        // Абсолютное значение угла (работает и для подъема, и для спуска)
+        float absAngle = Mathf.Abs(angleDegrees);
+
+        // Для подъёма (угол > 0) MET увеличивается
+        // Для спуска (угол < 0) MET уменьшается, но не менее базового
+        if (angleDegrees > 0)
+        {
+            // Коэффициент увеличения MET при подъёме
+            return absAngle switch
+            {
+                <= 2 => 1.1f,    // +10%
+                <= 5 => 1.25f,   // +25%
+                <= 8 => 1.4f,    // +40%
+                <= 12 => 1.6f,   // +60%
+                <= 15 => 1.8f,   // +80%
+                <= 20 => 2.1f,   // +110%
+                <= 25 => 2.5f,   // +150%
+                <= 30 => 3.0f,   // +200%
+                _ => 3.5f        // +250% при очень крутых подъёмах
+            };
+        }
+        else if (angleDegrees < 0)
+        {
+            // Коэффициент уменьшения MET при спуске
+            return absAngle switch
+            {
+                <= 2 => 0.95f,   // -5%
+                <= 5 => 0.9f,    // -10%
+                <= 10 => 0.85f,  // -15%
+                <= 15 => 0.8f,   // -20%
+                _ => 0.7f        // -30% при крутых спусках
+            };
+        }
+
+        return 1.0f; // Угол = 0
     }
     #endregion
 }
+[System.Serializable]
 public class StrengthTraining : SpecificParameters
 {
     #region Переменные и конструкторы
-    public byte workWeight;
-    public byte repetitions;
-    public byte onePm;
-    public short twelvePm;
+    public float workWeight;
+    public int repetitions;
+    public int baseRep;
+    public float onePm;
+    public float twelvePm;
     public byte ApproachNumber;
     public string description;
-    public StrengthTraining(byte repetitions, byte onePm, short twelvePm)
+    public StrengthTraining(int baseRepetitions, float onePm, float twelvePm)
     {
-        this.repetitions = repetitions;
+        this.baseRep = baseRepetitions;
         this.onePm = onePm;
         this.twelvePm = twelvePm;
     }
@@ -261,7 +341,7 @@ public class StrengthTraining : SpecificParameters
             debugString.AppendLine($"Эталонный 1 пм - {(short)onePm}кг");
             float twelvePm = player.weight * ((float)this.twelvePm / 100);
             debugString.AppendLine($"Эталонный 12 пм - {(short)twelvePm}");
-            workWeight = (byte)GetWorkWeightByRepetitions(onePm, twelvePm,repetitions);
+            workWeight = (byte)GetWorkWeightByRepetitions(onePm, twelvePm,(byte)repetitions);
             debugString.AppendLine($"Эталонный {repetitions} пм - {workWeight}");
             workWeight = (byte)((int)workWeight *ExerciseManager.Coefficient.StrengthCoefficient);
             debugString.AppendLine($"итоговый {workWeight} - коифицент силы - {ExerciseManager.Coefficient.StrengthCoefficient}");
@@ -296,10 +376,11 @@ public class StrengthTraining : SpecificParameters
         if (specificParameters is StrengthTraining strengthToClone)
         {
             StrengthTraining clone = new StrengthTraining(
-                strengthToClone.repetitions,
+                strengthToClone.baseRep,
                 strengthToClone.onePm,
                 strengthToClone.twelvePm)
             {
+                repetitions = strengthToClone.repetitions,
                 workWeight = strengthToClone.workWeight,
                 ApproachNumber = strengthToClone.ApproachNumber,
                 description = strengthToClone.description,
@@ -311,13 +392,22 @@ public class StrengthTraining : SpecificParameters
     }
     public override void SetParametrs(Player player, byte ApproachNumber = 0) 
     {
+        if (player.treningParametrs.goal == Goal.IncreasedStrength) repetitions = (int)(baseRep * 0.5f);
+        else if (player.treningParametrs.goal == Goal.GainingMuscleMass) repetitions = baseRep;
+
         SetWorkWeight(player);
     }
     public override string ToString()
     {
         if (workWeight > 0 && repetitions > 0) { return $"{workWeight} кг на {repetitions} раз"; }
         else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
-        else return "Ошибка : повторений < 1";
+        else 
+        {
+            SetParametrs(Player.player,ApproachNumber);
+            if (workWeight > 0 && repetitions > 0) { return $"{workWeight} кг на {repetitions} раз"; }
+            else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
+            return "Ошибка : повторений < 1"; 
+        }
     }
     public override string GetDescription(string name)
     {
@@ -343,6 +433,7 @@ public class StrengthTraining : SpecificParameters
     }
     #endregion
 }
+[System.Serializable]
 public class Static : SpecificParameters
 {
     #region Переменные и конструкторы 
@@ -398,17 +489,19 @@ public class Static : SpecificParameters
 
     #endregion
 }
+[System.Serializable]
 public class Stretching : SpecificParameters
 {
     public float seconds;
+    public Stretching(float seconds) 
+    { 
+        this.seconds = seconds;
+    }
 
     #region публичные методы
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
-        return new Stretching()
-        {
-            seconds = (specificParameters as Stretching).seconds
-        };
+        return new Stretching((specificParameters as Stretching).seconds);
     }
 
     public override string GetDescription(string name)
@@ -437,17 +530,22 @@ public class Stretching : SpecificParameters
     } 
     #endregion
 }
+[System.Serializable]
 public class Calisthenics : SpecificParameters
 {
     public int replications;
+    public int baseRep;
     public Calisthenics(int replications)
     {
-        this.replications = replications;
+        this.baseRep = replications;
     }
     #region публичные методы
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
-        return new Calisthenics((specificParameters as Calisthenics).replications);
+        return new Calisthenics((specificParameters as Calisthenics).baseRep)
+        {
+            replications = (specificParameters as Calisthenics).replications
+        };
     }
 
     public override string GetDescription(string name)
@@ -467,7 +565,11 @@ public class Calisthenics : SpecificParameters
 
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
-        replications = (int)(replications * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient);
+        replications = (int)(baseRep * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient);
+        debugString += $"replications: {replications} → " +
+            $"{replications * ExerciseManager.Coefficient.EnduranceCoefficient * ExerciseManager.Coefficient.StrengthCoefficient:F0}" +
+            $" (Endurance: {ExerciseManager.Coefficient.EnduranceCoefficient:F2}," +
+            $" Strength: {ExerciseManager.Coefficient.StrengthCoefficient:F2})\n";
     }
 
     public override string ToString()
@@ -494,6 +596,7 @@ public class ExerciseManager
     #endregion
 
     #region Статичные поля
+    #region Сохранение загрузка апдэйт
     private static DateTime _lastLoadTime;
     public static string path { get { return $"{DataPath.Path()}/ExerciseData.json"; } }
 
@@ -528,11 +631,7 @@ public class ExerciseManager
         exercises[index] = exercise;
         Save(exercises);
     }
-    public static Exercise GetExercisesByName(string name)
-    {
-        var exercise = Exercises.FirstOrDefault(e => e.name == name);
-        return exercise == null? throw new KeyNotFoundException($"Упражнение '{name}' не найдено"): exercise; 
-    }
+
     private static List<Exercise> Load()
     {
         if (File.Exists(path))
@@ -544,6 +643,49 @@ public class ExerciseManager
             return GetBaseExercises();
         }
     }
+    #endregion
+    #region Get методы
+    public static Exercise GetExercisesByName(string name)
+    {
+        var exercise = Exercises.FirstOrDefault(e => e.name == name);
+        return exercise == null ? throw new KeyNotFoundException($"Упражнение '{name}' не найдено") : exercise;
+    }
+    public static List<Exercise> GetExercisesByNames(List<string> names)
+    {
+        List<Exercise> exercises = new();
+        for(int i = 0; i < names.Count; i++)
+        {
+            var exercise = Exercises.FirstOrDefault(e => e.name == names[i]);
+            if (exercise == null) { Debug.Log($"Упражнение '{names[i]}' не найдено");continue; }
+            exercises.Add(exercise);
+        }
+        return exercises;
+    }
+    public static List<Exercise> GetExercisesByMuscle(Muscle muscle, int minPercentageOfWork = 50)
+    {
+        return ExerciseManager.Exercises
+            .Where(ex =>
+            {
+                // Находим мышцы с процентом > minPercentageOfWork
+                var primaryMuscles = ex.muscles
+                    .Where(m => m.percentageOfWork > minPercentageOfWork)
+                    .ToList();
+
+                // Если есть первичные мышцы, проверяем нашу мышцу
+                if (primaryMuscles.Any())
+                    return primaryMuscles.Any(m => m.name == muscle.name);
+
+                // Если нет первичных (>50), берем 2 самые работающие мышцы
+                var topMuscles = ex.muscles
+                    .OrderByDescending(m => m.percentageOfWork)
+                    .Take(2)
+                    .ToList();
+
+                return topMuscles.Any(m => m.name == muscle.name);
+            })
+            .ToList();
+    }
+    #endregion
     #endregion
 
     #region Нестатичные поля
@@ -886,17 +1028,6 @@ public class ExerciseManager
             1 // Высокий приоритет (базовое упражнение для трицепса)
         ));
 
-        exercises.Add(new Exercise(
-            "Отжимания на брусьях (акцент на трицепс)",
-            new List<Muscle>
-            {
-        new Muscle("Трицепс", 85),
-        new Muscle("Низ груди", 10),
-        new Muscle("Передние дельты", 5)
-            },
-            new StrengthTraining(12, 18, 0),
-            1 // Высокий приоритет (базовое упражнение)
-        ));
 
         exercises.Add(new Exercise(
             "Разгибания на трицепс в верхнем блоке с канатом",
@@ -941,7 +1072,7 @@ public class ExerciseManager
         new Muscle("Бицепс бедра", 10),
         new Muscle("Поясница", 5)
             },
-            new StrengthTraining(6, 141, 94),
+            new StrengthTraining(10, 141, 94),
             1 // Высокий приоритет (базовое упражнение №1 для ног)
         ));
 
@@ -1106,6 +1237,18 @@ public class ExerciseManager
         ));
 
         exercises.Add(new Exercise(
+            "Отжимания на брусьях (акцент на трицепс)",
+            new List<Muscle>
+            {
+        new Muscle("Трицепс", 85),
+        new Muscle("Низ груди", 10),
+        new Muscle("Передние дельты", 5)
+            },
+            new Calisthenics(12),
+            1,true // Высокий приоритет (базовое упражнение)
+        ));
+
+        exercises.Add(new Exercise(
             "Отжимания от пола (классические)",
             new List<Muscle>
             {
@@ -1236,8 +1379,526 @@ public class ExerciseManager
             3, true // Низкий приоритет (изолирующее для косых)
         ));
 
+        exercises.Add(new Exercise(
+            "Планка на предплечьях",
+            new List<Muscle>
+            {
+        new Muscle("Верх пресса", 40),
+        new Muscle("Низ пресса", 40),
+        new Muscle("Поясница", 10),
+        new Muscle("Ягодичные", 5),
+        new Muscle("Передние дельты", 3),
+        new Muscle("Бицепс бедра", 2)
+            },
+            new Static(1, 0), // 30 секунд для начала
+            1, // Высокий приоритет для пауэрлифтеров
+            true
+        ));
         #endregion
 
+        #endregion
+
+        #region Растяжка
+
+        #region Грудь
+        // Растяжка верхней части груди
+        exercises.Add(new Exercise(
+            "Растяжка верхней части груди у стены",
+            new List<Muscle>
+            {
+        new Muscle("Верх груди", 85),
+        new Muscle("Передние дельты", 15)
+            },
+            new Stretching(40), // 40 секунд
+            2,
+            false
+        ));
+
+        // Растяжка середины груди
+        exercises.Add(new Exercise(
+            "Растяжка середины груди в дверном проеме",
+            new List<Muscle>
+            {
+        new Muscle("Середина груди", 90),
+        new Muscle("Передние дельты", 10)
+            },
+            new Stretching(45), // 45 секунд
+            2,
+            false
+        ));
+
+        // Растяжка нижней части груди
+        exercises.Add(new Exercise(
+            "Растяжка нижней части груди на фитболе",
+            new List<Muscle>
+            {
+        new Muscle("Низ груди", 85),
+        new Muscle("Передние дельты", 10),
+        new Muscle("Верх пресса", 5)
+            },
+            new Stretching(35), // 35 секунд
+            3,
+            false
+        ));
+
+        // Растяжка внутренней части груди
+        exercises.Add(new Exercise(
+            "Растяжка внутренней части груди (ладони вместе)",
+            new List<Muscle>
+            {
+        new Muscle("Внутренняя часть груди", 95),
+        new Muscle("Передние дельты", 5)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        #endregion
+
+        #region Спина
+        // Растяжка широчайших
+        exercises.Add(new Exercise(
+            "Растяжка широчайших в висе на турнике",
+            new List<Muscle>
+            {
+        new Muscle("Широчайшие", 90),
+        new Muscle("Поясница", 10)
+            },
+            new Stretching(50), // 50 секунд
+            1,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка широчайших сидя наклон вперед",
+            new List<Muscle>
+            {
+        new Muscle("Широчайшие", 80),
+        new Muscle("Поясница", 15),
+        new Muscle("Бицепс бедра", 5)
+            },
+            new Stretching(60), // 60 секунд
+            2,
+            false
+        ));
+
+        // Растяжка трапеций
+        exercises.Add(new Exercise(
+            "Растяжка трапеций наклон головы вбок",
+            new List<Muscle>
+            {
+        new Muscle("Трапеции", 100),
+            },
+            new Stretching(30), // 30 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка трапеций с помощью руки",
+            new List<Muscle>
+            {
+        new Muscle("Трапеции", 100),
+            },
+            new Stretching(35), // 35 секунд
+            3,
+            false
+        ));
+
+        // Растяжка ромбовидных
+        exercises.Add(new Exercise(
+            "Растяжка ромбовидных обхват себя руками",
+            new List<Muscle>
+            {
+        new Muscle("Ромбовидные", 85),
+        new Muscle("Задние дельты", 15)
+            },
+            new Stretching(40), // 40 секунд
+            3,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка ромбовидных сидя наклонившись вперед",
+            new List<Muscle>
+            {
+        new Muscle("Ромбовидные", 80),
+        new Muscle("Широчайшие", 20)
+            },
+            new Stretching(45), // 45 секунд
+            3,
+            false
+        ));
+
+        // Растяжка поясницы
+        exercises.Add(new Exercise(
+            "Растяжка поясницы кошка-корова",
+            new List<Muscle>
+            {
+        new Muscle("Поясница", 95),
+        new Muscle("Широчайшие", 5)
+            },
+            new Stretching(60), // 60 секунд (30+30)
+            1,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка поясницы лежа на спине",
+            new List<Muscle>
+            {
+        new Muscle("Поясница", 90),
+        new Muscle("Ягодичные", 10)
+            },
+            new Stretching(50), // 50 секунд
+            2,
+            false
+        ));
+
+        #endregion
+
+        #region Плечи
+        // Растяжка передних дельт
+        exercises.Add(new Exercise(
+            "Растяжка передних дельт за спиной",
+            new List<Muscle>
+            {
+        new Muscle("Передние дельты", 100),
+            },
+            new Stretching(40), // 40 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка передних дельт у стены",
+            new List<Muscle>
+            {
+        new Muscle("Передние дельты", 100),
+            },
+            new Stretching(35), // 35 секунд
+            3,
+            false
+        ));
+
+        // Растяжка средних дельт
+        exercises.Add(new Exercise(
+            "Растяжка средних дельт через руку",
+            new List<Muscle>
+            {
+        new Muscle("Средние дельты", 85),
+        new Muscle("Трапеции", 15)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка средних дельт скрестив руки",
+            new List<Muscle>
+            {
+        new Muscle("Средние дельты", 80),
+        new Muscle("Задние дельты", 20)
+            },
+            new Stretching(25), // 25 секунд
+            3,
+            false
+        ));
+
+        // Растяжка задних дельт
+        exercises.Add(new Exercise(
+            "Растяжка задних дельт обхват плеча",
+            new List<Muscle>
+            {
+        new Muscle("Задние дельты", 90),
+        new Muscle("Ромбовидные", 10)
+            },
+            new Stretching(35), // 35 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка задних дельт с полотенцем",
+            new List<Muscle>
+            {
+        new Muscle("Задние дельты", 85),
+        new Muscle("Средние дельты", 15)
+            },
+            new Stretching(40), // 40 секунд
+            3,
+            false
+        ));
+
+        #endregion
+
+        #region Руки
+        // Растяжка бицепса
+        exercises.Add(new Exercise(
+            "Растяжка бицепса у стены",
+            new List<Muscle>
+            {
+        new Muscle("Бицепс", 95),
+        new Muscle("Передние дельты", 5)
+            },
+            new Stretching(30), // 30 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка бицепса с опорой",
+            new List<Muscle>
+            {
+        new Muscle("Бицепс", 90),
+        new Muscle("Предплечья", 10)
+            },
+            new Stretching(25), // 25 секунд
+            3,
+            false
+        ));
+
+        // Растяжка трицепса
+        exercises.Add(new Exercise(
+            "Растяжка трицепса за головой",
+            new List<Muscle>
+            {
+        new Muscle("Трицепс", 95),
+        new Muscle("Передние дельты", 5)
+            },
+            new Stretching(35), // 35 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка трицепса через плечо",
+            new List<Muscle>
+            {
+        new Muscle("Трицепс", 90),
+        new Muscle("Широчайшие", 10)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        // Растяжка предплечий
+        exercises.Add(new Exercise(
+            "Растяжка предплечий ладонью вниз",
+            new List<Muscle>
+            {
+        new Muscle("Предплечья", 100)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка предплечий ладонью вверх",
+            new List<Muscle>
+            {
+        new Muscle("Предплечья", 100)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        #endregion
+
+        #region Ноги
+        // Растяжка квадрицепса
+        exercises.Add(new Exercise(
+            "Растяжка квадрицепса стоя",
+            new List<Muscle>
+            {
+        new Muscle("Квадрицепс", 95),
+        new Muscle("Бицепс бедра", 5)
+            },
+            new Stretching(45), // 45 секунд
+            1,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка квадрицепса лежа на боку",
+            new List<Muscle>
+            {
+        new Muscle("Квадрицепс", 90),
+        new Muscle("Бицепс бедра", 10)
+            },
+            new Stretching(50), // 50 секунд
+            2,
+            false
+        ));
+
+        // Растяжка бицепса бедра
+        exercises.Add(new Exercise(
+            "Растяжка бицепса бедра сидя",
+            new List<Muscle>
+            {
+        new Muscle("Бицепс бедра", 95),
+        new Muscle("Ягодичные", 5)
+            },
+            new Stretching(60), // 60 секунд
+            1,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка бицепса бедра стоя",
+            new List<Muscle>
+            {
+        new Muscle("Бицепс бедра", 90),
+        new Muscle("Икры", 10)
+            },
+            new Stretching(40), // 40 секунд
+            2,
+            false
+        ));
+
+        // Растяжка ягодичных
+        exercises.Add(new Exercise(
+            "Растяжка ягодичных сидя скрестив ноги",
+            new List<Muscle>
+            {
+        new Muscle("Ягодичные", 95),
+        new Muscle("Бицепс бедра", 5)
+            },
+            new Stretching(50), // 50 секунд
+            1,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка ягодичных лежа на спине",
+            new List<Muscle>
+            {
+        new Muscle("Ягодичные", 90),
+        new Muscle("Поясница", 10)
+            },
+            new Stretching(45), // 45 секунд
+            2,
+            false
+        ));
+
+        // Растяжка икр
+        exercises.Add(new Exercise(
+            "Растяжка икр у стены",
+            new List<Muscle>
+            {
+        new Muscle("Икры", 100)
+            },
+            new Stretching(40), // 40 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка икр на ступеньке",
+            new List<Muscle>
+            {
+        new Muscle("Икры", 100)
+            },
+            new Stretching(45), // 45 секунд
+            2,
+            false
+        ));
+
+        #endregion
+
+        #region Кор
+        // Растяжка верхнего пресса
+        exercises.Add(new Exercise(
+            "Растяжка верхнего пресса лежа на животе",
+            new List<Muscle>
+            {
+        new Muscle("Верх пресса", 90),
+        new Muscle("Поясница", 10)
+            },
+            new Stretching(40), // 40 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка верхнего пресса мостик",
+            new List<Muscle>
+            {
+        new Muscle("Верх пресса", 85),
+        new Muscle("Поясница", 15)
+            },
+            new Stretching(35), // 35 секунд
+            3,
+            false
+        ));
+
+        // Растяжка нижнего пресса
+        exercises.Add(new Exercise(
+            "Растяжка нижнего пресса кобра",
+            new List<Muscle>
+            {
+        new Muscle("Низ пресса", 95),
+        new Muscle("Поясница", 5)
+            },
+            new Stretching(45), // 45 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка нижнего пресса лежа на спине",
+            new List<Muscle>
+            {
+        new Muscle("Низ пресса", 90),
+        new Muscle("Бицепс бедра", 10)
+            },
+            new Stretching(50), // 50 секунд
+            2,
+            false
+        ));
+
+        // Растяжка косых мышц
+        exercises.Add(new Exercise(
+            "Растяжка косых мышц в боковом наклоне",
+            new List<Muscle>
+            {
+        new Muscle("Косые мышцы", 95),
+        new Muscle("Широчайшие", 5)
+            },
+            new Stretching(35), // 35 секунд
+            2,
+            false
+        ));
+
+        exercises.Add(new Exercise(
+            "Растяжка косых мышц сидя скручивание",
+            new List<Muscle>
+            {
+        new Muscle("Косые мышцы", 90),
+        new Muscle("Ромбовидные", 10)
+            },
+            new Stretching(30), // 30 секунд
+            3,
+            false
+        ));
+
+        #endregion
+        Debug.Log($"{exercises.Count}");
+        #endregion
+
+        #region Кардио
+        exercises.Add(new Exercise("Ходьба",
+            new List<Muscle>(),
+            new Walk(5,1,0)));
+
+        exercises.Add(new Exercise("Бег",
+            new List<Muscle>(),
+            new Walk(10, 1, 0)));
         #endregion
         return exercises;
     }
@@ -1264,12 +1925,6 @@ public class ExerciseManager
         {
             exercises[i].id = i;
         }
-        return exercises;
-    }
-    public static List<Exercise> GetExercisesByMuscle(Muscle muscle,int minPercentageOfWork = 50)
-    {
-        List<Exercise> exercises = ExerciseManager.Exercises;
-        exercises = exercises.Where(ex => ex.muscles.Where(m => m.percentageOfWork > minPercentageOfWork).Any(mus => mus.name == muscle.name)).ToList();
         return exercises;
     }
     #endregion
@@ -1796,6 +2451,44 @@ public class ExerciseManager
             return finalCoefficient;
         }
     }
+    #endregion
+
+    #region Данные для разных целей
+    public static List<string> powerliftingExercises = new List<string>
+{
+    // БАЗОВЫЕ (The Big 3 + основные)
+    "Становая тяга",
+    "Жим гантелей на наклонной скамье",
+    "Приседания со штангой на спине",
+    "Жим лежа",
+    "Тяга штанги в наклоне (хват на ширине плеч)",
+    "Румынская тяга",
+    "Армейский жим стоя",
+
+    "Подтягивания широким хватом",
+    "Жим ногами в тренажере",
+    
+    // ВСПОМОГАТЕЛЬНЫЕ (для жима)
+    "Жим гантелей сидя",
+    "Французский жим лежа (EZ-гриф)",
+    "Отжимания на брусьях (акцент на трицепс)",
+    "Подъем штанги на бицепс стоя",
+    
+    // ВСПОМОГАТЕЛЬНЫЕ (для тяги и приседа)
+    "Шраги со штангой сзади",
+    "Гиперэкстензия с дополнительным весом",
+    "Сгибания ног лежа в тренажере",
+    "Выпады со штангой",
+    "Тяга штанги к подбородку широким хватом",
+    "Разведение гантелей в наклоне",
+    "Ягодичный мост со штангой",
+    "Подъемы на носки стоя в тренажере",
+    
+    // ДОПОЛНИТЕЛЬНЫЕ (коре/общая сила)
+    "Подъемы ног в висе",
+    "Планка на предплечьях",
+    "Отжимания от пола (классические)"
+};
     #endregion
 } 
 #endregion

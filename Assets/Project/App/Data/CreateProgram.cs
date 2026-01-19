@@ -12,12 +12,13 @@ public class CreateProgram : MonoBehaviour
     [SerializeField] NumberSelectorUI daySelectorUI = null;
     [SerializeField] NumberSelectorUI difficlitySelectorUI = null;
     [SerializeField] ViewProgram ViewProgram;
+    
     public void CreateTrening()
     {
         int value = System.Convert.ToInt32(daySelectorUI.value);
         float difficlity = (float)Convert.ToInt32(difficlitySelectorUI.value) / 100;
         StringBuilder stringBuilder = new StringBuilder();
-        CreateProgram.CreateStrengthTraining(1 * difficlity, value, 80, stringBuilder);
+        CreateProgram.CreateStrengthTraining(1 * difficlity, value, stringBuilder);
         ViewProgram.UpdateProgramNames();
 
 
@@ -56,7 +57,7 @@ public class CreateProgram : MonoBehaviour
     public static List<SetOfExercises> DistributeExercises(List<Muscle> muscles, List<MuscleGroup> muscleGroups, int weekWA, StringBuilder DB = null)
     {
         // 1. Распределили подходы между группами
-        muscleGroups = DistributeMuscleGroup(muscleGroups, weekWA);
+        muscleGroups = DistributeMuscleGroup(muscleGroups, weekWA,DB);
 
         DB?.AppendLine();
         DB?.AppendLine("Распределение подходов внутри групп мышц:");
@@ -151,11 +152,12 @@ public class CreateProgram : MonoBehaviour
     #region Основной метод создания тренеровки
 
 
-    public static void CreateStrengthTraining(float intensity, int daysCount, int weekWA, StringBuilder DB = null)
+    public static void CreateStrengthTraining(float intensity, int daysCount, StringBuilder DB = null)
     {
         intensity *= ExerciseManager.Coefficient.VolumeTolerance;
         Week.week = Week.EmptyWeek;
-        DB?.AppendLine(); 
+        if (Player.player.treningParametrs.goal == Goal.IncreasedStrength) intensity *= 0.6f;
+        DB?.AppendLine(Player.player.treningParametrs.goal.ToString()); 
 
 
 
@@ -176,13 +178,16 @@ public class CreateProgram : MonoBehaviour
 
                 treningNum++;
             }
-                Week.week.SetParametrs();
+                //Week.week.SetParametrs();
         }
 
 
 
 	}
+    public static void CreateFlexibilityTraining()
+    {
 
+    }
     private static List<List<Muscle>> CreateSplitForDay(int nums)
     {
         switch (nums)

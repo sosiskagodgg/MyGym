@@ -95,7 +95,7 @@ public class Week
             {
                 for (int i3 = 0; setWeek.Days[i1].setsOfExercises[i2].exercises.Count > i3; i3++)
                 {
-                    setWeek.Days[i1].setsOfExercises[i2].exercises[i3].specificParameters.SetParametrs(Player.LoadPlayer());
+                    setWeek.Days[i1].setsOfExercises[i2].exercises[i3].specificParameters.SetParametrs(Player.player);
                 }
             }
         }
@@ -110,7 +110,7 @@ public class SetOfExercises
     public List<Exercise> exercises = new List<Exercise>();
     public SetOfExercises(Exercise exercise, byte quantity, bool isSetId = true)
     {
-        Player player = Player.LoadPlayer();
+        Player player = Player.player;
         exercises = new List<Exercise>();
         for (int i = 0; i < quantity; i++)
         {
@@ -221,12 +221,28 @@ public class SetOfExercises
     public static List<SetOfExercises> GetExercisesByMuscleWeekWA(Muscle muscle,int weekWA,StringBuilder debugString = null)
     {
         // 1. Получаем упражнения, отсортированные по приоритету (1 - самый высокий)
-        List<Exercise> listExercises = ExerciseManager
+        List<Exercise> listExercises = new();
+        if (Player.player.treningParametrs.goal==Goal.GainingMuscleMass)
+        {
+            listExercises = ExerciseManager
             .GetExercisesByMuscle(muscle)
             .OrderBy(ex => ex.priority)  // 1 → 2 → 3
             .ToList();
+        }
+        else if (Player.player.treningParametrs.goal == Goal.IncreasedStrength)
+        {
+                listExercises = ExerciseManager
+                .GetExercisesByMuscle(muscle)
+                .Where(ex => ExerciseManager.powerliftingExercises.Contains(ex.name))
+                .OrderBy(ex => ex.priority)
+                .ToList();
+            for (int i = 0; i < listExercises.Count; i++) 
+            {
+                listExercises[i].priority = ExerciseManager.powerliftingExercises.FindIndex(ex => ex == listExercises[i].name);
+            }
+        }
 
-        List<SetOfExercises> setOfExercises = new();
+            List<SetOfExercises> setOfExercises = new();
 
         // 2. Если нет упражнений - возвращаем пустой список
         if (listExercises.Count == 0)
