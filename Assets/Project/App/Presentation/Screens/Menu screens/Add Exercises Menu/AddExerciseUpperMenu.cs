@@ -37,7 +37,7 @@ public class AddExerciseUpperMenu : MonoBehaviour
             }
             else if(lastClick == cardioEx)
             {
-                corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower()) && (ex.specificParameters is Walk) ).ToList();
+                corectExercises = exercises.Where(ex => ex.name.ToLower().Contains(imputText.ToLower()) && (ex.specificParameters is Cardio) ).ToList();
             }
             else if (lastClick == stretchingEx)
             {

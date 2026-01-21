@@ -398,6 +398,7 @@ public class StrengthTraining : SpecificParameters
 {
     #region Переменные и конструкторы
     public float workWeight;
+    public float weightCof = 1;
     public int repetitions;
     public int baseRep;
     public float onePm;
@@ -414,7 +415,7 @@ public class StrengthTraining : SpecificParameters
     #endregion
     #region Методы для расчета параметров
 
-    private void SetWorkWeight(Player player)
+    public void SetWorkWeight(Player player)
     {
         StringBuilder debugString = new StringBuilder();
         if (repetitions != 0 && onePm != 0 && twelvePm != 0 && player.weight!=0)
@@ -437,8 +438,8 @@ public class StrengthTraining : SpecificParameters
             debugString.AppendLine($"Эталонный 12 пм - {(short)twelvePm}");
             workWeight = (byte)GetWorkWeightByRepetitions(onePm, twelvePm,(byte)repetitions);
             debugString.AppendLine($"Эталонный {repetitions} пм - {workWeight}");
-            workWeight = (byte)((int)workWeight *ExerciseManager.Coefficient.StrengthCoefficient);
-            debugString.AppendLine($"итоговый {workWeight} - коифицент силы - {ExerciseManager.Coefficient.StrengthCoefficient}");
+            workWeight = (byte)((int)workWeight *ExerciseManager.Coefficient.StrengthCoefficient * weightCof);
+            debugString.AppendLine($"итоговый {workWeight} - коифицент силы - {ExerciseManager.Coefficient.StrengthCoefficient} * {weightCof} - {ExerciseManager.Coefficient.StrengthCoefficient * weightCof}");
 
             debugString.AppendLine();
             debugString.AppendLine();
@@ -464,6 +465,7 @@ public class StrengthTraining : SpecificParameters
 
 
     #endregion
+
     #region Публичные методы
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
@@ -474,6 +476,7 @@ public class StrengthTraining : SpecificParameters
                 strengthToClone.onePm,
                 strengthToClone.twelvePm)
             {
+                weightCof = strengthToClone.weightCof,
                 repetitions = strengthToClone.repetitions,
                 workWeight = strengthToClone.workWeight,
                 ApproachNumber = strengthToClone.ApproachNumber,
@@ -507,7 +510,6 @@ public class StrengthTraining : SpecificParameters
     {
         return Description.GetDescriptionByName(name);
     }
-
     public override void SetNewParametrs(List<float> newParametrs)
     {
         if(newParametrs.Count == 2)
@@ -627,6 +629,7 @@ public class Stretching : SpecificParameters
 public class Calisthenics : SpecificParameters
 {
     public int replications;
+    public float repCof=1;
     public int baseRep;
     public Calisthenics(int replications)
     {
@@ -637,7 +640,8 @@ public class Calisthenics : SpecificParameters
     {
         return new Calisthenics((specificParameters as Calisthenics).baseRep)
         {
-            replications = (specificParameters as Calisthenics).replications
+            replications = (specificParameters as Calisthenics).replications,
+            repCof = (specificParameters as Calisthenics).repCof
         };
     }
 
@@ -658,7 +662,7 @@ public class Calisthenics : SpecificParameters
 
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
-        replications = (int)(baseRep * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient );
+        replications = (int)(baseRep * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient * repCof) ;
         
 debugString += $"replications: {replications} → " +
             $"{replications * ExerciseManager.Coefficient.EnduranceCoefficient * ExerciseManager.Coefficient.StrengthCoefficient:F0}" +
@@ -712,6 +716,7 @@ public class ExerciseManager
     }
     public static void Save(List<Exercise> exercises)
     {
+        _cachedExercises = exercises;
         File.WriteAllText(path, JsonUtility.ToJson(new ExerciseManager(exercises), true));
     }
     public static void UpdateExercise(Exercise exercise)
@@ -1447,7 +1452,7 @@ public class ExerciseManager
         new Muscle("Верх пресса", 2)       // Было: "Пресс"
             },
             new Calisthenics(25),
-            1, true // Высокий приоритет (фундаментальное упражнение)
+            4, true // Высокий приоритет (фундаментальное упражнение)
         ));
 
         exercises.Add(new Exercise(
@@ -2132,7 +2137,7 @@ public class ExerciseManager
         new Muscle("Предплечья", 5)
             },
             new Cardio(10.0f, TimeSpan.FromMinutes(3)), // MET 10.0, время 3 минуты
-            1,
+            5,
             true
         ));
 

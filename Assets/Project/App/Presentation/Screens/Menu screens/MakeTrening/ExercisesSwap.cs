@@ -70,7 +70,15 @@ public class ExercisesSwap : SwapLeftRight
         }
         gameObject.SetActive(false);
         DeliteExercise(swipedRight);
-        contentSizeFitter.enabled = true;
+        if (swipedLeft) 
+        {
+            CompleteExercises.CompleteExercise(GetComponent<LowerCard>().exercise,true);
+        }
+        else
+        {
+            CompleteExercises.CompleteExercise(GetComponent<LowerCard>().exercise, false);
+        }
+            contentSizeFitter.enabled = true;
         verticalLayoutGroup.enabled = true;
         OpenStartTrening.UpdateActiveDayCards();
     }
