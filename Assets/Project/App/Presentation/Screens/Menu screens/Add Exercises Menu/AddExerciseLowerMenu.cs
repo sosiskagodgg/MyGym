@@ -27,7 +27,7 @@ public class AddExerciseLowerMenu : MonoBehaviour
     {
         try
         {
-            SetOfExercises newSet = new SetOfExercises(exercise, (byte)scrollBarUI.Value);
+            SetOfExercises newSet = new SetOfExercises(exercise, (int)scrollBarUI.Value == 0 ? 1 : (int)scrollBarUI.Value);
             Day day = isActiveDay ? Day.ActiveDay : ViewProgram.day;
             day.AddSetOfExercises(newSet);
             text.text = "Успех!";

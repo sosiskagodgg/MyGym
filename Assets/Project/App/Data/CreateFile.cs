@@ -41,7 +41,7 @@ public class CreateFile : MonoBehaviour
 
     void Test()
     {
-      
+        Walk.AutoCreateWalk(new TimeSpan(1, 0, 0), 800);
     }
     public static void DebugLog(string message) {  Debug.Log(message); }
 }

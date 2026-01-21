@@ -108,8 +108,9 @@ public class SetOfExercises
     #region Параметры и конструкторы
 
     public List<Exercise> exercises = new List<Exercise>();
-    public SetOfExercises(Exercise exercise, byte quantity, bool isSetId = true)
+    public SetOfExercises(Exercise exercise, int quantity = 1, bool isSetId = true)
     {
+        if (exercise == null) { return; }
         Player player = Player.player;
         exercises = new List<Exercise>();
         for (int i = 0; i < quantity; i++)
@@ -222,14 +223,15 @@ public class SetOfExercises
     {
         // 1. Получаем упражнения, отсортированные по приоритету (1 - самый высокий)
         List<Exercise> listExercises = new();
-        if (Player.player.treningParametrs.goal==Goal.GainingMuscleMass)
+        Goal goal = Player.player.treningParametrs.goal;
+        if (goal == Goal.GainingMuscleMass||goal==Goal.WeightLoss||goal == Goal.Recovery)
         {
             listExercises = ExerciseManager
             .GetExercisesByMuscle(muscle)
             .OrderBy(ex => ex.priority)  // 1 → 2 → 3
             .ToList();
         }
-        else if (Player.player.treningParametrs.goal == Goal.IncreasedStrength)
+        else if (goal == Goal.IncreasedStrength)
         {
                 listExercises = ExerciseManager
                 .GetExercisesByMuscle(muscle)
@@ -241,8 +243,21 @@ public class SetOfExercises
                 listExercises[i].priority = ExerciseManager.powerliftingExercises.FindIndex(ex => ex == listExercises[i].name);
             }
         }
-
-            List<SetOfExercises> setOfExercises = new();
+        else if (goal == Goal.Flexibility)
+        {
+            listExercises = ExerciseManager
+            .GetExercisesByMuscle(muscle)
+            .Where(ex => ExerciseManager.stretchingExercises.Contains(ex.name))
+            .ToList();
+        }
+        else if (goal == Goal.IncreasedEndurance)
+        {
+            listExercises = ExerciseManager
+            .GetExercisesByMuscle(muscle)
+            .Where(ex => ExerciseManager.calisthenicsAndCardioExercises.Contains(ex.name))
+            .ToList();
+        }
+        List<SetOfExercises> setOfExercises = new();
 
         // 2. Если нет упражнений - возвращаем пустой список
         if (listExercises.Count == 0)

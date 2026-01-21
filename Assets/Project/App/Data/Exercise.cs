@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Unity.VectorGraphics;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
@@ -38,15 +40,29 @@ public class Exercise
 
 }
 #endregion
+
 #region Доп классы
 [System.Serializable]
 public abstract class SpecificParameters
 {
     public abstract override string ToString();
     public abstract string GetDescription(string name);
+    /// <summary>
+    /// Автоматически устанавливает параметры
+    /// </summary>
     public abstract void SetParametrs(Player player,byte ApproachNumber = 0);
     public abstract SpecificParameters DeepClone(SpecificParameters specificParameters);
+
+    /// <summary>
+    /// Устанавливает новые параметры из списка.
+    /// первый параметр в классе == newParametrs[0].
+    /// </summary>
     public abstract void SetNewParametrs(List<float> newParametrs);
+
+    /// <summary>
+    /// Выдает параметры упражнения.
+    /// List[0] == первый параметр в классе.
+    /// </summary>
     public abstract List<float> GetParametrs();
 
 
@@ -92,91 +108,43 @@ public abstract class SpecificParameters
     }
 }
 [System.Serializable]
-public class Walk : SpecificParameters
+
+
+
+
+public class Cardio : SpecificParameters
 {
-    #region Переменные и конструкторы
-    private string _description;
-    public float _kmPerHour;
-    public byte _kilometers;
-    public short _meters;
-    public byte _angle;
-    public float MET;
-    public Walk(float kmPerHour, byte kilometers, short meters,  byte angle = 0)
+    #region Класс для сериализации
+    [System.Serializable]
+    public class SerializableTimeSpan
     {
-            if (kmPerHour == 0)
-            throw new ArgumentException("Скорость не может быть нулевой");
-        if (meters >= 1000)
-            throw new ArgumentException("Метры должны быть меньше 1000");
+        public long ticks;
 
-        _kmPerHour = kmPerHour;
-        _kilometers = kilometers;
-        _meters = meters;
-        _angle = angle;
-        MET = GetMetBySpeed(_kmPerHour) * GetInclineCoefficient(angle);
-    }
-    public Walk() { }
-    #endregion
-    private (byte Hours, byte Minutes) CalculateTime()
-    {
-        float totalHours = (_kilometers + _meters / 1000f) / _kmPerHour;
-
-            if (totalHours > 255f)
-            totalHours = 255f;
-
-        byte hours = (byte)MathF.Floor(totalHours);
-        byte minutes = (byte)((totalHours - hours) * 60f);
-
-            if (minutes >= 60)
+        public TimeSpan TimeSpan
         {
-            hours++;
-            minutes = 0;
+            get => new TimeSpan(ticks);
+            set => ticks = value.Ticks;
         }
 
-        return (hours, minutes);
-    }// Основной метод расчета времени
-    #region Методы для вывода информации
-    private string FormatTimeString()
-    {
-        var (hours, minutes) = CalculateTime();
+        public SerializableTimeSpan() => ticks = 0;
+        public SerializableTimeSpan(TimeSpan timeSpan) => ticks = timeSpan.Ticks;
 
-        if (hours == 0)
-            return $"{minutes} {GetMinuteWord(minutes)}";
-
-        return $"{hours} {GetHourWord(hours)}, {minutes} {GetMinuteWord(minutes)}";
-    }
-    private string FormatDistanceString()
-    {
-        if (_kilometers == 0 && _meters == 0)
-            return "0 метров";
-
-        if (_kilometers == 0)
-            return $"{_meters} {GetMeterWord(_meters)}";
-
-        if (_meters == 0)
-            return $"{_kilometers} {GetKilometerWord(_kilometers)}";
-
-        return $"{_kilometers} {GetKilometerWord(_kilometers)} " +
-               $"и {_meters} {GetMeterWord(_meters)}";
-    }
-    private string GetKilometerWord(int km) =>
-        GetNounForm(km, "километр", "километра", "километров");
-    private string GetMeterWord(int meters) =>
-        GetNounForm(meters, "метр", "метра", "метров");
-    private string GetNounForm(int number, string form1, string form2, string form5)
-    {
-        int n = Math.Abs(number % 100);
-        if (n >= 11 && n <= 14) return form5;
-
-        return (number % 10) switch
-        {
-            1 => form1,
-            2 or 3 or 4 => form2,
-            _ => form5
-        };
-    }
-    private string FormatAngleString() =>
-        _angle == 0 ? string.Empty : $"Угол подъема: {_angle}°";
+        public static implicit operator TimeSpan(SerializableTimeSpan sts) => sts.TimeSpan;
+        public static implicit operator SerializableTimeSpan(TimeSpan ts) => new SerializableTimeSpan(ts);
+    } 
     #endregion
+    #region Переменные и конструкторы
+    public SerializableTimeSpan time;
+    public float MET;
+    public Cardio(float MET, TimeSpan time)
+    {
+        this.MET = MET;
+        this.time = time;
+    }
+    public Cardio() { }
+    #endregion
+
+
     #region Методы для расчета параметров
 
 
@@ -185,54 +153,59 @@ public class Walk : SpecificParameters
     #region Основные публичные методы
     public override SpecificParameters DeepClone(SpecificParameters specificParameters)
     {
-        if (specificParameters is Walk walkToClone)
+        if (specificParameters is Cardio сardioToClone)
         {
-            return new Walk(
-                walkToClone._kmPerHour,
-                walkToClone._kilometers,
-                walkToClone._meters,
-                walkToClone._angle
+            return new Cardio(
+                сardioToClone.MET,
+                сardioToClone.time
             );
         }
 
-        throw new ArgumentException("Параметр должен быть типа Walk", nameof(specificParameters));
+        throw new ArgumentException("Параметр должен быть типа Cardio", nameof(specificParameters));
     }
     public override void SetParametrs(Player player, byte ApproachNumber = 0) {  }
-    public override string ToString() => $"{_kilometers}.{_meters:D3}";
+    public override string ToString() { return $"{(int)time.TimeSpan.TotalMinutes} минут"; }
     public override string GetDescription(string name)
     {
-        var parts = new List<string>
-        {
-            _description,
-            $"Скорость: {_kmPerHour} км/ч",
-            $"Время: {FormatTimeString()}",
-            $"Дистанция: {FormatDistanceString()}"
-        };
-
-        var angleStr = FormatAngleString();
-        if (!string.IsNullOrEmpty(angleStr))
-            parts.Add(angleStr);
-
-        return string.Join(Environment.NewLine, parts.Where(p => !string.IsNullOrEmpty(p)));
+        return null;
     }
     public override void SetNewParametrs(List<float> newParametrs)
     {
-        _kilometers = (byte)newParametrs[0];
-        _meters = (byte)newParametrs[1];
-        _kmPerHour = newParametrs[2];
-        _angle = (byte)newParametrs[3];
-        MET = GetMetBySpeed(newParametrs[2]) * GetInclineCoefficient(newParametrs[3]);
+        time.TimeSpan = TimeSpan.FromMinutes(newParametrs[0]);
     }
     public override List<float> GetParametrs()
     {
-        return new List<float> { _kilometers, _meters , _kmPerHour ,_angle};
+        return new List<float> { (float)time.TimeSpan.TotalMinutes };
     }
     #endregion
     #region Для расчета каллорий
-    public static float GetMetBySpeed(float speedKmH)
+    public float GetCalories()
     {
-        // Формула на основе Compendium of Physical Activities
-        return speedKmH switch
+        return (float)(MET*time.TimeSpan.TotalHours*Player.player.weight);
+    }
+    #endregion
+}
+[System.Serializable]
+class Walk : Cardio
+{
+    #region Конструкторы и параметры
+    public Distance distance;
+    public Speed speed;
+    public int angle;
+    public Walk(Distance distance, Speed speed, int angle = 0)
+    {
+        this.distance = distance;
+        this.speed = speed;
+        this.angle = angle;
+        time = distance / speed;
+        MET = GetMetBySpeed(speed) * GetInclineCoefficient(angle);
+    }
+    #endregion
+
+    #region Расчет МЕТ
+    private static float GetMetBySpeed(Speed speedKmH)
+    {
+        return speedKmH.KilometersPerHour switch
         {
             // Ходьба
             <= 2.5f => 2.0f,      // Очень медленно
@@ -256,10 +229,10 @@ public class Walk : SpecificParameters
             <= 16.0f => 17.0f,    // 16 км/ч
 
             // Спринт
-            _ => 18.0f + (speedKmH - 16) * 1.5f // +1.5 MET за каждый км/ч сверх 16
+            _ => 18.0f + (speedKmH.KilometersPerHour - 16) * 1.5f // +1.5 MET за каждый км/ч сверх 16
         };
     }
-    public static float GetInclineCoefficient(float angleDegrees)
+    private static float GetInclineCoefficient(float angleDegrees)
     {
         // Абсолютное значение угла (работает и для подъема, и для спуска)
         float absAngle = Mathf.Abs(angleDegrees);
@@ -297,8 +270,129 @@ public class Walk : SpecificParameters
 
         return 1.0f; // Угол = 0
     }
+
+    /// <summary>
+    /// Возвращает скорость (км/ч) на основе значения MET для ровной поверхности (угол = 0)
+    /// </summary>
+    /// <param name="targetMET">Целевое значение MET (2.0 - 30.0)</param>
+    /// <returns>Скорость, соответствующая целевому MET</returns>
+    public static Speed GetSpeedByMET(float targetMET)
+    {
+        // Проверка входных данных
+        if (targetMET < 2.0f)
+            return Speed.FromKilometersPerHour(2.5f); // Минимальная скорость ходьбы
+
+        if (targetMET > 30.0f)
+            return Speed.FromKilometersPerHour(25.0f); // Максимальная реалистичная скорость
+
+        // Обратное преобразование на основе твоей функции GetMetBySpeed
+        return targetMET switch
+        {
+            // Ходьба
+            <= 2.0f => Speed.FromKilometersPerHour(2.5f),      // Очень медленно
+            <= 2.8f => Speed.FromKilometersPerHour(3.0f),
+            <= 3.0f => Speed.FromKilometersPerHour(4.0f),      // Прогулка
+            <= 3.5f => Speed.FromKilometersPerHour(5.0f),      // Обычная ходьба
+            <= 4.3f => Speed.FromKilometersPerHour(6.0f),      // Быстрая ходьба
+            <= 5.0f => Speed.FromKilometersPerHour(7.0f),      // Очень быстрая ходьба
+
+            // Бег трусцой
+            <= 8.0f => Speed.FromKilometersPerHour(8.0f),
+            <= 9.0f => Speed.FromKilometersPerHour(9.0f),
+            <= 10.0f => Speed.FromKilometersPerHour(10.0f),
+
+            // Бег
+            <= 11.0f => Speed.FromKilometersPerHour(11.0f),
+            <= 12.3f => Speed.FromKilometersPerHour(12.0f),
+            <= 13.5f => Speed.FromKilometersPerHour(13.0f),
+            <= 14.5f => Speed.FromKilometersPerHour(14.0f),
+            <= 15.8f => Speed.FromKilometersPerHour(15.0f),
+            <= 17.0f => Speed.FromKilometersPerHour(16.0f),
+
+            // Спринт (линейная интерполяция для значений выше 17.0)
+            _ => Speed.FromKilometersPerHour(16.0f + (targetMET - 17.0f) / 1.5f)
+        };
+    }
     #endregion
+
+    #region автоматическое создание упражнения
+    public static Exercise AutoCreateWalk(TimeSpan time, int calories)
+    {
+        if(time<TimeSpan.Zero) return null;
+        float targetMET = calories / (Player.player.weight * (float)time.TotalHours);
+        Speed speed = GetSpeedByMET(targetMET);
+
+
+        string getName()=>speed.KilometersPerHour switch
+        {
+            >= 1 and < 5 => "Ходьба",
+            >= 5 and < 7 => "Быстрая ходьба",
+            >= 7 =>"Бег",
+            _=>"Ошибка скорость > 1"
+        };
+
+        return new Exercise(getName(), null,new Walk(speed*time,speed));
+    }
+    #endregion
+
+    #region Публичные методы
+    public override void SetNewParametrs(List<float> newParametrs)
+    {
+        distance = new Distance(newParametrs[0]);
+        speed = new Speed(newParametrs[1], "KPH");
+        angle = (int)newParametrs[2];
+        MET = GetMetBySpeed(speed)* GetInclineCoefficient(angle);
+    }
+    public override List<float> GetParametrs()
+    {
+        return new List<float> { distance.Meters, speed.KilometersPerHour, angle };
+    }
+    public override void SetParametrs(Player player, byte ApproachNumber = 0)
+    {
+        
+    }
+
+
+    public override string GetDescription(string name)
+    {
+        var parts = new List<string>
+        {
+            $"Скорость: {speed} км/ч",
+            $"Время: {time}",
+            $"Дистанция: {distance}"
+        };
+
+        var angleStr = FormatAngleString(angle);
+        if (!string.IsNullOrEmpty(angleStr))
+            parts.Add(angleStr);
+
+        return string.Join(Environment.NewLine, parts.Where(p => !string.IsNullOrEmpty(p)));
+    }
+    public override string ToString()
+    {
+        return $"{speed.ToString("kmh")} {time.TimeSpan.TotalMinutes} минут";
+    }
+
+    public override SpecificParameters DeepClone(SpecificParameters specificParameters)
+    {
+        Walk walk = specificParameters as Walk;
+        return new Walk(walk.distance, walk.speed, walk.angle);
+
+    }
+    #endregion
+
+    #region Методы для вывода информации
+    private string FormatAngleString(float _angle) =>
+        _angle == 0 ? string.Empty : $"Угол подъема: {_angle}°";
+    #endregion
+
+
 }
+
+
+
+
+
 [System.Serializable]
 public class StrengthTraining : SpecificParameters
 {
@@ -393,7 +487,7 @@ public class StrengthTraining : SpecificParameters
     public override void SetParametrs(Player player, byte ApproachNumber = 0) 
     {
         if (player.treningParametrs.goal == Goal.IncreasedStrength) repetitions = (int)(baseRep * 0.5f);
-        else if (player.treningParametrs.goal == Goal.GainingMuscleMass) repetitions = baseRep;
+        else repetitions = baseRep;
 
         SetWorkWeight(player);
     }
@@ -473,7 +567,6 @@ public class Static : SpecificParameters
     public override string GetDescription(string name) => Description.GetDescriptionByName(name);
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
-        
     }
 
     public override void SetNewParametrs(List<float> newParametrs)
@@ -565,8 +658,9 @@ public class Calisthenics : SpecificParameters
 
     public override void SetParametrs(Player player, byte ApproachNumber = 0)
     {
-        replications = (int)(baseRep * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient);
-        debugString += $"replications: {replications} → " +
+        replications = (int)(baseRep * ExerciseManager.Coefficient.EnduranceCoefficient*ExerciseManager.Coefficient.StrengthCoefficient );
+        
+debugString += $"replications: {replications} → " +
             $"{replications * ExerciseManager.Coefficient.EnduranceCoefficient * ExerciseManager.Coefficient.StrengthCoefficient:F0}" +
             $" (Endurance: {ExerciseManager.Coefficient.EnduranceCoefficient:F2}," +
             $" Strength: {ExerciseManager.Coefficient.StrengthCoefficient:F2})\n";
@@ -1394,6 +1488,104 @@ public class ExerciseManager
             1, // Высокий приоритет для пауэрлифтеров
             true
         ));
+        exercises.Add(new Exercise(
+    "Шраги в висе на турнике",
+    new List<Muscle>
+    {
+        new Muscle("Трапеции", 85),
+        new Muscle("Широчайшие", 10),
+        new Muscle("Предплечья", 5)
+    },
+    new Calisthenics(15),
+    2,
+    true
+));
+
+        exercises.Add(new Exercise(
+            "Удержание виса на турнике с подъемом плеч",
+            new List<Muscle>
+            {
+        new Muscle("Трапеции", 90),
+        new Muscle("Предплечья", 10)
+            },
+            new Static(0, 30), // 30 секунд
+            3,
+            true
+        ));
+        exercises.Add(new Exercise(
+    "Супермен (гиперэкстензия на полу)",
+    new List<Muscle>
+    {
+        new Muscle("Поясница", 85),
+        new Muscle("Ягодичные", 10),
+        new Muscle("Бицепс бедра", 5)
+    },
+    new Calisthenics(15),
+    2,
+    false // Можно делать дома
+));
+
+        exercises.Add(new Exercise(
+            "Мостик на одной ноге",
+            new List<Muscle>
+            {
+        new Muscle("Поясница", 60),
+        new Muscle("Ягодичные", 30),
+        new Muscle("Бицепс бедра", 10)
+            },
+            new Calisthenics(12),
+            2,
+            false
+        ));
+        exercises.Add(new Exercise(
+    "Вис на турнике",
+    new List<Muscle>
+    {
+        new Muscle("Предплечья", 95),
+        new Muscle("Трапеции", 5)
+    },
+    new Static(0, 120), // 120 секунд
+    3,
+    true
+));
+
+        exercises.Add(new Exercise(
+            "Прогулка фермера (с гантелями/бутылками)",
+            new List<Muscle>
+            {
+        new Muscle("Предплечья", 85),
+        new Muscle("Трапеции", 10),
+        new Muscle("Квадрицепс", 5)
+            },
+            new Static(0, 60), // 60 секунд ходьбы
+            3,
+            true
+        ));
+        exercises.Add(new Exercise(
+    "Отжимания в стойке у стены (плечи)",
+    new List<Muscle>
+    {
+        new Muscle("Передние дельты", 80),
+        new Muscle("Трицепс", 15),
+        new Muscle("Верх пресса", 5)
+    },
+    new Calisthenics(10),
+    2,
+    true
+));
+
+        exercises.Add(new Exercise(
+            "Подъемы рук перед собой с импровизированным весом",
+            new List<Muscle>
+            {
+        new Muscle("Передние дельты", 95),
+        new Muscle("Средние дельты", 5)
+            },
+            new Calisthenics(20),
+            3,
+            false
+        ));
+
         #endregion
 
         #endregion
@@ -1556,6 +1748,17 @@ public class ExerciseManager
             false
         ));
 
+        // Шея
+         exercises.Add(new Exercise(
+        "Изометрическая растяжка шеи в стороны",
+        new List<Muscle>
+        {
+            new Muscle("Шея", 100)  // 100% фокус на шею
+        },
+        new Stretching(40), // 40 секунд (20 секунд на каждую сторону)
+        1,
+        false
+    ));
         #endregion
 
         #region Плечи
@@ -1888,17 +2091,51 @@ public class ExerciseManager
         ));
 
         #endregion
-        Debug.Log($"{exercises.Count}");
         #endregion
 
         #region Кардио
         exercises.Add(new Exercise("Ходьба",
             new List<Muscle>(),
-            new Walk(5,1,0)));
+            new Walk(new Distance(1000),
+            new Speed(5,"KPH")
+            )));
 
         exercises.Add(new Exercise("Бег",
             new List<Muscle>(),
-            new Walk(10, 1, 0)));
+            new Walk(new Distance(1000),
+            new Speed(10, "KPH")
+            )));
+        exercises.Add(new Exercise(
+    "Берпи (Burpees)",
+    new List<Muscle>
+    {
+        new Muscle("Квадрицепс", 30),
+        new Muscle("Ягодичные", 25),
+        new Muscle("Трицепс", 15),
+        new Muscle("Передние дельты", 15),
+        new Muscle("Верх пресса", 10),
+        new Muscle("Низ пресса", 5)
+    },
+    new Cardio(8.0f, TimeSpan.FromMinutes(2)), // MET 8.0, время 2 минуты
+    1,
+    true
+));
+
+        // Скакалка
+        exercises.Add(new Exercise(
+            "Скакалка",
+            new List<Muscle>
+            {
+        new Muscle("Икры", 70),
+        new Muscle("Квадрицепс", 15),
+        new Muscle("Ягодичные", 10),
+        new Muscle("Предплечья", 5)
+            },
+            new Cardio(10.0f, TimeSpan.FromMinutes(3)), // MET 10.0, время 3 минуты
+            1,
+            true
+        ));
+
         #endregion
         return exercises;
     }
@@ -1908,6 +2145,7 @@ public class ExerciseManager
 
     public static Exercise DeepClone(Exercise exercise)
     {
+        if(exercise.specificParameters == null) return new Exercise();
         Exercise cloneExercise = new Exercise()
         {
             name = exercise.name,
@@ -1936,6 +2174,7 @@ public class ExerciseManager
         public static float StrengthCoefficient { get { return GetStrengthCoefficient(); } private set { } }
         public static float EnduranceCoefficient { get { return GetEnduranceCoefficient(); } private set { } }
         public static float VolumeTolerance { get { return GetVolumeTolerance(); } private set { } }
+        public static float WeightLossVolumeCoefficient { get { return GetWeightLossVolumeCoefficient(); } private set { } }
 
         // Вложенный класс для хранения отладочной информации
         private static class DebugInfo
@@ -2181,7 +2420,7 @@ public class ExerciseManager
             float finalCoefficient = weightMod * ageMod * expMod * bodyCompMod;
             finalCoefficient = Mathf.Clamp(finalCoefficient, 0.2f, 2f);
             DebugInfo.StrFinal = finalCoefficient;
-
+            if (Player.player.treningParametrs.goal == Goal.Recovery) finalCoefficient *= 0.5f;
             return finalCoefficient;
         }
 
@@ -2335,7 +2574,7 @@ public class ExerciseManager
             float finalCoefficient = weightMod * ageMod * expMod * bodyfatMod;
             finalCoefficient = Mathf.Clamp(finalCoefficient, 0.5f, 1.5f);
             DebugInfo.EndFinal = finalCoefficient;
-
+            if (Player.player.treningParametrs.goal == Goal.Recovery) finalCoefficient *= 0.5f;
             return finalCoefficient;
         }
 
@@ -2447,8 +2686,26 @@ public class ExerciseManager
             float finalCoefficient = ageMod * expMod * bodyfatMod * dailyMod;
             finalCoefficient = Mathf.Clamp(finalCoefficient, 0.4f, 1.6f);
             DebugInfo.VolFinal = finalCoefficient;
-
+            if (Player.player.treningParametrs.goal == Goal.Recovery) finalCoefficient *= 0.5f ;
             return finalCoefficient;
+        }
+        private static float GetWeightLossVolumeCoefficient()
+        {
+            float bodyFatPercentage = player.percentageOfFat;
+            float experienceMonths = player.experience;
+            // Базовый коэффициент
+            float baseCoefficient = 0.7f;
+
+            // Корректировка по % жира
+            if (bodyFatPercentage > 30) baseCoefficient *= 0.85f;   // -15%
+            else if (bodyFatPercentage > 25) baseCoefficient *= 0.9f; // -10%
+            else if (bodyFatPercentage < 18) baseCoefficient *= 1.1f; // +10%
+
+            // Корректировка по опыту
+            if (experienceMonths < 3) baseCoefficient *= 0.9f;       // -10%
+            else if (experienceMonths > 12) baseCoefficient *= 1.15f; // +15%
+
+            return Mathf.Clamp(baseCoefficient, 0.5f, 0.9f);
         }
     }
     #endregion
@@ -2488,6 +2745,96 @@ public class ExerciseManager
     "Подъемы ног в висе",
     "Планка на предплечьях",
     "Отжимания от пола (классические)"
+};
+
+    public static List<string> stretchingExercises = new List<string>
+{
+    // Грудь
+    "Растяжка верхней части груди у стены",
+    "Растяжка середины груди в дверном проеме",
+    "Растяжка нижней части груди на фитболе",
+    "Растяжка внутренней части груди (ладони вместе)",
+    
+    // Спина
+    "Растяжка широчайших в висе на турнике",
+    "Растяжка широчайших сидя наклон вперед",
+    "Растяжка трапеций наклон головы вбок",
+    "Растяжка трапеций с помощью руки",
+    "Растяжка ромбовидных обхват себя руками",
+    "Растяжка ромбовидных сидя наклонившись вперед",
+    "Растяжка поясницы кошка-корова",
+    "Растяжка поясницы лежа на спине",
+    "Изометрическая растяжка шеи в стороны",
+    
+    // Плечи
+    "Растяжка передних дельт за спиной",
+    "Растяжка передних дельт у стены",
+    "Растяжка средних дельт через руку",
+    "Растяжка средних дельт скрестив руки",
+    "Растяжка задних дельт обхват плеча",
+    "Растяжка задних дельт с полотенцем",
+    
+    // Руки
+    "Растяжка бицепса у стены",
+    "Растяжка бицепса с опорой",
+    "Растяжка трицепса за головой",
+    "Растяжка трицепса через плечо",
+    "Растяжка предплечий ладонью вниз",
+    "Растяжка предплечий ладонью вверх",
+    
+    // Ноги
+    "Растяжка квадрицепса стоя",
+    "Растяжка квадрицепса лежа на боку",
+    "Растяжка бицепса бедра сидя",
+    "Растяжка бицепса бедра стоя",
+    "Растяжка ягодичных сидя скрестив ноги",
+    "Растяжка ягодичных лежа на спине",
+    "Растяжка икр у стены",
+    "Растяжка икр на ступеньке",
+    
+    // Кор
+    "Растяжка верхнего пресса лежа на животе",
+    "Растяжка верхнего пресса мостик",
+    "Растяжка нижнего пресса кобра",
+    "Растяжка нижнего пресса лежа на спине",
+    "Растяжка косых мышц в боковом наклоне",
+    "Растяжка косых мышц сидя скручивание"
+};
+    
+    public static List<string> calisthenicsAndCardioExercises = new List<string>
+{
+    // КАЛИСТЕНИКА
+    "Отжимания на брусьях с акцентом на грудь",
+    "Отжимания на брусьях (акцент на трицепс)",
+    "Отжимания от пола (классические)",
+    "Отжимания с широкой постановкой рук",
+    "Алмазные отжимания (узкий хват)",
+    "Отжимания с ногами на возвышении",
+    "Подтягивания широким хватом",
+    "Подтягивания (стандартный хват)",
+    "Подтягивания обратным хватом",
+    "Приседания с собственным весом",
+    "Подъемы ног в висе",
+    "Боковые скручивания на полу",
+    "Планка на предплечьях",
+        // Трапеции (для back)
+    "Шраги в висе на турнике",
+    "Удержание виса на турнике с подъемом плеч",
+    
+    // Поясница (для back)
+    "Супермен (гиперэкстензия на полу)",
+    "Мостик на одной ноге",
+    
+    // Предплечья (для hands)
+    "Вис на турнике",
+    "Прогулка фермера (с гантелями/бутылками)",
+    
+    // Передние дельты (для deltoid)
+    "Отжимания в стойке у стены (плечи)",
+    "Подъемы рук перед собой с импровизированным весом",
+    // КАРДИО (только берпи и скакалка, без бега)
+    "Берпи (Burpees)",
+    "Скакалка"
 };
     #endregion
 } 

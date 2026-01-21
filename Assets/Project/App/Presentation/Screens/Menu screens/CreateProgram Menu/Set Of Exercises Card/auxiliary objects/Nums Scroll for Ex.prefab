@@ -181,6 +181,7 @@ MonoBehaviour:
   fontSize: 20
   isAutoCreate: 0
   isAutoColor: 1
+  stepSize: 1
   magnit: {fileID: 2242739282227077490}
   durationAnimation: 0.2
   magnitRange: 0.032

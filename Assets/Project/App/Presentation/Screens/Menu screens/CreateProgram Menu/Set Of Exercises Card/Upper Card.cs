@@ -28,13 +28,23 @@ public class UpperCard : MonoBehaviour
         {
             var inst = Instantiate(lowerCard, upperCard);
             inst.GetComponentInChildren<LowerCard>().exercise = setOfExercises.exercises[i];
+
+            Exercise exercise = inst.GetComponentInChildren<LowerCard>().exercise;
+            string descr;
+            if (exercise.specificParameters is Walk)
+            {
+                descr = (exercise.specificParameters as Walk).ToString();
+            }
+            descr = exercise.specificParameters?.ToString() ?? $"не найденно описание к {exercise.name}";
+            
             try
             {
-                inst.GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponentInChildren<LowerCard>().exercise.specificParameters.ToString();
+
+                inst.GetComponentInChildren<TextMeshProUGUI>().text = descr;
             }
             catch 
-            { 
-                inst.transform.Find("Lower Visual").GetComponentInChildren<TextMeshProUGUI>().text = inst.GetComponentInChildren<LowerCard>().exercise.specificParameters.ToString();
+            {
+                inst.transform.Find("Lower Visual").GetComponentInChildren<TextMeshProUGUI>().text = descr;
             }
 
             

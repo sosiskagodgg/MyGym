@@ -26,7 +26,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] public float fontSize;
     [SerializeField] bool isAutoCreate = true;
     [SerializeField] bool isAutoColor = true;
-
+    [SerializeField] int stepSize = 1;
     [Header("Настройки Магнита")]
     [SerializeField] RectTransform magnit;
     [SerializeField] float durationAnimation;
@@ -81,17 +81,28 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     private List<GameObject> instantiateObjects = new();
     public void CreateTextObjects()
     {
-        for(int i = 0;max - min+1 > i; i++)
+        int numberOfObjects = Mathf.CeilToInt((float)(max - min) / stepSize) + 1;
+
+        for (int i = 0; i < numberOfObjects; i++)
         {
-            GameObject instObj = Instantiate(textObject,content.transform);
-            instObj.GetComponentInChildren<TextMeshProUGUI>().text = (min + i).ToString();
-            if (fontSize > 0) instObj.GetComponentInChildren<TextMeshProUGUI>().fontSizeMax = fontSize;
+            int value = min + (i * stepSize);
+
+            // Проверка, чтобы не превысить max
+            if (value > max) break;
+
+            GameObject instObj = Instantiate(textObject, content.transform);
+            instObj.GetComponentInChildren<TextMeshProUGUI>().text = value.ToString();
+
+            if (fontSize > 0)
+                instObj.GetComponentInChildren<TextMeshProUGUI>().fontSizeMax = fontSize;
+
             instantiateObjects.Add(instObj);
             instObj.SetActive(true);
             instObj.AddComponent<DestroyOnDisable>();
         }
+
         sizeFilterAndVerticalGroup.SetTransform();
-        if(setCastomStart)SetStart();
+        if (setCastomStart) SetStart();
     }
     private void SetStart() 
     {

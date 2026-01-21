@@ -130,6 +130,7 @@ public class LowerCard : MonoBehaviour
 
         int max = (int)(value * modifierMax);
         int min = (int)(value * modifierMin);
+        if (value < 10) { max = value * 2;min = value / 2; }
         scrollCompontent.max = max;
         scrollCompontent.min = min;
         scrollCompontent.localId = indexParametr;

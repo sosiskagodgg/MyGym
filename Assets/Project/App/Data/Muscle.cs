@@ -216,6 +216,7 @@ public class Muscle
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(6, 14, 45, 60)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(3, 7, 15, 48)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(2, 5, 10, 42)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(3, 6, 30, 48)));
         }
         else if (goal == Goal.GainingMuscleMass)
@@ -224,6 +225,7 @@ public class Muscle
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(8, 18, 60, 72)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(4, 9, 20, 55)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(3, 7, 10, 48)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(3, 6, 10, 48)));
         }
         else if (goal == Goal.IncreasedStrength)
@@ -232,6 +234,7 @@ public class Muscle
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(6, 14, 35, 72)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(5, 11, 25, 60)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(2, 5, 10, 48)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(4, 8, 30, 60)));
         }
         else if (goal == Goal.IncreasedEndurance)
@@ -240,6 +243,7 @@ public class Muscle
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(5, 12, 40, 48)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(3, 8, 20, 42)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(2, 6, 15, 36)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(3, 7, 25, 42)));
         }
         else if (goal == Goal.Recomposition)
@@ -248,12 +252,14 @@ public class Muscle
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(7, 16, 50, 60)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(4, 8, 20, 48)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(3, 6, 10, 42)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(3, 6, 20, 48)));
         }
         else if (goal == Goal.Flexibility)
         {
             // Гибкость: для растяжки позвоночника
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(2, 5, 35, 36)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(2, 4, 25, 30)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(1, 3, 15, 24)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(2, 4, 25, 30)));
@@ -262,6 +268,7 @@ public class Muscle
         {
             // Восстановление: легкая нагрузка
             muscles.Add(new Muscle("Широчайшие", MuscleGroup.back, new Burden(3, 7, 30, 72)));
+            muscles.Add(new Muscle("Шея", MuscleGroup.neck, new Burden(2, 5, 100, 36)));
             muscles.Add(new Muscle("Трапеции", MuscleGroup.back, new Burden(2, 4, 20, 60)));
             muscles.Add(new Muscle("Ромбовидные", MuscleGroup.back, new Burden(1, 2, 10, 48)));
             muscles.Add(new Muscle("Поясница", MuscleGroup.back, new Burden(2, 4, 40, 60)));
@@ -514,6 +521,7 @@ public class MuscleGroup
     public string name;
     public Burden burden;
     public static MuscleGroup chest = GetMuscleGroupByName("chest");
+    public static MuscleGroup neck = GetMuscleGroupByName("neck");
     public static MuscleGroup back = GetMuscleGroupByName("back");
     public static MuscleGroup deltoid = GetMuscleGroupByName("deltoid");
     public static MuscleGroup hands = GetMuscleGroupByName("hands");
@@ -754,6 +762,11 @@ public class MuscleGroup
             Save(_muscleGroups);
         }
     }
+
+    private static DateTime updateTime;
+    #endregion
+ 
+    #region Создание групп
     public static List<MuscleGroup> CreateMuscleGroups()
     {
         Player currentPlayer = Player.player;
@@ -776,7 +789,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(7, 14, 12, 60)),  // 12% важности
             new MuscleGroup("hands", new Burden(6, 12, 8, 48)),     // 8% важности
             new MuscleGroup("legs", new Burden(13, 26, 28, 72)),    // 28% важности
-            new MuscleGroup("core", new Burden(9, 18, 18, 48))      // 18% важности
+            new MuscleGroup("core", new Burden(9, 18, 18, 48))  ,    // 18% важности
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else if (goal == Goal.GainingMuscleMass)
@@ -789,7 +803,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(9, 18, 16, 72)),  // 16%
             new MuscleGroup("hands", new Burden(11, 22, 14, 48)),   // 14%
             new MuscleGroup("legs", new Burden(13, 26, 22, 96)),    // 22%
-            new MuscleGroup("core", new Burden(7, 14, 10, 48))      // 10%
+            new MuscleGroup("core", new Burden(7, 14, 10, 48))   ,   // 10%
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else if (goal == Goal.IncreasedStrength)
@@ -802,7 +817,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(8, 16, 10, 72)),  // 15% (жим стоя)
             new MuscleGroup("hands", new Burden(8, 16, 10, 48)),    // 10% (вспомогательные)
             new MuscleGroup("legs", new Burden(12, 20, 26, 96)),    // 25% (приседания)
-            new MuscleGroup("core", new Burden(6, 12, 6, 48))       // 5% (стабильность)
+            new MuscleGroup("core", new Burden(6, 12, 6, 48))   ,    // 5% (стабильность)
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else if (goal == Goal.IncreasedEndurance)
@@ -815,7 +831,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(8, 20, 16, 48)),  // 16%
             new MuscleGroup("hands", new Burden(10, 24, 14, 36)),   // 14%
             new MuscleGroup("legs", new Burden(12, 28, 22, 60)),    // 22%
-            new MuscleGroup("core", new Burden(8, 20, 15, 36))      // 15%
+            new MuscleGroup("core", new Burden(8, 20, 15, 36))   ,   // 15%
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else if (goal == Goal.Recomposition)
@@ -828,7 +845,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(9, 18, 15, 72)),  // 15%
             new MuscleGroup("hands", new Burden(10, 20, 13, 48)),   // 13%
             new MuscleGroup("legs", new Burden(12, 24, 20, 72)),    // 20%
-            new MuscleGroup("core", new Burden(8, 16, 15, 48))      // 15%
+            new MuscleGroup("core", new Burden(8, 16, 15, 48)) ,     // 15%
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else if (goal == Goal.Flexibility)
@@ -836,12 +854,14 @@ public class MuscleGroup
             // Цель: Гибкость - минимальная силовая нагрузка
             return new List<MuscleGroup>
         {
-            new MuscleGroup("chest", new Burden(4, 8, 15, 48)),     // 15%
-            new MuscleGroup("back", new Burden(6, 12, 20, 48)),     // 20%
-            new MuscleGroup("deltoid", new Burden(4, 8, 15, 48)),   // 15%
-            new MuscleGroup("hands", new Burden(4, 8, 10, 36)),     // 10%
-            new MuscleGroup("legs", new Burden(6, 12, 25, 48)),     // 25%
-            new MuscleGroup("core", new Burden(5, 10, 15, 36))      // 15%
+            // Распределение для гибкости (всего 100%)
+            new MuscleGroup("legs", new Burden(4, 8, 25, 48)),        // 25% - Ноги требуют больше внимания для гибкости
+            new MuscleGroup("back", new Burden(6, 12, 20, 48)),       // 20% - Гибкость спины критически важна
+            new MuscleGroup("chest", new Burden(4, 8, 15, 48)),       // 15% - Раскрытие грудного отдела
+            new MuscleGroup("deltoid", new Burden(4, 8, 12, 48)),     // 12% - Плечевой пояс
+            new MuscleGroup("core", new Burden(5, 10, 10, 36)),       // 10% - Кор, пресс, поясница
+            new MuscleGroup("hands", new Burden(4, 8, 10, 36)),       // 10% - Руки (бицепс/трицепс/предплечья)
+            new MuscleGroup("neck", new Burden(5, 10, 8, 36))         // 8% - Шея (для общей мобильности)
         };
         }
         else if (goal == Goal.Recovery)
@@ -854,7 +874,8 @@ public class MuscleGroup
             new MuscleGroup("deltoid", new Burden(4, 8, 10, 96)),   // 10%
             new MuscleGroup("hands", new Burden(4, 8, 10, 72)),     // 10%
             new MuscleGroup("legs", new Burden(5, 10, 25, 96)),     // 25%
-            new MuscleGroup("core", new Burden(5, 10, 30, 72))      // 30%
+            new MuscleGroup("core", new Burden(5, 10, 30, 72)) ,     // 30%
+            new MuscleGroup("neck", new Burden(5, 10, 0, 36))
         };
         }
         else
@@ -863,7 +884,6 @@ public class MuscleGroup
             return GetBaseMuscleGroups();
         }
     }
-
     private static List<MuscleGroup> GetBaseMuscleGroups()
     {
         // Возвращаем базовые значения (оригинальные)
@@ -876,10 +896,10 @@ public class MuscleGroup
         new MuscleGroup("legs", new Burden(15, 25, 20, 96)),
         new MuscleGroup("core", new Burden(8, 16, 10, 48))
     };
-    }
-
-    private static DateTime updateTime; 
+    } 
     #endregion
+
+
     #region Класс обертка
     [System.Serializable]
     public class MuscleGroupsWrapper

@@ -42,6 +42,7 @@ public class Day
     }
     public void AddSetOfExercises(SetOfExercises setOfExercises)
     {
+        if (setOfExercises.exercises.Count <= 0){ return; }
         setsOfExercises.Add(setOfExercises);
         Week.SaveDay(this);
     }

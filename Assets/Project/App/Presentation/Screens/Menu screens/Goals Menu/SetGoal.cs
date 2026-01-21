@@ -8,6 +8,8 @@ public class SetGoal : MonoBehaviour
     static TextMeshProUGUI text;
     public void SetGoals(string goal)
     {
+        Muscle.Muscles = Muscle.GetBaseMuscles();
+        MuscleGroup.muscleGroups = MuscleGroup.CreateMuscleGroups();
         player = Player.player;
         switch (goal)
         {
