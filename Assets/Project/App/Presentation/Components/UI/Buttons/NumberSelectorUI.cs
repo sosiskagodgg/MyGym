@@ -27,8 +27,10 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] bool isAutoCreate = true;
     [SerializeField] bool isAutoColor = true;
     [SerializeField] int stepSize = 1;
+    [SerializeField] bool isBeautifulText;
+    [SerializeField] float beautifulTextRange;
     [Header("Настройки Магнита")]
-    [SerializeField] RectTransform magnit;
+    [SerializeField] public RectTransform magnit;
     [SerializeField] float durationAnimation;
     [SerializeField] float magnitRange;
     [Header("Вывод")]
@@ -99,6 +101,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             instantiateObjects.Add(instObj);
             instObj.SetActive(true);
             instObj.AddComponent<DestroyOnDisable>();
+            if (isBeautifulText) { instObj.AddComponent<BeautifulText>(); instObj.GetComponent<BeautifulText>().range = beautifulTextRange; }
         }
 
         sizeFilterAndVerticalGroup.SetTransform();
@@ -197,4 +200,48 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
 
     #endregion
+}
+public class BeautifulText : MonoBehaviour
+{
+    RectTransform rectTransform;
+    RectTransform magnit;
+    public float range= 10f;
+    private void OnEnable()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        magnit = GetComponentInParent<NumberSelectorUI>().magnit;
+    }
+
+    private Vector3 lastPosition;
+    void Update()
+    {
+        TransformChange();
+
+    }
+    void TransformChange()
+    {
+        float distance = rectTransform.position.y - magnit.position.y;
+        if (Mathf.Abs(distance) < this.range)
+        {
+            float t = distance / this.range;
+
+            // Для эллиптической/сферической проекции используем синус
+            float angleX = Mathf.Sin(t * Mathf.PI * 0.5f) * 70f;
+
+            // Уменьшение масштаба по краям (как в iOS)
+            float scale = 0.7f + 0.3f * Mathf.Cos(t * Mathf.PI * 0.5f);
+            //rectTransform.localScale = new Vector3(scale, scale, 1);
+
+
+            rectTransform.localRotation = Quaternion.Euler(angleX, 0f, 0f);
+        }
+        else
+        {
+            rectTransform.localRotation = Quaternion.identity;
+            rectTransform.localScale = Vector3.one;
+            Vector3 pos = rectTransform.localPosition;
+            pos.z = 0;
+            rectTransform.localPosition = pos;
+        }
+    }
 }

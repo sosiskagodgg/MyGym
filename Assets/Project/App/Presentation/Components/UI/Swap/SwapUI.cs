@@ -44,6 +44,10 @@ public class SwapUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     {
         isDrag = false;
     }
+    private void OnEnable()
+    {
+        StartCoroutine(SetPosition());
+    }
     #endregion
 
     #region Для магнита

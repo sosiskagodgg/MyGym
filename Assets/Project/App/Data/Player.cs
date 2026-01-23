@@ -90,6 +90,10 @@ public class Player
     }
 
     #endregion
+
+    #region Данные по упражнениям
+
+    #endregion
 }
 public class DataPath : MonoBehaviour
 {
