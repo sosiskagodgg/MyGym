@@ -79,7 +79,7 @@ public class ViewProgram : MonoBehaviour
             case "Пятница":
                 CreateUpperCards(4);
                 break;
-            case "Субота":
+            case "Суббота":
                 CreateUpperCards(5);
                 break;
             case "Воскресенье":

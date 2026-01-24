@@ -2185,10 +2185,10 @@ public class ExerciseManager
         private static class DebugInfo
         {
             // Исходные данные игрока
-            public static int PlayerWeight;
+            public static float PlayerWeight;
             public static int PlayerAge;
             public static int PlayerExperience;
-            public static int PlayerBodyFat;
+            public static float PlayerBodyFat;
 
             // Модификаторы для силы
             public static float StrWeightMod;
@@ -2286,22 +2286,22 @@ public class ExerciseManager
             float weightMod;
             switch (player.weight)
             {
-                case int w when w <= 60:
+                case float w when w <= 60:
                     weightMod = 1.12f;
                     break;
-                case int w when w <= 70:
+                case float w when w <= 70:
                     weightMod = 1.06f;
                     break;
-                case int w when w <= 80:
+                case float w when w <= 80:
                     weightMod = 1.02f;
                     break;
                 case 85:
                     weightMod = 1.00f;
                     break;
-                case int w when w <= 95:
+                case float w when w <= 95:
                     weightMod = 0.98f;
                     break;
-                case int w when w <= 110:
+                case float w when w <= 110:
                     weightMod = 0.94f;
                     break;
                 default:
@@ -2437,22 +2437,22 @@ public class ExerciseManager
             float weightMod;
             switch (player.weight)
             {
-                case int w when w <= 60:
+                case float w when w <= 60:
                     weightMod = 1.24f;
                     break;
-                case int w when w <= 70:
+                case float w when w <= 70:
                     weightMod = 1.12f;
                     break;
-                case int w when w <= 80:
+                case float w when w <= 80:
                     weightMod = 1.05f;
                     break;
                 case 85:
                     weightMod = 1.00f;
                     break;
-                case int w when w <= 95:
+                case float w when w <= 95:
                     weightMod = 0.95f;
                     break;
-                case int w when w <= 110:
+                case float w when w <= 110:
                     weightMod = 0.88f;
                     break;
                 default:

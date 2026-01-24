@@ -8,26 +8,21 @@ using UnityEngine;
 public class Week
 {
     public List<Day> Days = new List<Day>();
-    public static string path = DataPath.Path() + "/WeekData.Json";
 
     #region Загрузка - Сохранение
     public static Week week
     {
         get
         {
-            var fileTime = File.GetLastWriteTime(path);
-            if (_cachedWeek == null || _lastLoadTime < fileTime)
+            if(_cachedWeek == null)
             {
-                _cachedWeek = Load();
-                Debug.Log("кэш обновлен");
-                _lastLoadTime = DateTime.Now;
+                _cachedWeek = EmptyWeek;
             }
             return _cachedWeek;
         }
         set 
         {
             _cachedWeek = value;
-            value.SaveWeek();
         }
     }
     public static Week EmptyWeek = new Week()
@@ -39,43 +34,18 @@ public class Week
         new Day(2, "Среда", new List<SetOfExercises>()),
         new Day(3, "Четверг", new List<SetOfExercises>()),
         new Day(4, "Пятница", new List<SetOfExercises>()),
-        new Day(5, "Субота", new List<SetOfExercises>()),
+        new Day(5, "Суббота", new List<SetOfExercises>()),
         new Day(6, "Воскресенье", new List<SetOfExercises>())
     }
     };
 
     private static Week _cachedWeek;
-    private static DateTime _lastLoadTime;
-    public void SaveWeek()
-    {
-        Days ??= new List<Day>();
-        Sort();
-        File.WriteAllText(path, JsonUtility.ToJson(this, true));
-
-    }
     public static void SaveDay(Day day)
     {
-        byte dayNum = (byte)week.Days.FindIndex(d => d.num == day.num);
-        week.Days[dayNum] = day;
-        week.SaveWeek();
+        byte dayNum = (byte)week.Days.FindIndex(d => d.name == day.name);
+        week.Days[dayNum] = Day.DeepClone(day);
     }
 
-    private static Week Load()
-    {
-
-        if (!File.Exists(path))
-        {
-            EmptyWeek.SaveWeek(); return EmptyWeek;
-        }
-        else
-        {
-            Week result;
-            result = JsonUtility.FromJson<Week>(File.ReadAllText(path));
-            Debug.Log("неделя загруженна из файла");
-            return result == null ? EmptyWeek : result;
-        }
-
-    }
     #endregion
     #region Сортировка
     public void Sort()

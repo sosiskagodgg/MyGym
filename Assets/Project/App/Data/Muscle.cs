@@ -23,23 +23,15 @@ public class Muscle
     {
         get
         {
-            if (!File.Exists(path))
+            if(_musclesCash == null)
             {
-                Muscle.Save(GetBaseMuscles());
                 _musclesCash = GetBaseMuscles();
-            }
-            if (Math.Abs((File.GetLastWriteTime(path) - cashUpdate).TotalSeconds) > 0.1)
-            {
-                _musclesCash = Load();
             }
             return _musclesCash;
         }
         set
         {
             _musclesCash = value;
-
-            Muscle.Save(_musclesCash);
-            cashUpdate = File.GetLastWriteTime(path);
         }
     }
     #endregion
@@ -94,37 +86,11 @@ public class Muscle
 
     #region Создание - Сохранение - Загрузка
     #region Параметры
-    public static readonly string path = DataPath.Path() + "/MuscleData.json";
-    private static DateTime cashUpdate;
     private static List<Muscle> _musclesCash;
 
 
     #endregion
 
-    #region Класс обертка
-    [System.Serializable]
-    public class MusclesWrapper
-    {
-        public List<Muscle> muscles;
-        public MusclesWrapper(List<Muscle> muscles)
-        {
-            this.muscles = muscles;
-        }
-    }
-    #endregion
-
-    #region Загрузка
-    private static List<Muscle> Load()
-    {
-        return JsonUtility.FromJson<MusclesWrapper>(File.ReadAllText(path)).muscles;
-    } 
-    #endregion
-
-    #region Сохранение
-    private static void Save(List<Muscle> muscles)
-    {
-        File.WriteAllText(path, JsonUtility.ToJson(new MusclesWrapper(muscles), true));
-    }
     public void SaveMuscle()
     {
         // 1. Находим индекс мышцы в списке
@@ -134,9 +100,6 @@ public class Muscle
         {
             // 2. Заменяем объект по индексу
             Muscles[index] = this;
-
-            // 3. Сохраняем весь список
-            Save(Muscles);
         }
     }
     #endregion
@@ -512,7 +475,6 @@ public class Muscle
     public static void UpdateCash(Muscle muscle) { var mus = Muscles.FirstOrDefault(m => m.name == muscle.name); mus = muscle; } 
     #endregion
 
-    #endregion
 }
 [System.Serializable]
 public class MuscleGroup
@@ -748,22 +710,23 @@ public class MuscleGroup
     #region Сохранение - загрузка
     #region Параметры для сохранения и загрузки
     private static List<MuscleGroup> _muscleGroups;
-    public static readonly string path = DataPath.Path() + "/MuscleGroupData.json";
     public static List<MuscleGroup> muscleGroups
     {
         get
         {
-            return Load();
+            if (_muscleGroups == null)
+            {
+                _muscleGroups = CreateMuscleGroups();
+            }
+            return _muscleGroups;
 
         }
         set
         {
             _muscleGroups = value;
-            Save(_muscleGroups);
         }
     }
 
-    private static DateTime updateTime;
     #endregion
  
     #region Создание групп
@@ -911,24 +874,7 @@ public class MuscleGroup
         }
     }
     #endregion
-    #region Загрузка
-    private static List<MuscleGroup> Load()
-    {
-        if (!File.Exists(path ?? DataPath.Path() + "/MuscleGroupData.json"))
-        {
-            Save(CreateMuscleGroups());
-            return CreateMuscleGroups();
-        }
-        if (updateTime != File.GetLastWriteTime(path ?? DataPath.Path() + "/MuscleGroupData.json")) return JsonUtility.FromJson<MuscleGroupsWrapper>(File.ReadAllText(path ?? DataPath.Path() + "/MuscleGroupData.json")).muscleGroups;
-        else return _muscleGroups;
-    } 
-    #endregion
     #region Сохранение
-    private static void Save(List<MuscleGroup> muscleGroups)
-    {
-        File.WriteAllText(path ?? DataPath.Path() + "/MuscleGroupData.json", JsonUtility.ToJson(new MuscleGroupsWrapper(muscleGroups), true));
-        updateTime = File.GetLastWriteTime(path ?? DataPath.Path() + "/MuscleGroupData.json");
-    }
     public void Save()
     {
         // 1. Загружаем текущий список
@@ -941,9 +887,6 @@ public class MuscleGroup
         {
             // 3. Заменяем объект
             groups[index] = this;
-
-            // 4. СОХРАНЯЕМ ВСЕЙ СПИСОК
-            muscleGroups = groups; // Вызовет сеттер, который сохранит в файл
         }
     } 
     #endregion

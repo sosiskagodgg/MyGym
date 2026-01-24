@@ -124,7 +124,7 @@ public class SwapUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             Week.SaveDay(day1);
             Week.SaveDay(day2);
 
-            Debug.Log($"Свапнуты программы: {day1.name}={day1.programName}, {day2.name}={day2.programName}");
+            Debug.Log($"Свапнуты программы: {day1.name}={day1.setsOfExercises.Count}, {day2.name}={day2.setsOfExercises.Count}");
 
             // Обновляем UI
             viewProgram.UpdateProgramNames();

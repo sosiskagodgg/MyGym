@@ -3,8 +3,13 @@ using System.Collections.Generic;
 public class DataManager : MonoBehaviour
 {
     [SerializeField] SupabaseExerciseManager supabaseExerciseManager;
+    public static SupabaseExerciseManager SEM;
     public static List<ExerciseData> exerciseDatas;
     public static long id;
+    private void Awake()
+    {
+        SEM = supabaseExerciseManager;
+    }
     void Start()
     {
         DataManager.id = GetID();

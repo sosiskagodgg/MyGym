@@ -36,6 +36,7 @@ public class SwapManager : MonoBehaviour
             (day1,day2)=(day2,day1);
             Week.SaveDay(day1);
             Week.SaveDay(day2);
+            Debug.Log($"Теперь {dayName} имеет {day2.setsOfExercises.Count} сетов а {programName} {day1.setsOfExercises.Count}");
 
         }
     }
