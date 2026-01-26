@@ -234,6 +234,7 @@ public class CreateProgram : MonoBehaviour
         
         // ТОЛЬКО ОДИН РАЗ: сохраняем готовую неделю
         Week.week = newWeek;
+        ViewProgram.UpdateProgramNames();
         Debug.Log("=== НЕДЕЛЯ СОЗДАНА И СОХРАНЕНА ===");
     }
     public static void CreateFlexibilityTraining()
@@ -1078,143 +1079,143 @@ public class CreateProgram : MonoBehaviour
                     throw new ArgumentException($"Неподдерживаемое количество дней: {nums}");
             }
     }
-    private static Dictionary<int, string> GetWorkoutNames(int nums, Goal goal)
+    private static Dictionary<int, string> GetWorkoutNames(int numberOfWorkouts, Goal workoutGoal)
     {
-        var workoutNames = new Dictionary<int, string>();
+        var WorkoutNames = new Dictionary<int, string>();
 
         // Список дней для тренировок
-        var trainingDays = GetDaysList(nums);
+        var TrainingDays = GetDaysList(numberOfWorkouts);
 
-        if (goal == Goal.IncreasedStrength) switch (nums)
+        if (workoutGoal == Goal.IncreasedStrength) switch (numberOfWorkouts)
             {
                 case 1:
-                    workoutNames[trainingDays[0]] = "БАЗА (Сила)";
+                    WorkoutNames[TrainingDays[0]] = "База (Сила)";
                     break;
 
                 case 2:
-                    workoutNames[trainingDays[0]] = "ЖИМЫ (Присед + Жим лежа)";
-                    workoutNames[trainingDays[1]] = "ТЯГИ (Становая + Подтягивания)";
+                    WorkoutNames[TrainingDays[0]] = "Жимы (Присед + Жим Лежа)";
+                    WorkoutNames[TrainingDays[1]] = "Тяги (Становая + Подтягивания)";
                     break;
 
                 case 3:
-                    workoutNames[trainingDays[0]] = "ПРИСЕД + ЖИМ + ТЯГА";
-                    workoutNames[trainingDays[1]] = "ПРИСЕД + ЖИМ ЛЕЖА + СТАНОВАЯ";
-                    workoutNames[trainingDays[2]] = "ПРИСЕД + ЖИМ + ТЯГА ГРУДНАЯ";
+                    WorkoutNames[TrainingDays[0]] = "Присед + Жим + Тяга";
+                    WorkoutNames[TrainingDays[1]] = "Присед + Жим Лежа + Становая";
+                    WorkoutNames[TrainingDays[2]] = "Присед + Жим + Тяга Грудная";
                     break;
 
                 case 4:
-                    workoutNames[trainingDays[0]] = "ЖИМ ЛЕЖА (5/3/1)";
-                    workoutNames[trainingDays[1]] = "СТАНОВАЯ (5/3/1)";
-                    workoutNames[trainingDays[2]] = "ЖИМ СТОЯ (5/3/1)";
-                    workoutNames[trainingDays[3]] = "ПРИСЕДАНИЯ (5/3/1)";
+                    WorkoutNames[TrainingDays[0]] = "Жим Лежа (5/3/1)";
+                    WorkoutNames[TrainingDays[1]] = "Становая (5/3/1)";
+                    WorkoutNames[TrainingDays[2]] = "Жим Стоя (5/3/1)";
+                    WorkoutNames[TrainingDays[3]] = "Приседания (5/3/1)";
                     break;
 
                 case 5:
-                    workoutNames[trainingDays[0]] = "ПРИСЕД (Тяжелый)";
-                    workoutNames[trainingDays[1]] = "ЖИМ ЛЕЖА (Тяжелый)";
-                    workoutNames[trainingDays[2]] = "СТАНОВАЯ (Тяжелая)";
-                    workoutNames[trainingDays[3]] = "ВСПОМОГАТЕЛЬНЫЙ";
-                    workoutNames[trainingDays[4]] = "СЛАБЫЕ ЗВЕНЬЯ";
+                    WorkoutNames[TrainingDays[0]] = "Присед (Тяжелый)";
+                    WorkoutNames[TrainingDays[1]] = "Жим Лежа (Тяжелый)";
+                    WorkoutNames[TrainingDays[2]] = "Становая (Тяжелая)";
+                    WorkoutNames[TrainingDays[3]] = "Вспомогательный";
+                    WorkoutNames[TrainingDays[4]] = "Слабые Звенья";
                     break;
             }
-        else if (goal == Goal.Flexibility) switch (nums)
+        else if (workoutGoal == Goal.Flexibility) switch (numberOfWorkouts)
             {
                 case 1:
-                    workoutNames[trainingDays[0]] = "ПОЛНАЯ РАСТЯЖКА ВСЕГО ТЕЛА";
+                    WorkoutNames[TrainingDays[0]] = "Полная Растяжка Всего Тела";
                     break;
 
                 case 2:
-                    workoutNames[trainingDays[0]] = "РАСТЯЖКА НОГ И КОРА";
-                    workoutNames[trainingDays[1]] = "РАСТЯЖКА ВЕРХНЕЙ ЧАСТИ ТЕЛА";
+                    WorkoutNames[TrainingDays[0]] = "Растяжка Ног И Кора";
+                    WorkoutNames[TrainingDays[1]] = "Растяжка Верхней Части Тела";
                     break;
 
                 case 3:
-                    workoutNames[trainingDays[0]] = "РАСТЯЖКА НОГ И ТАЗА";
-                    workoutNames[trainingDays[1]] = "ГИБКОСТЬ СПИНЫ И ГРУДИ";
-                    workoutNames[trainingDays[2]] = "МОБИЛЬНОСТЬ ПЛЕЧ И РУК";
+                    WorkoutNames[TrainingDays[0]] = "Растяжка Ног И Таза";
+                    WorkoutNames[TrainingDays[1]] = "Гибкость Спины И Груди";
+                    WorkoutNames[TrainingDays[2]] = "Мобильность Плеч И Рук";
                     break;
 
                 case 4:
-                    workoutNames[trainingDays[0]] = "ГИБКОСТЬ НОГ";
-                    workoutNames[trainingDays[1]] = "РАСТЯЖКА СПИНЫ И КОРА";
-                    workoutNames[trainingDays[2]] = "РАСКРЫТИЕ ГРУДИ И ПЛЕЧ";
-                    workoutNames[trainingDays[3]] = "МОБИЛЬНОСТЬ РУК И ШЕИ";
+                    WorkoutNames[TrainingDays[0]] = "Гибкость Ног";
+                    WorkoutNames[TrainingDays[1]] = "Растяжка Спины И Кора";
+                    WorkoutNames[TrainingDays[2]] = "Раскрытие Груди И Плеч";
+                    WorkoutNames[TrainingDays[3]] = "Мобильность Рук И Шеи";
                     break;
 
                 case 5:
-                    workoutNames[trainingDays[0]] = "РАСТЯЖКА ПЕРЕДНИХ МЫШЦ БЕДРА";
-                    workoutNames[trainingDays[1]] = "РАСТЯЖКА ЗАДНИХ МЫШЦ НОГ";
-                    workoutNames[trainingDays[2]] = "ГИБКОСТЬ СПИНЫ И ПОЯСНИЦЫ";
-                    workoutNames[trainingDays[3]] = "РАСКРЫТИЕ ГРУДНОГО ОТДЕЛА";
-                    workoutNames[trainingDays[4]] = "МОБИЛЬНОСТЬ ПЛЕЧЕВОГО ПОЯСА";
+                    WorkoutNames[TrainingDays[0]] = "Растяжка Передних Мышц Бедра";
+                    WorkoutNames[TrainingDays[1]] = "Растяжка Задних Мышц Ног";
+                    WorkoutNames[TrainingDays[2]] = "Гибкость Спины И Поясницы";
+                    WorkoutNames[TrainingDays[3]] = "Раскрытие Грудного Отдела";
+                    WorkoutNames[TrainingDays[4]] = "Мобильность Плечевого Пояса";
                     break;
             }
-        else if (goal == Goal.IncreasedEndurance) switch (nums)
+        else if (workoutGoal == Goal.IncreasedEndurance) switch (numberOfWorkouts)
             {
                 case 1:
-                    workoutNames[trainingDays[0]] = "КРУГОВАЯ ТРЕНИРОВКА НА ВЫНОСЛИВОСТЬ";
+                    WorkoutNames[TrainingDays[0]] = "Круговая Тренировка На Выносливость";
                     break;
 
                 case 2:
-                    workoutNames[trainingDays[0]] = "ВЫНОСЛИВОСТЬ ВЕРХНЕЙ ЧАСТИ ТЕЛА";
-                    workoutNames[trainingDays[1]] = "ВЫНОСЛИВОСТЬ НИЖНЕЙ ЧАСТИ ТЕЛА";
+                    WorkoutNames[TrainingDays[0]] = "Выносливость Верхней Части Тела";
+                    WorkoutNames[TrainingDays[1]] = "Выносливость Нижней Части Тела";
                     break;
 
                 case 3:
-                    workoutNames[trainingDays[0]] = "ТОЛКАЮЩИЕ ДВИЖЕНИЯ";
-                    workoutNames[trainingDays[1]] = "ТЯНУЩИЕ ДВИЖЕНИЯ";
-                    workoutNames[trainingDays[2]] = "НОГИ И КОР";
+                    WorkoutNames[TrainingDays[0]] = "Толкающие Движения";
+                    WorkoutNames[TrainingDays[1]] = "Тянущие Движения";
+                    WorkoutNames[TrainingDays[2]] = "Ноги И Кор";
                     break;
 
                 case 4:
-                    workoutNames[trainingDays[0]] = "ГРУДЬ+ТРИЦЕПС (Толкай)";
-                    workoutNames[trainingDays[1]] = "СПИНА+БИЦЕПС (Тяни)";
-                    workoutNames[trainingDays[2]] = "НОГИ+ПЛЕЧИ";
-                    workoutNames[trainingDays[3]] = "ФУНКЦИОНАЛЬНАЯ ВЫНОСЛИВОСТЬ";
+                    WorkoutNames[TrainingDays[0]] = "Грудь+Трицепс (Толкай)";
+                    WorkoutNames[TrainingDays[1]] = "Спина+Бицепс (Тяни)";
+                    WorkoutNames[TrainingDays[2]] = "Ноги+Плечи";
+                    WorkoutNames[TrainingDays[3]] = "Функциональная Выносливость";
                     break;
 
                 case 5:
-                    workoutNames[trainingDays[0]] = "ТОЛКАЮЩИЕ УПРАЖНЕНИЯ";
-                    workoutNames[trainingDays[1]] = "ТЯНУЩИЕ УПРАЖНЕНИЯ";
-                    workoutNames[trainingDays[2]] = "НОГИ И КОР (Силовая выносливость)";
-                    workoutNames[trainingDays[3]] = "ВЕРХ ТЕЛА (Круговая)";
-                    workoutNames[trainingDays[4]] = "ФУНКЦИОНАЛЬНАЯ ТРЕНИРОВКА";
+                    WorkoutNames[TrainingDays[0]] = "Толкающие Упражнения";
+                    WorkoutNames[TrainingDays[1]] = "Тянущие Упражнения";
+                    WorkoutNames[TrainingDays[2]] = "Ноги И Кор (Силовая Выносливость)";
+                    WorkoutNames[TrainingDays[3]] = "Верх Тела (Круговая)";
+                    WorkoutNames[TrainingDays[4]] = "Функциональная Тренировка";
                     break;
             }
-        else switch (nums) // Для цели по умолчанию
+        else switch (numberOfWorkouts) // Для цели по умолчанию
             {
                 case 1:
-                    workoutNames[trainingDays[0]] = "Фулл-бади. Интенсивность!";
+                    WorkoutNames[TrainingDays[0]] = "Фулл-Бади. Интенсивность!";
                     break;
 
                 case 2:
-                    workoutNames[trainingDays[0]] = "ВЕРХ (Тяги + Жимы)";
-                    workoutNames[trainingDays[1]] = "НИЗ + Пресс";
+                    WorkoutNames[TrainingDays[0]] = "Верх (Тяги + Жимы)";
+                    WorkoutNames[TrainingDays[1]] = "Низ + Пресс";
                     break;
 
                 case 3:
-                    workoutNames[trainingDays[0]] = "ТЯНИ (Спина, Бицепс, Задние дельты)";
-                    workoutNames[trainingDays[1]] = "ЖМИ (Грудь, Трицепс, Плечи)";
-                    workoutNames[trainingDays[2]] = "НОГИ + Пресс";
+                    WorkoutNames[TrainingDays[0]] = "Тяни (Спина, Бицепс, Задние Дельты)";
+                    WorkoutNames[TrainingDays[1]] = "Жми (Грудь, Трицепс, Плечи)";
+                    WorkoutNames[TrainingDays[2]] = "Ноги + Пресс";
                     break;
 
                 case 4:
-                    workoutNames[trainingDays[0]] = "ВЕРХ (А) - Грудь/Спина акцент";
-                    workoutNames[trainingDays[1]] = "НИЗ (А) - Квадрицепсы акцент";
-                    workoutNames[trainingDays[2]] = "ВЕРХ (Б) - Плечи/Руки акцент";
-                    workoutNames[trainingDays[3]] = "НИЗ (Б) - Бицепс бедра/Ягодицы акцент";
+                    WorkoutNames[TrainingDays[0]] = "Верх (А) - Грудь/Спина Акцент";
+                    WorkoutNames[TrainingDays[1]] = "Низ (А) - Квадрицепсы Акцент";
+                    WorkoutNames[TrainingDays[2]] = "Верх (Б) - Плечи/Руки Акцент";
+                    WorkoutNames[TrainingDays[3]] = "Низ (Б) - Бицепс Бедра/Ягодицы Акцент";
                     break;
 
                 case 5:
-                    workoutNames[trainingDays[0]] = "ТЯНИ (А) - Спина ширина";
-                    workoutNames[trainingDays[1]] = "ЖМИ (А) - Грудь объем";
-                    workoutNames[trainingDays[2]] = "НОГИ (А) - Квадрицепсы";
-                    workoutNames[trainingDays[3]] = "ТЯНИ (Б) - Спина толщина + Бицепс";
-                    workoutNames[trainingDays[4]] = "ЖМИ (Б) - Плечи + Трицепс";
+                    WorkoutNames[TrainingDays[0]] = "Тяни (А) - Спина Ширина";
+                    WorkoutNames[TrainingDays[1]] = "Жми (А) - Грудь Объем";
+                    WorkoutNames[TrainingDays[2]] = "Ноги (А) - Квадрицепсы";
+                    WorkoutNames[TrainingDays[3]] = "Тяни (Б) - Спина Толщина + Бицепс";
+                    WorkoutNames[TrainingDays[4]] = "Жми (Б) - Плечи + Трицепс";
                     break;
             }
 
-        return workoutNames;
+        return WorkoutNames;
     }
 
     #endregion

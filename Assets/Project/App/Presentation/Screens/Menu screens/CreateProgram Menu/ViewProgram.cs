@@ -24,9 +24,40 @@ public class ViewProgram : MonoBehaviour
     
     public static void UpdateProgramNames()
     {
-        for (int i = 0; i < 6; i++) 
+        if (_treningNames[0] != null)
         {
-            _treningNames[i].GetComponent<TextMeshProUGUI>().text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
+            string text0 = string.IsNullOrEmpty(Week.week.Days[0].programName) ? "отдых" : Week.week.Days[0].programName;
+            _treningNames[0].GetComponent<TextMeshProUGUI>().text = text0;
+        }
+
+        if (_treningNames[1] != null)
+        {
+            string text1 = string.IsNullOrEmpty(Week.week.Days[1].programName) ? "отдых" : Week.week.Days[1].programName;
+            _treningNames[1].GetComponent<TextMeshProUGUI>().text = text1;
+        }
+
+        if (_treningNames[2] != null)
+        {
+            string text2 = string.IsNullOrEmpty(Week.week.Days[2].programName) ? "отдых" : Week.week.Days[2].programName;
+            _treningNames[2].GetComponent<TextMeshProUGUI>().text = text2;
+        }
+
+        if (_treningNames[3] != null)
+        {
+            string text3 = string.IsNullOrEmpty(Week.week.Days[3].programName) ? "отдых" : Week.week.Days[3].programName;
+            _treningNames[3].GetComponent<TextMeshProUGUI>().text = text3;
+        }
+
+        if (_treningNames[4] != null)
+        {
+            string text4 = string.IsNullOrEmpty(Week.week.Days[4].programName) ? "отдых" : Week.week.Days[4].programName;
+            _treningNames[4].GetComponent<TextMeshProUGUI>().text = text4;
+        }
+
+        if (_treningNames[5] != null)
+        {
+            string text5 = string.IsNullOrEmpty(Week.week.Days[5].programName) ? "отдых" : Week.week.Days[5].programName;
+            _treningNames[5].GetComponent<TextMeshProUGUI>().text = text5;
         }
 
     }
@@ -37,9 +68,11 @@ public class ViewProgram : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++)
         {
             buttons[i].GetComponent<DoubleClickEvent>().DoubleClick += OpenProgram;
+            if (Week.week.Days[i].setsOfExercises.Count < 1) _treningNames[i].GetComponent<TextMeshProUGUI>().text = "отдых";
         }
         Set_Description(description);
     }
+
     private static void Set_Description(GameObject Description) => ViewProgram.Description = Description;
     #region для обновления
     static public List<GameObject> instList = new List<GameObject>();
