@@ -15,7 +15,8 @@ public class DataManager : MonoBehaviour
         DataManager.id = GetID();
     }
     static long GetID() 
-    { 
+    {
+        long id;
 #if UNITY_WEBGL
         string url = Application.absoluteURL;
         int i = url.IndexOf("user_id=");
@@ -29,7 +30,10 @@ public class DataManager : MonoBehaviour
             SupabaseSaveManager.id = id;
         }
 #else
-        long id = 12345;
+        id = 12345;
+#endif
+#if UNITY_STANDALONE_WIN
+        id = 54321;
 #endif
         return id;
     }

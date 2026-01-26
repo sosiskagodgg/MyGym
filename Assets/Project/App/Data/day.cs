@@ -122,8 +122,8 @@ public class Day
     public static void RefreshActiveDay()
     {
          int i = Week.week.Days.FindIndex(d => d.name == ActiveDay.name);
-         Debug.Log($"новый активный день имеет {SetOfExercises.Count(Week.week.Days[i].setsOfExercises)}");
-         ActiveDay = Week.week.Days[i];
+
+         ActiveDay = Day.DeepClone(Week.week.Days[i]);
     }
     // Добавляем приватные поля для отслеживания дня недели
     private static Day _activeDay;
@@ -179,7 +179,7 @@ public class Day
         return trainingExercises;
     }
 
-    public static Day CreateDayByTrainingSet(List<TrainingSet> trainingSets, string name)
+    public static Day CreateDayByTrainingSet(List<TrainingSet> trainingSets, string name,string programName = null)
     {
         // Группируем по set_number
         var groupedBySet = trainingSets.GroupBy(t => t.set_number);
@@ -226,7 +226,7 @@ public class Day
             }
         }
 
-        return new Day() { name = name, setsOfExercises = setOfExercises };
+        return new Day() { name = name, setsOfExercises = setOfExercises,programName = programName ?? "Отдых" };
     }
 
     #endregion

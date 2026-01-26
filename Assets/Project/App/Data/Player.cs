@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 [System.Serializable]
-public class Player
+public class Player : MonoBehaviour
 {
     #region Параметры и конструкторы
     public string name;
@@ -15,25 +16,12 @@ public class Player
 
     #region Загрузка - Сохранение
 
-    private static Player _cachedPlayer;
+    public static Player _cachedPlayer = new();
 
     public static Player player
     {
         get
         {
-            if(_cachedPlayer == null)
-            {
-                _cachedPlayer = new Player();
-                    DataManager.SEM.LoadUserMetrics(DataManager.id,
-                    (weight,percentageOfFat, age, experience) =>
-                        {
-                            _cachedPlayer.weight = weight;
-                            _cachedPlayer.age = age;
-                            _cachedPlayer.percentageOfFat = percentageOfFat;
-                            _cachedPlayer.experience = experience;
-                        }
-                    );
-            }
             return _cachedPlayer;
         }
         set

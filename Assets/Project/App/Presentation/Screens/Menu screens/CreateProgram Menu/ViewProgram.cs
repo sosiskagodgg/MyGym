@@ -16,22 +16,23 @@ public class ViewProgram : MonoBehaviour
 
     [SerializeField] Button[] buttons; // Для привязки событий на дабл клик
     [SerializeField] GameObject[] treningNames;
-    
-      
+    static GameObject[] _treningNames;
+
 
     [SerializeField] GameObject description;//для описания
     public static GameObject Description;
     
-    public void UpdateProgramNames()
+    public static void UpdateProgramNames()
     {
-        for (int i = 0; i < buttons.Length; i++) 
+        for (int i = 0; i < 6; i++) 
         {
-            treningNames[i].GetComponent<TextMeshProUGUI>().text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
+            _treningNames[i].GetComponent<TextMeshProUGUI>().text = Week.week.Days[i].programName ==""?"отдых": Week.week.Days[i].programName;
         }
 
     }
     private void OnEnable()
     {
+        _treningNames = treningNames;
         UpdateProgramNames();
         for (int i = 0; i < buttons.Length; i++)
         {

@@ -17,12 +17,56 @@ public class Week
             if(_cachedWeek == null)
             {
                 _cachedWeek = EmptyWeek;
+                try
+                {
+                   DataManager.SEM.LoadWeeklyTrainingSchedule(DataManager.id, (weekly) =>
+            {
+               _cachedWeek.Days[0] = Day.CreateDayByTrainingSet(weekly.days[0].exercises, "Понедельник", weekly.days[0].notes);
+               _cachedWeek.Days[1] = Day.CreateDayByTrainingSet(weekly.days[1].exercises, "Вторник", weekly.days[1].notes);
+                _cachedWeek.Days[2] = Day.CreateDayByTrainingSet(weekly.days[2].exercises, "Среда", weekly.days[2].notes);
+               _cachedWeek.Days[3] = Day.CreateDayByTrainingSet(weekly.days[3].exercises, "Четверг", weekly.days[3].notes);
+                _cachedWeek.Days[4] = Day.CreateDayByTrainingSet(weekly.days[4].exercises, "Пятница", weekly.days[4].notes);
+               _cachedWeek.Days[5] = Day.CreateDayByTrainingSet(weekly.days[5].exercises, "Суббота" , weekly.days[5].notes);
+                _cachedWeek.Days[6] = Day.CreateDayByTrainingSet(weekly.days[6].exercises, "Воскресенье", weekly.days[6].notes);
+                ViewProgram.UpdateProgramNames();
+            });
+                }
+                catch 
+                {
+
+                
+                }
             }
             return _cachedWeek;
         }
         set 
         {
             _cachedWeek = value;
+            DataManager.SEM.SaveEntireWeek(DataManager.id, new WeeklyTrainingSchedule(DataManager.id,
+                new List<TrainingDaySchedule>
+                {
+        new TrainingDaySchedule("Понедельник",
+            value.Days.First(d=>d.name == "Понедельник").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Понедельник").programName),
+        new TrainingDaySchedule("Вторник",
+            value.Days.First(d=>d.name == "Вторник").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Вторник").programName),
+        new TrainingDaySchedule("Среда",
+            value.Days.First(d=>d.name == "Среда").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Среда").programName),
+        new TrainingDaySchedule("Четверг",
+            value.Days.First(d=>d.name == "Четверг").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Четверг").programName),
+        new TrainingDaySchedule("Пятница",
+            value.Days.First(d=>d.name == "Пятница").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Пятница").programName),
+        new TrainingDaySchedule("Суббота",
+            value.Days.First(d=>d.name == "Суббота").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Суббота").programName),
+        new TrainingDaySchedule("Воскресенье",
+            value.Days.First(d=>d.name == "Воскресенье").CreateTrainingSet(),
+            value.Days.First(d=>d.name == "Воскресенье").programName)
+                }));
         }
     }
     public static Week EmptyWeek = new Week()
@@ -147,6 +191,7 @@ public class SetOfExercises
             try
             {
                 newSetOfExercises.exercises.Add(ExerciseManager.DeepClone(exercises[i]));
+                newSetOfExercises.id = setOfExercises.id;
             }
             catch
             {
@@ -189,98 +234,7 @@ public class SetOfExercises
         return returnList;
     }
 
-    public static List<SetOfExercises> GetExercisesByMuscleWeekWA(Muscle muscle,int weekWA,StringBuilder debugString = null)
-    {
-        // 1. Получаем упражнения, отсортированные по приоритету (1 - самый высокий)
-        List<Exercise> listExercises = new();
-        Goal goal = Player.player.treningParametrs.goal;
-        if (goal == Goal.GainingMuscleMass||goal==Goal.WeightLoss||goal == Goal.Recovery)
-        {
-            listExercises = ExerciseManager
-            .GetExercisesByMuscle(muscle)
-            .OrderBy(ex => ex.priority)  // 1 → 2 → 3
-            .ToList();
-        }
-        else if (goal == Goal.IncreasedStrength)
-        {
-                listExercises = ExerciseManager
-                .GetExercisesByMuscle(muscle)
-                .Where(ex => ExerciseManager.powerliftingExercises.Contains(ex.name))
-                .OrderBy(ex => ex.priority)
-                .ToList();
-            for (int i = 0; i < listExercises.Count; i++) 
-            {
-                listExercises[i].priority = ExerciseManager.powerliftingExercises.FindIndex(ex => ex == listExercises[i].name);
-            }
-        }
-        else if (goal == Goal.Flexibility)
-        {
-            listExercises = ExerciseManager
-            .GetExercisesByMuscle(muscle)
-            .Where(ex => ExerciseManager.stretchingExercises.Contains(ex.name))
-            .ToList();
-        }
-        else if (goal == Goal.IncreasedEndurance)
-        {
-            listExercises = ExerciseManager
-            .GetExercisesByMuscle(muscle)
-            .Where(ex => ExerciseManager.calisthenicsAndCardioExercises.Contains(ex.name))
-            .ToList();
-        }
-        List<SetOfExercises> setOfExercises = new();
 
-        // 2. Если нет упражнений - возвращаем пустой список
-        if (listExercises.Count == 0)
-        {
-            debugString?.AppendLine($"      Нет упражнений для мышцы: {muscle.name}");
-            return setOfExercises;
-        }
-
-        debugString?.AppendLine($"      Для мышцы '{muscle.name}' найдено {listExercises.Count} упражнений");
-        debugString?.AppendLine($"      Необходимо распределить {weekWA} подходов за неделю");
-
-        // 3. Простой алгоритм распределения
-        int remainingWA = weekWA;
-        int exerciseIndex = 0;
-
-        while (remainingWA > 0)
-        {
-            // Определяем сколько подходов дать на этом шаге (макс 4)
-            int setsForThisStep = Math.Min(4, remainingWA);
-
-            // Берем упражнение (циклически по кругу, начиная с приоритетных)
-            Exercise currentExercise = listExercises[exerciseIndex % listExercises.Count];
-
-            // Создаем сет упражнений
-            setOfExercises.Add(new SetOfExercises(
-                currentExercise,
-                (byte)setsForThisStep
-            ));
-
-            debugString?.AppendLine(
-                $"            Добавлен сет: '{currentExercise.name}' " +
-                $"(приоритет {currentExercise.priority}) - {setsForThisStep} подходов");
-
-            // Уменьшаем оставшиеся подходы
-            remainingWA -= setsForThisStep;
-
-            // Переходим к следующему упражнению
-            exerciseIndex++;
-
-            // Если прошли все доступные упражнения и еще есть подходы,
-            // начинаем с начала (дублируем упражнения)
-            if (exerciseIndex >= listExercises.Count && remainingWA > 0)
-            {
-                debugString?.AppendLine("  Упражнения закончились, начинаем дублирование...");
-            }
-        }
-
-        debugString?.AppendLine(
-            $"      Итого создано {setOfExercises.Count} сетов, " +
-            $"всего {setOfExercises.Sum(s => s.exercises.Count)} упражнений");
-
-        return setOfExercises.OrderBy(ex => ex.exercises[0].priority).ToList();
-    }
 
     #endregion
 }

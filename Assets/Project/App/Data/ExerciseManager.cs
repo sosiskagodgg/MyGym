@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -500,7 +501,6 @@ public class StrengthTraining : SpecificParameters
         else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
         else 
         {
-            SetParametrs(Player.player,ApproachNumber);
             if (workWeight > 0 && repetitions > 0) { return $"{workWeight} кг на {repetitions} раз"; }
             else if (workWeight <= 0 && repetitions > 0) return $"{repetitions} раз";
             return "Ошибка : повторений < 1"; 
@@ -681,7 +681,7 @@ debugString += $"replications: {replications} → " +
 
 #region Менеджер
 [System.Serializable]
-public class ExerciseManager
+public class ExerciseManager : MonoBehaviour
 {
     #region Загрузка - сохранение
 
@@ -695,21 +695,14 @@ public class ExerciseManager
 
     #region Статичные поля
     #region Сохранение загрузка апдэйт
-    private static DateTime _lastLoadTime;
-    public static string path { get { return $"{DataPath.Path()}/ExerciseData.json"; } }
 
-    private static List<Exercise> _cachedExercises;
+    public static List<Exercise> _cachedExercises;
     public static List<Exercise> Exercises
     {
         get
         {
             {
-                var fileTime = File.GetLastWriteTime(path);
-                if (_cachedExercises == null || _lastLoadTime < fileTime)
-                {
-                    _cachedExercises = Load();
-                    _lastLoadTime = DateTime.Now;
-                }
+                _cachedExercises??= GetBaseExercises();
                 return _cachedExercises;
             }
         }
@@ -717,7 +710,6 @@ public class ExerciseManager
     public static void Save(List<Exercise> exercises)
     {
         _cachedExercises = exercises;
-        File.WriteAllText(path, JsonUtility.ToJson(new ExerciseManager(exercises), true));
     }
     public static void UpdateExercise(Exercise exercise)
     {
@@ -731,22 +723,12 @@ public class ExerciseManager
         Save(exercises);
     }
 
-    private static List<Exercise> Load()
-    {
-        if (File.Exists(path))
-        {
-            return JsonUtility.FromJson<ExerciseManager>(File.ReadAllText(path)).exercises;
-        }
-        else
-        {
-            return GetBaseExercises();
-        }
-    }
     #endregion
     #region Get методы
     public static Exercise GetExercisesByName(string name)
     {
-        var exercise = Exercises.FirstOrDefault(e => e.name == name);
+        var exercise = Exercises.FirstOrDefault(e => e.name.ToLower() == name.ToLower());
+
         return exercise == null ? throw new KeyNotFoundException($"Упражнение '{name}' не найдено") : exercise;
     }
     public static List<Exercise> GetExercisesByNames(List<string> names)
@@ -795,7 +777,7 @@ public class ExerciseManager
     #endregion
 
     #region Создание упражнений
-    private static List<Exercise> GetBaseExercises()
+    public static List<Exercise> GetBaseExercises()
     {
 
         List<Exercise> exercises = new List<Exercise>();
@@ -857,7 +839,17 @@ public class ExerciseManager
             new StrengthTraining(12, 45, 35),
             2 // Средний приоритет (вспомогательное)
         ));
-
+        exercises.Add(new Exercise(
+    "Жим узким хватом",
+    new List<Muscle>
+    {
+        new Muscle("Трицепс", 60),
+        new Muscle("Середина груди", 35),
+        new Muscle("Передние дельты", 5)
+    },
+    new StrengthTraining(12, 95, 65),
+    2 // Средний приоритет (вспомогательное для трицепса)
+));
         #endregion
 
         #region Спина
@@ -877,7 +869,7 @@ public class ExerciseManager
         ));
 
         exercises.Add(new Exercise(
-            "Тяга штанги в наклоне (хват на ширине плеч)",
+            "Тяга штанги в наклоне",
             new List<Muscle>
             {
         new Muscle("Широчайшие", 60),
@@ -2715,132 +2707,6 @@ public class ExerciseManager
     }
     #endregion
 
-    #region Данные для разных целей
-    public static List<string> powerliftingExercises = new List<string>
-{
-    // БАЗОВЫЕ (The Big 3 + основные)
-    "Становая тяга",
-    "Жим гантелей на наклонной скамье",
-    "Приседания со штангой на спине",
-    "Жим лежа",
-    "Тяга штанги в наклоне (хват на ширине плеч)",
-    "Румынская тяга",
-    "Армейский жим стоя",
 
-    "Подтягивания широким хватом",
-    "Жим ногами в тренажере",
-    
-    // ВСПОМОГАТЕЛЬНЫЕ (для жима)
-    "Жим гантелей сидя",
-    "Французский жим лежа (EZ-гриф)",
-    "Отжимания на брусьях (акцент на трицепс)",
-    "Подъем штанги на бицепс стоя",
-    
-    // ВСПОМОГАТЕЛЬНЫЕ (для тяги и приседа)
-    "Шраги со штангой сзади",
-    "Гиперэкстензия с дополнительным весом",
-    "Сгибания ног лежа в тренажере",
-    "Выпады со штангой",
-    "Тяга штанги к подбородку широким хватом",
-    "Разведение гантелей в наклоне",
-    "Ягодичный мост со штангой",
-    "Подъемы на носки стоя в тренажере",
-    
-    // ДОПОЛНИТЕЛЬНЫЕ (коре/общая сила)
-    "Подъемы ног в висе",
-    "Планка на предплечьях",
-    "Отжимания от пола (классические)"
-};
-
-    public static List<string> stretchingExercises = new List<string>
-{
-    // Грудь
-    "Растяжка верхней части груди у стены",
-    "Растяжка середины груди в дверном проеме",
-    "Растяжка нижней части груди на фитболе",
-    "Растяжка внутренней части груди (ладони вместе)",
-    
-    // Спина
-    "Растяжка широчайших в висе на турнике",
-    "Растяжка широчайших сидя наклон вперед",
-    "Растяжка трапеций наклон головы вбок",
-    "Растяжка трапеций с помощью руки",
-    "Растяжка ромбовидных обхват себя руками",
-    "Растяжка ромбовидных сидя наклонившись вперед",
-    "Растяжка поясницы кошка-корова",
-    "Растяжка поясницы лежа на спине",
-    "Изометрическая растяжка шеи в стороны",
-    
-    // Плечи
-    "Растяжка передних дельт за спиной",
-    "Растяжка передних дельт у стены",
-    "Растяжка средних дельт через руку",
-    "Растяжка средних дельт скрестив руки",
-    "Растяжка задних дельт обхват плеча",
-    "Растяжка задних дельт с полотенцем",
-    
-    // Руки
-    "Растяжка бицепса у стены",
-    "Растяжка бицепса с опорой",
-    "Растяжка трицепса за головой",
-    "Растяжка трицепса через плечо",
-    "Растяжка предплечий ладонью вниз",
-    "Растяжка предплечий ладонью вверх",
-    
-    // Ноги
-    "Растяжка квадрицепса стоя",
-    "Растяжка квадрицепса лежа на боку",
-    "Растяжка бицепса бедра сидя",
-    "Растяжка бицепса бедра стоя",
-    "Растяжка ягодичных сидя скрестив ноги",
-    "Растяжка ягодичных лежа на спине",
-    "Растяжка икр у стены",
-    "Растяжка икр на ступеньке",
-    
-    // Кор
-    "Растяжка верхнего пресса лежа на животе",
-    "Растяжка верхнего пресса мостик",
-    "Растяжка нижнего пресса кобра",
-    "Растяжка нижнего пресса лежа на спине",
-    "Растяжка косых мышц в боковом наклоне",
-    "Растяжка косых мышц сидя скручивание"
-};
-    
-    public static List<string> calisthenicsAndCardioExercises = new List<string>
-{
-    // КАЛИСТЕНИКА
-    "Отжимания на брусьях с акцентом на грудь",
-    "Отжимания на брусьях (акцент на трицепс)",
-    "Отжимания от пола (классические)",
-    "Отжимания с широкой постановкой рук",
-    "Алмазные отжимания (узкий хват)",
-    "Отжимания с ногами на возвышении",
-    "Подтягивания широким хватом",
-    "Подтягивания (стандартный хват)",
-    "Подтягивания обратным хватом",
-    "Приседания с собственным весом",
-    "Подъемы ног в висе",
-    "Боковые скручивания на полу",
-    "Планка на предплечьях",
-        // Трапеции (для back)
-    "Шраги в висе на турнике",
-    "Удержание виса на турнике с подъемом плеч",
-    
-    // Поясница (для back)
-    "Супермен (гиперэкстензия на полу)",
-    "Мостик на одной ноге",
-    
-    // Предплечья (для hands)
-    "Вис на турнике",
-    "Прогулка фермера (с гантелями/бутылками)",
-    
-    // Передние дельты (для deltoid)
-    "Отжимания в стойке у стены (плечи)",
-    "Подъемы рук перед собой с импровизированным весом",
-    // КАРДИО (только берпи и скакалка, без бега)
-    "Берпи (Burpees)",
-    "Скакалка"
-};
-    #endregion
 } 
 #endregion

@@ -138,8 +138,8 @@ public class ExercisesSwap : SwapLeftRight
 
         int setIndex = Day.ActiveDay.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int exIndex = Day.ActiveDay.setsOfExercises[setIndex].exercises.FindIndex(ex => ex.id == exercise.id);
-
-
+        Debug.Log($"удаляем cэт {setIndex} ,упражнение {exIndex}");
+        Debug.Log($"Есть ли сылка на активный день в неделе - {Week.week.Days.Any(d=>d==Day.ActiveDay)}");
         Day.ActiveDay.setsOfExercises[setIndex].exercises.Remove(Day.ActiveDay.setsOfExercises[setIndex].exercises[exIndex]);
         Day.ActiveDay = Day.ActiveDay;
 

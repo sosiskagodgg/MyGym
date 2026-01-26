@@ -211,7 +211,11 @@ public class LowerCard : MonoBehaviour
         int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Remove(day.setsOfExercises[i].exercises[i2]);
-        if (!isActiveDay) {Week.SaveDay(day);ViewProgram.UpdateProgram(); }
+        if (!isActiveDay) 
+        {
+            Week.SaveDay(day);ViewProgram.UpdateProgram();
+            DataManager.SEM.UpdateDayInSchedule(DataManager.id, ViewProgram.day.name, true, ViewProgram.day.CreateTrainingSet(), ViewProgram.day.programName);
+        }
         else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
         
     }
@@ -225,7 +229,11 @@ public class LowerCard : MonoBehaviour
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises.Insert(i2,ExerciseManager.DeepClone(day.setsOfExercises[i].exercises[i2]));
         day.setsOfExercises[i].Sort();
-        if (!isActiveDay) { Week.SaveDay(day); ViewProgram.UpdateProgram(); }
+        if (!isActiveDay) 
+        {
+            Week.SaveDay(day); ViewProgram.UpdateProgram();
+            DataManager.SEM.UpdateDayInSchedule(DataManager.id, ViewProgram.day.name, true, ViewProgram.day.CreateTrainingSet(), ViewProgram.day.programName);
+        }
         else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
     }
     public void UpdateExercise(List<float> newParametrs)
@@ -237,9 +245,18 @@ public class LowerCard : MonoBehaviour
         int i = day.setsOfExercises.FindIndex(set => set.id == setOfExercises.id);
         int i2 = day.setsOfExercises[i].exercises.FindIndex(ex => ex.id == exercise.id);
         day.setsOfExercises[i].exercises[i2].specificParameters.SetNewParametrs(newParametrs);
-        if (!isActiveDay) { Week.SaveDay(day); ViewProgram.UpdateProgram(); }
+
+        if (!isActiveDay) {
+            Week.SaveDay(day); ViewProgram.UpdateProgram();
+            float weight = 0;
+            int rep = 0;
+            if (exercise.specificParameters is StrengthTraining) { weight = (exercise.specificParameters as StrengthTraining).workWeight;rep = (exercise.specificParameters as StrengthTraining).repetitions; }
+            ;
+            if (exercise.specificParameters is Calisthenics) rep = (exercise.specificParameters as Calisthenics).replications;
+            DataManager.SEM.UpdateTrainingSetInSchedule(DataManager.id, day.name, new TrainingSet(exercise.id, exercise.name, i, weight, rep));
+        }
         else { Day.ActiveDay = Day.ActiveDay; OpenStartTrening.UpdateActiveDayCards(); }
-  
+        
     }
     
     #endregion

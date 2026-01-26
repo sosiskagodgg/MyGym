@@ -88,6 +88,7 @@ public class UpperCard : MonoBehaviour
             ViewProgram.day.Sort();
             Week.SaveDay(ViewProgram.day);
             ViewProgram.UpdateProgram();
+            DataManager.SEM.UpdateDayInSchedule(DataManager.id, ViewProgram.day.name, true, ViewProgram.day.CreateTrainingSet(), ViewProgram.day.programName);
         }
         else
         {
@@ -109,6 +110,7 @@ public class UpperCard : MonoBehaviour
         {   
             Week.SaveDay(ViewProgram.day);
             ViewProgram.UpdateProgram();
+            DataManager.SEM.UpdateDayInSchedule(DataManager.id, ViewProgram.day.name, true, ViewProgram.day.CreateTrainingSet(), ViewProgram.day.programName);
         }
         else
         {
