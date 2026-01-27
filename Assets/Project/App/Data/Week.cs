@@ -130,6 +130,7 @@ public class SetOfExercises
         for (int i = 0; i < quantity; i++)
         {
             Exercise newExercise = ExerciseManager.DeepClone(exercise);
+            newExercise.id = (short)i;
             newExercise.specificParameters.SetParametrs(player, (byte)i);
             exercises.Add(newExercise);
         }

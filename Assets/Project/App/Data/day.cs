@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -46,7 +47,17 @@ public class Day
     }
     public void AddSetOfExercises(SetOfExercises setOfExercises)
     {
-        if (setOfExercises.exercises.Count <= 0){ return; }
+        if (setOfExercises.exercises.Count <= 0) { return; }
+
+        // Генерируем новый ID перед добавлением
+        byte newId = 0;
+        if (setsOfExercises.Count > 0)
+        {
+            // Находим максимальный существующий ID
+            newId = (byte)(setsOfExercises.Max(set => set.id) + 1);
+        }
+        Debug.Log($"Добавлен сэт №{newId} - {setOfExercises.ToString()}");
+        setOfExercises.id = newId;
         setsOfExercises.Add(setOfExercises);
         Week.SaveDay(this);
     }

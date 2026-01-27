@@ -5,11 +5,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 [System.Serializable]
-public class Player : MonoBehaviour
+public class Player 
 {
     #region Параметры и конструкторы
     public string name;
-    public int age, experience;
+    public int age, experience,height;
     public float weight, percentageOfFat;
     public TreningParametrs treningParametrs = new TreningParametrs();
     #endregion
@@ -35,8 +35,4 @@ public class Player : MonoBehaviour
     #region Данные по упражнениям
 
     #endregion
-}
-public class DataPath : MonoBehaviour
-{
-    static public string Path() => $"{Application.persistentDataPath}";
 }

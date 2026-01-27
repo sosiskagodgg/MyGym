@@ -19,7 +19,7 @@ public class buttonClickAnimation : MonoBehaviour
 
     Vector2 targetPos;
     Vector2 targetShadow;
-
+    VerticalLayoutGroup verticalLayoutGroup;
     float distance = 0f;
     public void OnClick()
     {
@@ -48,6 +48,7 @@ public class buttonClickAnimation : MonoBehaviour
     
     IEnumerator StartPressAnimation(bool isPressed)
     {
+        if(verticalLayoutGroup!=null) verticalLayoutGroup.enabled = false;
         float elapsed = 0f;
         Vector2 startPos = rectTransform.anchoredPosition;
         Vector2 startShadowPos = shadow.effectDistance;
@@ -66,11 +67,14 @@ public class buttonClickAnimation : MonoBehaviour
         foreach(GameObject obj in setActiveObj) { obj.SetActive(!isPress); }
         foreach (GameObject obj in setDeactiveObj) { obj.SetActive(isPress); }
         if (!isPress) SetStartPos();
-
     }
     void SetStartPos()
     {
         rectTransform.anchoredPosition = startPos;
+    }
+    private void OnEnable()
+    {
+        if (verticalLayoutGroup != null) verticalLayoutGroup.enabled = true;
     }
     private void Awake()
     {
@@ -78,5 +82,6 @@ public class buttonClickAnimation : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         startPos = rectTransform.anchoredPosition;
         startChadow = shadow.effectDistance;
+        verticalLayoutGroup= transform.GetComponentInParent<VerticalLayoutGroup>();
     }
 }

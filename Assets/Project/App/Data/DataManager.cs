@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 public class DataManager : MonoBehaviour
 {
     [SerializeField] SupabaseExerciseManager supabaseExerciseManager;
@@ -16,7 +17,7 @@ public class DataManager : MonoBehaviour
     }
     static long GetID() 
     {
-        long id;
+        long id = 0;
 #if UNITY_WEBGL
         string url = Application.absoluteURL;
         int i = url.IndexOf("user_id=");
@@ -25,9 +26,7 @@ public class DataManager : MonoBehaviour
             i += 8;
             int j = url.IndexOfAny("&#".ToCharArray(), i);
             if (j < 0) j = url.Length;
-            displayText.text = url.Substring(i, j - i);
             id = Convert.ToInt64(url.Substring(i, j - i));
-            SupabaseSaveManager.id = id;
         }
 #else
         id = 12345;

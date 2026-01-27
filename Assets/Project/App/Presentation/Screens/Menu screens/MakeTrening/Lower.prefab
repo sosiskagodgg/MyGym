@@ -36,10 +36,10 @@ RectTransform:
   - {fileID: 6312635527250453775}
   m_Father: {fileID: 7172756316356465372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 47.5, y: -12.5}
-  m_SizeDelta: {x: 25, y: 25}
+  m_AnchorMin: {x: 0.18400002, y: 0.069287494}
+  m_AnchorMax: {x: 0.287, y: 0.9393563}
+  m_AnchoredPosition: {x: -3.185791, y: -0.49996567}
+  m_SizeDelta: {x: 4.2985, y: -1.632}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4359843135421721093
 CanvasRenderer:
@@ -199,10 +199,10 @@ RectTransform:
   - {fileID: 7172756316356465372}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 190, y: 25}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -1229}
+  m_SizeDelta: {x: 915.1694, y: 115.6906}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3291586986669906042
 CanvasRenderer:
@@ -260,10 +260,10 @@ RectTransform:
   - {fileID: 6202693090480175539}
   m_Father: {fileID: 7172756316356465372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 142.5, y: -12.5}
-  m_SizeDelta: {x: 25, y: 25}
+  m_AnchorMin: {x: 0.70000005, y: 0.069287494}
+  m_AnchorMax: {x: 0.80648994, y: 0.9393563}
+  m_AnchoredPosition: {x: 1, y: -0.5}
+  m_SizeDelta: {x: -0.70149994, y: -1.6000023}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6017676147639338387
 CanvasRenderer:
@@ -421,10 +421,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7172756316356465372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 180, y: 22}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1798865034991426500
 CanvasRenderer:
@@ -481,12 +481,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 15
-  m_fontSizeMax: 20
+  m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -568,10 +568,10 @@ RectTransform:
   - {fileID: 6244246527803513766}
   m_Father: {fileID: 7017488282064594980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 190, y: 25}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4819763676175482692
 MonoBehaviour:
@@ -591,6 +591,7 @@ MonoBehaviour:
       rid: -2
     muscles: []
     priority: 0
+    isStreet: 0
     id: 0
   textMeshProUGUI: {fileID: 4810774171632632500}
   scrollText: {fileID: 8064695685458734013, guid: b50ff269b9fa5654c8a0efe2eb39f9c8, type: 3}
@@ -843,10 +844,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -921,10 +922,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7017488282064594980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 190, y: 25}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8537750268223157476
 CanvasRenderer:
@@ -1013,7 +1014,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1.9}
+  m_AnchoredPosition: {x: 0, y: 1.9000244}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &338129121703553981
@@ -1071,10 +1072,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0

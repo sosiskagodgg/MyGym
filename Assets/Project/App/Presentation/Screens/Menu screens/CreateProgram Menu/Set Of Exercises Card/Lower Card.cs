@@ -178,7 +178,7 @@ public class LowerCard : MonoBehaviour
     #region Дебаг
     public void DebugStringBilder()
     {
-        Debug.Log(exercise.specificParameters.debugString.ToString());
+        Debug.Log(exercise.specificParameters?.debugString?.ToString());
     } 
     #endregion
 

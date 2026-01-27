@@ -4,18 +4,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 public class CreateFile : MonoBehaviour
 {
     [SerializeField] GameObject description;
+    [SerializeField] PlayerVisual playerVisual;
     private void Awake()
     {
         StartCoroutine(Initialization());
     }
     private IEnumerator Initialization()
     {
+        description.SetActive(true);
+        description.SetActive(false);
         yield return StartCoroutine(LoadPlayer());
+        playerVisual.Initialization();
         yield return StartCoroutine(SetCof(ExerciseManager.GetBaseExercises()));
     } 
     static private IEnumerator SetCof(List<Exercise> exercises)
@@ -42,12 +47,13 @@ public class CreateFile : MonoBehaviour
     {
         yield return null;
         yield return DataManager.SEM.LoadUserMetricsCoroutine(DataManager.id,
-        (weight, percentageOfFat, age, experience) =>
+        (weight, percentageOfFat, age, experience,height) =>
         {
             Player._cachedPlayer.weight = weight;
             Player._cachedPlayer.age = age;
             Player._cachedPlayer.percentageOfFat = percentageOfFat;
             Player._cachedPlayer.experience = experience;
+            Player._cachedPlayer.height = height;
         });
     }
 }

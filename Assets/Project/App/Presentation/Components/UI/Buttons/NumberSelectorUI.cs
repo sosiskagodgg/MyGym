@@ -13,9 +13,8 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     #region Настройка параметров
     [Header("Сcылки")]
     [SerializeField] GameObject content;
-                     RectTransform contentRt;
+    [SerializeField] RectTransform contentRt;
     [SerializeField] GameObject textObject;
-    [SerializeField] SizeFilterAndVerticalGroup sizeFilterAndVerticalGroup;
     
 
     [Header("Настройки")]
@@ -80,32 +79,24 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     }
     #endregion
     #region Методы для создания текстовых обьектов
-    private List<GameObject> instantiateObjects = new();
     public void CreateTextObjects()
     {
-        int numberOfObjects = Mathf.CeilToInt((float)(max - min) / stepSize) + 1;
+        float contenWidth = contentRt.rect.width;
+        RectTransform textRT = textObject.transform as RectTransform;
+        textRT.sizeDelta = new Vector2(contenWidth, contenWidth);
 
-        for (int i = 0; i < numberOfObjects; i++)
+
+        for (int i = min; i < max; i+=stepSize)
         {
-            int value = min + (i * stepSize);
-
-            // Проверка, чтобы не превысить max
-            if (value > max) break;
-
-            GameObject instObj = Instantiate(textObject, content.transform);
-            instObj.GetComponentInChildren<TextMeshProUGUI>().text = value.ToString();
-
-            if (fontSize > 0)
-                instObj.GetComponentInChildren<TextMeshProUGUI>().fontSizeMax = fontSize;
-
-            instantiateObjects.Add(instObj);
-            instObj.SetActive(true);
-            instObj.AddComponent<DestroyOnDisable>();
-            if (isBeautifulText) { instObj.AddComponent<BeautifulText>(); instObj.GetComponent<BeautifulText>().range = beautifulTextRange; }
+            GameObject inst = Instantiate(textObject, contentRt);
+            RectTransform instRT = inst.GetComponent<RectTransform>();
+            instRT.anchoredPosition = new Vector2(0 + instRT.rect.width, instRT.anchoredPosition.y);
+            TextMeshProUGUI instText = instRT.GetComponentInChildren<TextMeshProUGUI>();
+            inst.AddComponent<DestroyOnDisable>();
+            instText.text = i.ToString();
+            
         }
 
-        sizeFilterAndVerticalGroup.SetTransform();
-        if (setCastomStart) SetStart();
     }
     private void SetStart() 
     {
@@ -144,14 +135,14 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     int lastValue;
     Image parentImage;
     Image image;
-    private void Update() 
+    private void Update()
     {
         contentRt ??= content.GetComponent<RectTransform>();
-        GameObject nearest = FindNearestByY(content,magnit);
+        GameObject nearest = FindNearestByY(content, magnit);
         RectTransform nearestRt = nearest.GetComponent<RectTransform>();
-        if (nearestRt == null)  Debug.LogError("Нет ближающего обьекта");
+        if (nearestRt == null) Debug.LogError("Нет ближающего обьекта");
 
-        if (!isPlayingAnimation && !IsScrolling&&!isPress) StartCoroutine(SetContentPosition(GetTargetPos(FindNearestByY(content, magnit).transform as RectTransform, magnit, contentRt)));
+        if (!isPlayingAnimation && !IsScrolling && !isPress) StartCoroutine(SetContentPosition(GetTargetPos(FindNearestByY(content, magnit).transform as RectTransform, magnit, contentRt)));
         #region Изменения цвета
         parentImage ??= transform.parent.GetComponentInParent<Image>();
         image ??= transform.GetComponent<Image>();
@@ -165,7 +156,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         {
             valueChanged?.Invoke(gameObject, System.Convert.ToInt32(value));
             lastValue = System.Convert.ToInt32(value);
-        } 
+        }
         #endregion
     }
     private Vector2 GetTargetPos(RectTransform Obj,RectTransform magnit,RectTransform content)
@@ -192,7 +183,7 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             float t = elapsed / durationAnimation;
             t = Mathf.SmoothStep(0f, 1f, t);
 
-            contentRt.position = Vector2.Lerp(startPos, targetPos, t);
+            contentRt.position = new Vector2(contentRt.position.x,Mathf.Lerp(startPos.y, targetPos.y,t));
             yield return null;
         }
         isPlayingAnimation= false;
@@ -200,48 +191,4 @@ public class NumberSelectorUI : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
 
     #endregion
-}
-public class BeautifulText : MonoBehaviour
-{
-    RectTransform rectTransform;
-    RectTransform magnit;
-    public float range= 10f;
-    private void OnEnable()
-    {
-        rectTransform = GetComponent<RectTransform>();
-        magnit = GetComponentInParent<NumberSelectorUI>().magnit;
-    }
-
-    private Vector3 lastPosition;
-    void Update()
-    {
-        TransformChange();
-
-    }
-    void TransformChange()
-    {
-        float distance = rectTransform.position.y - magnit.position.y;
-        if (Mathf.Abs(distance) < this.range)
-        {
-            float t = distance / this.range;
-
-            // Для эллиптической/сферической проекции используем синус
-            float angleX = Mathf.Sin(t * Mathf.PI * 0.5f) * 70f;
-
-            // Уменьшение масштаба по краям (как в iOS)
-            float scale = 0.7f + 0.3f * Mathf.Cos(t * Mathf.PI * 0.5f);
-            //rectTransform.localScale = new Vector3(scale, scale, 1);
-
-
-            rectTransform.localRotation = Quaternion.Euler(angleX, 0f, 0f);
-        }
-        else
-        {
-            rectTransform.localRotation = Quaternion.identity;
-            rectTransform.localScale = Vector3.one;
-            Vector3 pos = rectTransform.localPosition;
-            pos.z = 0;
-            rectTransform.localPosition = pos;
-        }
-    }
 }

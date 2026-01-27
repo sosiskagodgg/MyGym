@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -27,9 +28,10 @@ public class AddExerciseLowerMenu : MonoBehaviour
     {
         try
         {
+            if (isActiveDay)Debug.Log(Week.week.Days.Any(d => d == Day.ActiveDay));
             SetOfExercises newSet = new SetOfExercises(exercise, (int)scrollBarUI.Value == 0 ? 1 : (int)scrollBarUI.Value);
-            Day day = isActiveDay ? Day.ActiveDay : ViewProgram.day;
-            day.AddSetOfExercises(newSet);
+            Day day = isActiveDay ? Day.DeepClone(Day.ActiveDay) : Day.DeepClone(ViewProgram.day);
+            day.setsOfExercises.Add(newSet);
             text.text = "Успех!";
             if (isActiveDay) Day.ActiveDay = day;
             else

@@ -59,7 +59,11 @@ public class ViewProgram : MonoBehaviour
             string text5 = string.IsNullOrEmpty(Week.week.Days[5].programName) ? "מעהûץ" : Week.week.Days[5].programName;
             _treningNames[5].GetComponent<TextMeshProUGUI>().text = text5;
         }
-
+        if (_treningNames[6] != null)
+        {
+            string text5 = string.IsNullOrEmpty(Week.week.Days[6].programName) ? "מעהûץ" : Week.week.Days[6].programName;
+            _treningNames[6].GetComponent<TextMeshProUGUI>().text = text5;
+        }
     }
     private void OnEnable()
     {

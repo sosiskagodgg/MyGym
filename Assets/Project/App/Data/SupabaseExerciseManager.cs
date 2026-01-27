@@ -37,11 +37,12 @@ public class SupabaseExerciseManager : MonoBehaviour
     {
         StartCoroutine(GetUserExercises(userId, callback));
     }
-    public void SaveUserMetrics(long userId, float weightKg, float bodyFatPercent, int age, int experienceMonths)
+    public void SaveUserMetrics(long userId, float weightKg, float bodyFatPercent, int age, int experienceMonths, int heightCm) // ДОБАВЛЕН heightCm
     {
-        StartCoroutine(SaveOrUpdateUserMetrics(userId, weightKg, bodyFatPercent, age, experienceMonths));
+        StartCoroutine(SaveOrUpdateUserMetrics(userId, weightKg, bodyFatPercent, age, experienceMonths, heightCm));
     }
-    public void LoadUserMetrics(long userId, System.Action<float, float, int, int> callback)
+
+    public void LoadUserMetrics(long userId, System.Action<float, float, int, int, int> callback) // ДОБАВЛЕН heightCm в колбэк
     {
         StartCoroutine(LoadUserMetricsCoroutine(userId, callback));
     }
@@ -204,9 +205,9 @@ public class SupabaseExerciseManager : MonoBehaviour
 
         Debug.Log($"Добавлено {exercisesToInsert.Count} новых упражнений");
     }
-    IEnumerator SaveOrUpdateUserMetrics(long userId, float weightKg, float bodyFatPercent, int age, int experienceMonths)
+    IEnumerator SaveOrUpdateUserMetrics(long userId, float weightKg, float bodyFatPercent, int age, int experienceMonths, int heightCm) // ДОБАВЛЕН heightCm
     {
-        Debug.Log($"Сохранение метрик для user {userId}: вес={weightKg}кг, жир={bodyFatPercent}%, возраст={age}, опыт={experienceMonths}мес");
+        Debug.Log($"Сохранение метрик для user {userId}: вес={weightKg}кг, жир={bodyFatPercent}%, возраст={age}, опыт={experienceMonths}мес, рост={heightCm}см");
 
         // 1. Проверяем, есть ли уже запись у пользователя
         bool userExists = false;
@@ -228,6 +229,7 @@ public class SupabaseExerciseManager : MonoBehaviour
                    $"\"body_fat_percent\":{bodyFatPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)}," +
                    $"\"age\":{age}," +
                    $"\"experience_months\":{experienceMonths}," +
+                   $"\"height_cm\":{heightCm}," + // НОВОЕ ПОЛЕ
                    $"\"measurement_date\":\"{currentDate}\"}}";
         }
         else
@@ -240,6 +242,7 @@ public class SupabaseExerciseManager : MonoBehaviour
                    $"\"body_fat_percent\":{bodyFatPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)}," +
                    $"\"age\":{age}," +
                    $"\"experience_months\":{experienceMonths}," +
+                   $"\"height_cm\":{heightCm}," + // НОВОЕ ПОЛЕ
                    $"\"measurement_date\":\"{currentDate}\"}}";
         }
 
@@ -1330,9 +1333,9 @@ public class SupabaseExerciseManager : MonoBehaviour
 
         return sets;
     }
-    public IEnumerator LoadUserMetricsCoroutine(long userId, System.Action<float, float, int, int> callback)
+    public IEnumerator LoadUserMetricsCoroutine(long userId, System.Action<float, float, int, int, int> callback) // ДОБАВЛЕН heightCm
     {
-        string url = $"{supabaseUrl}/rest/v1/user_metrics?user_id=eq.{userId}&select=weight_kg,body_fat_percent,age,experience_months&order=measurement_date.desc&limit=1";
+        string url = $"{supabaseUrl}/rest/v1/user_metrics?user_id=eq.{userId}&select=weight_kg,body_fat_percent,age,experience_months,height_cm&order=measurement_date.desc&limit=1"; // ДОБАВЛЕН height_cm
 
         Debug.Log($"Загрузка метрик по URL: {url}");
 
@@ -1355,18 +1358,19 @@ public class SupabaseExerciseManager : MonoBehaviour
             Debug.LogError($"Статус код: {request.responseCode}");
             if (request.downloadHandler != null)
                 Debug.LogError($"Ответ сервера: {request.downloadHandler.text}");
-            callback?.Invoke(0, 0, 0, 0);
+            callback?.Invoke(0, 0, 0, 0, 0); // ДОБАВЛЕН heightCm=0
         }
 
         request.Dispose();
     }
     // ============ ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ============
-    private void ParseMetricsFromJson(string json, System.Action<float, float, int, int> callback)
+    private void ParseMetricsFromJson(string json, System.Action<float, float, int, int, int> callback) // ДОБАВЛЕН heightCm
     {
         float weight = 0;
         float bodyFat = 0;
         int age = 0;
         int experience = 0;
+        int heightCm = 0; // НОВАЯ ПЕРЕМЕННАЯ
 
         Debug.Log($"Парсим JSON метрик: {json}");
 
@@ -1374,7 +1378,7 @@ public class SupabaseExerciseManager : MonoBehaviour
         if (json == "[]" || string.IsNullOrEmpty(json) || json.Length < 3)
         {
             Debug.LogWarning("JSON метрик пустой");
-            callback?.Invoke(weight, bodyFat, age, experience);
+            callback?.Invoke(weight, bodyFat, age, experience, heightCm);
             return;
         }
 
@@ -1461,20 +1465,32 @@ public class SupabaseExerciseManager : MonoBehaviour
                         }
                         break;
 
+                    case "height_cm": // НОВЫЙ КЕЙС
+                        if (int.TryParse(value, out int h))
+                        {
+                            heightCm = h;
+                            Debug.Log($"Рост: {heightCm} см");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Не удалось распарсить рост: {value}");
+                        }
+                        break;
+
                     default:
                         Debug.LogWarning($"Неизвестный ключ: {key}");
                         break;
                 }
             }
 
-            Debug.Log($"Итог: вес={weight}, жир={bodyFat}, возраст={age}, опыт={experience}");
-            callback?.Invoke(weight, bodyFat, age, experience);
+            Debug.Log($"Итог: вес={weight}, жир={bodyFat}, возраст={age}, опыт={experience}, рост={heightCm}см");
+            callback?.Invoke(weight, bodyFat, age, experience, heightCm);
         }
         catch (System.Exception e)
         {
             Debug.LogError($"Ошибка парсинга метрик: {e.Message}");
             Debug.LogError($"Stack trace: {e.StackTrace}");
-            callback?.Invoke(0, 0, 0, 0);
+            callback?.Invoke(0, 0, 0, 0, 0);
         }
     }
 
